@@ -30,6 +30,7 @@ export function normalizeAnalysis(
   raw: unknown,
   id: string,
   input: string,
+  extra?: { alignedSummary?: string; sources?: import("@/lib/analysis/types").SearchSource[] },
 ): AnalysisResult {
   const o = (raw ?? {}) as Record<string, unknown>;
 
