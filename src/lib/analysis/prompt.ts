@@ -87,7 +87,7 @@ export function drillSystemPrompt(mode: DrillMode): string {
 - 用中文。只输出这段文字本身，不要 JSON、不要标题。`;
 }
 
-/** 从模型回复文本中稳健地抽取 JSON */
+/** 从模型回复文本中稳健地抽取 JSON，并对常见 LLM 格式小瑕疵做轻量修复 */
 export function extractJson(text: string): unknown {
   const trimmed = text.trim();
   const fenced = trimmed.match(/```(?:json)?\s*([\s\S]*?)```/);
@@ -97,5 +97,19 @@ export function extractJson(text: string): unknown {
   if (start === -1 || end === -1 || end <= start) {
     throw new Error("AI 未返回可解析的结果");
   }
-  return JSON.parse(candidate.slice(start, end + 1));
+  const raw = candidate.slice(start, end + 1);
+  try {
+    return JSON.parse(raw);
+  } catch {
+    // 轻量修复：去掉尾随逗号、补齐数组/对象元素间缺失的逗号
+    const repaired = raw
+      // 去掉 } 或 ] 前的尾随逗号
+      .replace(/,\s*([}\]])/g, "$1")
+      // 字符串结束后紧跟另一个字符串/对象/数组起始，补一个逗号
+      .replace(/"(\s*)"(?=\s*[:])/g, '"$1"') // 保护 key
+      .replace(/"(\s*)(?=")/g, '",$1')
+      .replace(/}(\s*){/g, "},$1{")
+      .replace(/](\s*)\[/g, "],$1[");
+    return JSON.parse(repaired);
+  }
 }
