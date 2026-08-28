@@ -1,0 +1,8 @@
+{
+  "route": "",
+  "name": "分析入口",
+  "nav_type": "tab",
+  "order_index": 0,
+  "icon": "search",
+  "summary": "输入框与深度题库，开始一次深度分析"
+}

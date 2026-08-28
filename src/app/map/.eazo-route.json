@@ -1,0 +1,8 @@
+{
+  "route": "map",
+  "name": "结构地图",
+  "nav_type": "tab",
+  "order_index": 2,
+  "icon": "network",
+  "summary": "结构节点与连线，假设与点亮的验证结构"
+}

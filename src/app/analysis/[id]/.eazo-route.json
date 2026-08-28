@@ -1,0 +1,10 @@
+{
+  "route": "analysis/[id]",
+  "name": "分析报告",
+  "nav_type": "stack",
+  "parent": "",
+  "order_index": 1,
+  "icon": "file-text",
+  "summary": "金句暴击、逐层展开、反噬保护与游走钩子",
+  "preview_route": "analysis/demo-reform"
+}
