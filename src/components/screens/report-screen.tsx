@@ -5,8 +5,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
-import { ArrowLeft, ShieldAlert, Compass, ArrowRight, Check } from "lucide-react";
-import { LayerAccordion } from "@/components/analysis/layer-accordion";
+import { ArrowLeft, Compass, ArrowRight, Check, History } from "lucide-react";
+import { PipelineTimeline } from "@/components/analysis/pipeline/pipeline-timeline";
 import { SkeletonCard } from "@/components/analysis/skeleton-card";
 import { getCachedAnalysis, cacheAnalysis } from "@/lib/analysis/store";
 import {
@@ -16,6 +16,7 @@ import {
 } from "@/lib/analysis/local-map";
 import { analyze, getAnalysis } from "@/lib/api/analysis";
 import { AppAIClientUnavailableError } from "@/lib/api/app-ai-request";
+import { STEP_LABELS } from "@/lib/analysis/types";
 import type { AnalysisResult } from "@/lib/analysis/types";
 
 export function ReportScreen({ id }: { id: string }) {
@@ -36,6 +37,14 @@ export function ReportScreen({ id }: { id: string }) {
       alive = false;
     };
   }, [id, result]);
+
+  /** 重算后：更新界面 + 本地缓存/持久化 */
+  function handleResult(next: AnalysisResult) {
+    setResult(next);
+    cacheAnalysis(next);
+    saveLocalAnalysis(next);
+    mergeLocalStructure(next.skeleton, next.verdict);
+  }
 
   async function digHook(title: string) {
     if (digging) return;
@@ -81,6 +90,8 @@ export function ReportScreen({ id }: { id: string }) {
     );
   }
 
+  const revisions = result.revisions ?? [];
+
   return (
     <div className="mx-auto flex w-full max-w-md flex-col gap-5 px-4 py-4">
       <button
@@ -97,46 +108,49 @@ export function ReportScreen({ id }: { id: string }) {
         className="rounded-3xl bg-primary p-5 text-primary-foreground shadow-[0_18px_44px_rgba(12,95,253,0.28)]"
         data-el="verdict-hero"
       >
-        <span className="text-[11px] font-bold uppercase tracking-widest text-primary-foreground/70">
-          {t("analysis.verdictLabel")}
-        </span>
+        <div className="flex items-center justify-between">
+          <span className="text-[11px] font-bold uppercase tracking-widest text-primary-foreground/70">
+            {t("analysis.verdictLabel")}
+          </span>
+          <span className="rounded-full bg-white/15 px-2 py-0.5 text-[11px] font-black">
+            v{result.version}
+          </span>
+        </div>
         <p className="mt-2 font-heading text-2xl font-black leading-tight">
           {result.verdict}
         </p>
       </div>
 
-      <LayerAccordion layers={result.layers} verdict={result.verdict} />
+      <PipelineTimeline result={result} onResult={handleResult} />
+
       <SkeletonCard skeleton={result.skeleton} />
 
-      <div
-        className="rounded-2xl border border-destructive/25 bg-destructive/[0.04] p-4"
-        data-el="backfire-guard"
-      >
-        <div className="flex items-center gap-2">
-          <ShieldAlert className="h-4 w-4 text-destructive" aria-hidden />
-          <span className="font-heading text-sm font-extrabold text-foreground">
-            {t("analysis.rebuttal.title")}
-          </span>
-        </div>
-        <div className="mt-3 space-y-3">
-          <div>
-            <p className="text-[11px] font-bold uppercase tracking-wide text-destructive">
-              {t("analysis.rebuttal.strongest")}
-            </p>
-            <p className="mt-1 text-sm leading-relaxed text-foreground">
-              {result.strongestRebuttal}
-            </p>
+      {revisions.length > 0 && (
+        <div
+          className="rounded-2xl border border-border bg-card p-4"
+          data-el="revisions"
+        >
+          <div className="flex items-center gap-2">
+            <History className="h-4 w-4 text-primary" aria-hidden />
+            <span className="font-heading text-sm font-extrabold text-foreground">
+              {t("pipeline.revisionLog")}
+            </span>
           </div>
-          <div>
-            <p className="text-[11px] font-bold uppercase tracking-wide text-destructive">
-              {t("analysis.rebuttal.blindSpot")}
-            </p>
-            <p className="mt-1 text-sm leading-relaxed text-foreground">
-              {result.blindSpot}
-            </p>
-          </div>
+          <ul className="mt-2 space-y-1.5">
+            {revisions.map((r, i) => (
+              <li key={i} className="text-xs leading-relaxed text-muted-foreground">
+                <span className="font-black text-primary">v{r.version}</span>
+                {" · "}
+                <span className="font-semibold text-foreground">
+                  {STEP_LABELS[r.stepKind]?.zh ?? r.stepKind}
+                </span>
+                {" — "}
+                {r.disagreement}
+              </li>
+            ))}
+          </ul>
         </div>
-      </div>
+      )}
 
       <div
         className="flex items-center gap-2 rounded-xl border border-secondary/20 bg-secondary/[0.06] px-4 py-2.5 text-sm font-semibold text-secondary"
