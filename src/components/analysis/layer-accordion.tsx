@@ -5,10 +5,17 @@ import { ChevronDown } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { cn } from "@/utils/utils";
 import { ConfidenceBar } from "@/components/shared/confidence-bar";
+import { DrillPoint } from "@/components/analysis/drill-point";
 import type { AnalysisLayer } from "@/lib/analysis/types";
 
 /** 逐层可折叠展开：骨架/下钻/暗黑/博弈/概率 */
-export function LayerAccordion({ layers }: { layers: AnalysisLayer[] }) {
+export function LayerAccordion({
+  layers,
+  verdict,
+}: {
+  layers: AnalysisLayer[];
+  verdict: string;
+}) {
   const { t } = useTranslation();
   const [open, setOpen] = useState<number>(0);
 
