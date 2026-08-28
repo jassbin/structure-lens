@@ -1,13 +1,14 @@
 "use client";
 
 import { useTranslation } from "react-i18next";
-import { Check, Pencil, Loader2, ExternalLink } from "lucide-react";
+import { Check, Pencil, Loader2, ExternalLink, SearchX } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import type { AlignResult } from "@/lib/analysis/types";
 
 /**
  * 事实对齐确认卡：展示搜索到的事件概要 + 来源，用户可确认或修正后再分析。
+ * needsManual = 联网没搜到，引导用户手动粘贴概要/链接后再分析。
  */
 export function AlignCard({
   align,
@@ -23,6 +24,7 @@ export function AlignCard({
   busy: boolean;
 }) {
   const { t } = useTranslation();
+  const manual = align.needsManual === true;
   return (
     <div
       className="flex flex-col gap-3 rounded-2xl border border-primary/30 bg-card p-4 shadow-sm"
@@ -30,23 +32,39 @@ export function AlignCard({
     >
       <div className="flex items-center gap-2">
         <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-primary/15 text-primary">
-          <Check className="h-3.5 w-3.5" />
+          {manual ? <SearchX className="h-3.5 w-3.5" /> : <Check className="h-3.5 w-3.5" />}
         </span>
         <h3 className="text-sm font-bold text-foreground">
-          {t("align.title", "先对齐事实，再穿透")}
+          {manual
+            ? t("align.manualTitle", "没搜到实时资料，请手动对齐")
+            : t("align.title", "先对齐事实，再穿透")}
         </h3>
       </div>
 
-      {!align.confident && (
-        <p className="rounded-lg bg-accent/15 px-3 py-2 text-xs text-muted-foreground">
-          {t("align.uncertain", "我不太确定说的是同一件事，请核对或补充下面的概要。")}
+      {manual ? (
+        <p className="rounded-lg bg-accent/15 px-3 py-2 text-xs leading-relaxed text-muted-foreground">
+          {t(
+            "align.manualHint",
+            "这件事可能太新、太小众，联网没检索到可靠资料。请把你知道的事件经过、或一段新闻摘要/链接粘到下面，我据此对齐后再深度分析。",
+          )}
         </p>
+      ) : (
+        !align.confident && (
+          <p className="rounded-lg bg-accent/15 px-3 py-2 text-xs text-muted-foreground">
+            {t("align.uncertain", "我不太确定说的是同一件事，请核对或补充下面的概要。")}
+          </p>
+        )
       )}
 
       <Textarea
         value={edited}
         onChange={(e) => onEdit(e.target.value)}
-        rows={5}
+        rows={manual ? 6 : 5}
+        placeholder={
+          manual
+            ? t("align.manualPlaceholder", "粘贴事件经过、新闻摘要或链接…")
+            : undefined
+        }
         className="resize-none rounded-xl border-border bg-background text-[14px] leading-relaxed"
         data-el="align-summary"
       />
@@ -93,7 +111,9 @@ export function AlignCard({
         ) : (
           <>
             <Pencil className="mr-1 h-4 w-4" />
-            {t("align.confirm", "就按这个概要，开始穿透")}
+            {manual
+              ? t("align.manualConfirm", "用我填的内容开始穿透")
+              : t("align.confirm", "就按这个概要，开始穿透")}
           </>
         )}
       </Button>
