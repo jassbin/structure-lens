@@ -8,7 +8,6 @@ import { toast } from "sonner";
 import { ArrowLeft, ShieldAlert, Compass, ArrowRight, Check } from "lucide-react";
 import { LayerAccordion } from "@/components/analysis/layer-accordion";
 import { SkeletonCard } from "@/components/analysis/skeleton-card";
-import { Button } from "@/components/ui/button";
 import { getCachedAnalysis, cacheAnalysis } from "@/lib/analysis/store";
 import { analyze, getAnalysis } from "@/lib/api/analysis";
 import { AppAIClientUnavailableError } from "@/lib/api/app-ai-request";
