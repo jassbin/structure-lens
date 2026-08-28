@@ -17,7 +17,6 @@ export async function POST(request: NextRequest) {
 
   const results = await ddgSearch(input, 6);
   const context = formatSearchContext(results);
-  console.log(`[align] ddg results=${results.length} for "${input.slice(0, 40)}"`);
 
   let content: string;
   try {
