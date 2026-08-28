@@ -16,6 +16,19 @@ export async function POST(request: NextRequest) {
   }
 
   const results = await ddgSearch(input, 6);
+
+  // 联网没搜到 → 优雅降级：不让 AI 硬编"无法确认"，直接请用户手动对齐
+  if (results.length === 0) {
+    const align: AlignResult = {
+      summary: "",
+      confident: false,
+      sources: [],
+      questions: [],
+      needsManual: true,
+    };
+    return NextResponse.json({ align });
+  }
+
   const context = formatSearchContext(results);
 
   let content: string;
