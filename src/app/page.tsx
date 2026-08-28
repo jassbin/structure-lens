@@ -51,7 +51,40 @@ export default function HomePage() {
 
   return (
     <AppShell tab={<BottomTabs />}>
-      <div className="mx-auto flex w-full max-w-md flex-col gap-6 px-4 py-6">
+      <div className="relative">
+        {/* 柔和涂鸦氛围背景（参考清新薄荷风） */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-x-0 top-0 z-0 h-80 overflow-hidden"
+        >
+          <div
+            className="absolute inset-0"
+            style={{
+              background:
+                "linear-gradient(180deg, rgba(180,230,210,0.5) 0%, rgba(200,225,255,0.3) 42%, rgba(255,248,236,0) 100%)",
+            }}
+          />
+          <div
+            className="absolute -left-8 top-8 h-28 w-28 opacity-60 blur-[1px]"
+            style={{
+              background: "#b8ecd6",
+              borderRadius: "42% 58% 60% 40% / 45% 45% 55% 55%",
+            }}
+          />
+          <div
+            className="absolute right-1 top-4 h-16 w-24 opacity-60"
+            style={{
+              background: "#cfe3ff",
+              borderRadius: "60% 40% 50% 50% / 55% 50% 50% 45%",
+            }}
+          />
+          <div
+            className="absolute right-12 top-28 h-9 w-9 rounded-full opacity-50"
+            style={{ background: "#ffe08a" }}
+          />
+        </div>
+
+        <div className="relative z-10 mx-auto flex w-full max-w-md flex-col gap-6 px-4 py-6">
         <div className="pt-2 text-center" data-el="home-hero">
           <span className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card px-3 py-1 text-xs font-semibold text-muted-foreground">
             <Sparkles className="h-3.5 w-3.5 text-accent" aria-hidden />
