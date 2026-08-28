@@ -74,3 +74,17 @@ export async function getStructureMap(): Promise<StructureNode[]> {
   const data = (await res.json()) as { nodes: StructureNode[] };
   return data.nodes;
 }
+
+/** 后置登录：把本地分析并入云端结构地图 */
+export async function importLocalToCloud(
+  analyses: AnalysisResult[],
+): Promise<number> {
+  const res = await request("/api/structure-map/import", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ analyses }),
+  });
+  if (!res.ok) throw new Error(`import failed: ${res.status}`);
+  const data = (await res.json()) as { imported: number };
+  return data.imported;
+}
