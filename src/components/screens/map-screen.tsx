@@ -46,9 +46,12 @@ export function MapScreen() {
       ) : nodes.length === 0 ? (
         <div className="flex flex-col items-center gap-3 rounded-2xl border border-dashed border-border bg-card py-12 text-center">
           <p className="px-8 text-sm text-muted-foreground">{t("map.empty")}</p>
-          <Button asChild className="rounded-xl font-bold">
-            <Link href="/">{t("map.goAnalyze")}</Link>
-          </Button>
+          <Link
+            href="/"
+            className="inline-flex h-10 items-center rounded-xl bg-primary px-5 text-sm font-bold text-primary-foreground"
+          >
+            {t("map.goAnalyze")}
+          </Link>
         </div>
       ) : (
         <div className="flex flex-col gap-3" data-el="map-nodes">
