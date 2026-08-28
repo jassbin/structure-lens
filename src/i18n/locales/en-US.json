@@ -34,36 +34,77 @@
       "backHome": "Back to home"
     }
   },
-  "starter": {
-    "badge": "Eazo App Starter",
-    "title": "Build your next app with Eazo",
-    "subtitle": "You now have a clean foundation with auth, data access, and platform integrations ready for your product.",
-    "steps": {
-      "readDocs": {
-        "title": "Read the docs",
-        "desc": "Open AGENTS.md and README.md to understand the template architecture.",
-        "code": "AGENTS.md + README.md"
-      },
-      "replacePage": {
-        "title": "Replace this page",
-        "desc": "Move your product UI into src/components and keep page.tsx thin.",
-        "code": "src/app/page.tsx"
-      },
-      "firstFeature": {
-        "title": "Build your first feature",
-        "desc": "Add API routes under src/app/api and call them from typed helpers.",
-        "code": "src/app/api/*"
-      },
-      "translations": {
-        "title": "Add translations",
-        "desc": "Edit en-US / zh-CN strings in src/i18n/locales. LanguageSwitcher and I18nProvider in layout.tsx are already wired.",
-        "code": "src/i18n/locales/"
-      }
+  "nav": {
+    "analyze": "Analyze",
+    "map": "Structure Map"
+  },
+  "home": {
+    "brand": "Structure Lens",
+    "tagline": "Drop an event in and see the structure behind it.",
+    "inputPlaceholder": "Paste an event, policy, decision, or something worth digging into…",
+    "analyze": "Pierce it",
+    "analyzing": "Piercing…",
+    "topicsTitle": "Or dig into a deep one right away",
+    "category": {
+      "policy": "Policy",
+      "business": "Business",
+      "history": "History"
     },
-    "nextCommand": {
-      "title": "Next command",
-      "desc": "Start developing and iterate in real time.",
-      "command": "bun dev"
+    "probeTitle": "Let's make it diggable first",
+    "probeIntro": "This is still too vague. Answer a question or two so we can turn it into a concrete, diggable event.",
+    "probeAnswerPlaceholder": "Add the specific people, actions, or anomaly…",
+    "probeContinue": "Good — dig it now",
+    "notApplicableTitle": "This may not fit structural analysis",
+    "notApplicableBack": "Try another event"
+  },
+  "analysis": {
+    "verdictLabel": "The verdict",
+    "confidence": "Confidence",
+    "probability": "Probability",
+    "layers": {
+      "skeleton": "Event skeleton",
+      "drill": "Three-layer drill",
+      "dark": "Who benefits",
+      "game": "Multi-party game",
+      "probability": "Probability"
+    },
+    "skeletonCard": {
+      "title": "Structure skeleton",
+      "hypothesisTag": "Hypothesis",
+      "subject": "Subject",
+      "mechanism": "Mechanism",
+      "extracted": "Extracted",
+      "root": "Root structure"
+    },
+    "rebuttal": {
+      "title": "Backfire guard",
+      "strongest": "Strongest rebuttal",
+      "blindSpot": "Where this could be wrong"
+    },
+    "walk": {
+      "title": "Keep walking",
+      "intro": "This structure may be isomorphic with the events below — dig one to test it.",
+      "dig": "Dig this"
+    },
+    "share": "Make a share card",
+    "savedToMap": "Saved this structure to your map",
+    "back": "Back",
+    "notFound": "Analysis not found"
+  },
+  "map": {
+    "title": "Structure Map",
+    "intro": "The events you dig settle into structures here. After enough isomorphic collisions, a hypothesis lights up as a verified structure.",
+    "empty": "No structures yet. Dig an event and structures will settle here.",
+    "goAnalyze": "Dig one",
+    "state": {
+      "hypothesis": "Hypothesis",
+      "verified": "Verified"
+    },
+    "appearsIn": "Appears in",
+    "root": {
+      "extraction": "Extraction",
+      "delegation": "Delegation",
+      "power": "Power balance"
     }
   }
 }
