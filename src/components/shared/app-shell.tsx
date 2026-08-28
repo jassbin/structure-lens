@@ -3,6 +3,7 @@
 import { useCallback, useSyncExternalStore } from "react";
 import { Languages } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { UserBadge } from "@/components/user-profile/user-badge";
 import {
   changeLocale,
   getLocalePreference,
