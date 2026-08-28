@@ -1,6 +1,6 @@
 "use client";
 
-import { use, useEffect, useState } from "react";
+import { use, useSyncExternalStore } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
@@ -12,7 +12,8 @@ import { SkeletonCard } from "@/components/analysis/skeleton-card";
 import { Button } from "@/components/ui/button";
 import { getAnalysis, saveAnalysis } from "@/lib/analysis/store";
 import { analyzeLocally, makeId } from "@/lib/analysis/engine";
-import type { AnalysisResult } from "@/lib/analysis/types";
+
+const emptySubscribe = () => () => {};
 
 export default function AnalysisPage({
   params,
@@ -22,11 +23,12 @@ export default function AnalysisPage({
   const { id } = use(params);
   const { t } = useTranslation();
   const router = useRouter();
-  const [result, setResult] = useState<AnalysisResult | null | undefined>(undefined);
-
-  useEffect(() => {
-    setResult(getAnalysis(id));
-  }, [id]);
+  // 客户端读取本次分析；SSR 快照返回 undefined 以避免 hydration mismatch。
+  const result = useSyncExternalStore(
+    emptySubscribe,
+    () => getAnalysis(id),
+    () => undefined,
+  );
 
   function digHook(title: string) {
     const newId = makeId();
