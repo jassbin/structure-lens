@@ -111,7 +111,7 @@ export default function HomePage() {
           <Button
             onClick={handleSubmit}
             disabled={!input.trim() || busy}
-            className="h-12 rounded-2xl text-base font-bold shadow-[0_8px_18px_rgba(12,95,253,0.18)]"
+            className="h-12 rounded-2xl bg-[#0C5FFD] text-base font-bold text-white shadow-[0_10px_24px_rgba(12,95,253,0.45)] hover:bg-[#0048F0] disabled:opacity-50"
             data-el="home-analyze"
           >
             {busy ? (
