@@ -6,7 +6,6 @@ import { useTranslation } from "react-i18next";
 import { Network, CheckCircle2, CircleDashed } from "lucide-react";
 import { RootBadge } from "@/components/shared/root-badge";
 import { ConfidenceBar } from "@/components/shared/confidence-bar";
-import { Button } from "@/components/ui/button";
 import { cn } from "@/utils/utils";
 import { getStructureMap } from "@/lib/api/analysis";
 import type { StructureNode } from "@/lib/analysis/types";
