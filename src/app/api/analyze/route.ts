@@ -31,7 +31,8 @@ export async function POST(request: NextRequest) {
   const alignedSummary = (body.alignedSummary ?? "").trim();
   const sources = Array.isArray(body.sources) ? body.sources.slice(0, 6) : undefined;
 
-  const triage = triageInput(input);
+  // 有对齐概要时，用概要做分诊（原始输入可能只有几个字，会被误判太浅）
+  const triage = triageInput(alignedSummary || input);
   if (triage.verdict !== "diggable") {
     return NextResponse.json({ status: triage.verdict, triage });
   }
