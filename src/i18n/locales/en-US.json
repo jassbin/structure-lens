@@ -94,6 +94,58 @@
     "back": "Back",
     "notFound": "Analysis not found"
   },
+  "pipeline": {
+    "title": "Reasoning pipeline",
+    "steps": "steps",
+    "recomputed": "Recomputed to",
+    "recomputeFailed": "Recompute failed, please retry",
+    "disagree": "I disagree with this step",
+    "disagreeHint": "Write your objection: if sound, I'll adopt it and recompute this step and all downstream steps.",
+    "disagreePlaceholder": "e.g. The anomaly entry is wrong; the real key is…",
+    "recomputeCta": "Recompute downstream",
+    "recomputingDownstream": "Re-sequencing downstream steps…",
+    "revisionLog": "Revision log",
+    "grade": {
+      "strong": "Strong",
+      "medium": "Medium",
+      "weak": "Weak",
+      "unverifiable": "Unverifiable"
+    },
+    "anomaly": {
+      "baseline": "Expected baseline",
+      "entry": "Entry point",
+      "leverage": "Leverage",
+      "why": "Why this one"
+    },
+    "skeleton": {
+      "subject": "Subject",
+      "object": "Object",
+      "mechanism": "Mechanism",
+      "harmed": "Harmed",
+      "benefited": "Benefited"
+    },
+    "mechanism": {
+      "surface": "Surface",
+      "deep": "Deeper",
+      "bottom": "Bottom",
+      "flow": "Interest flow",
+      "renaming": "Structural renaming"
+    },
+    "game": {
+      "variable": "Variable parameter (decider)"
+    },
+    "scenario": {
+      "signal": "Warning signals"
+    },
+    "judgment": {
+      "falsifiable": "Falsifiable condition"
+    },
+    "adversarial": {
+      "challenge": "Devil's advocate",
+      "response": "Response",
+      "meta": "Metacognitive audit"
+    }
+  },
   "map": {
     "title": "Structure Map",
     "intro": "The events you dig settle into structures here. After enough isomorphic collisions, a hypothesis lights up as a verified structure.",
