@@ -77,22 +77,12 @@ export default function HomePage() {
             }}
           />
           <div
-            className="absolute -left-8 top-8 h-28 w-28 opacity-60 blur-[1px]"
-            style={{
-              background: "#b8ecd6",
-              borderRadius: "42% 58% 60% 40% / 45% 45% 55% 55%",
-            }}
+            className="absolute -left-10 -top-6 h-40 w-40 rounded-full opacity-70 blur-2xl"
+            style={{ background: "rgba(12,95,253,0.16)" }}
           />
           <div
-            className="absolute right-1 top-4 h-16 w-24 opacity-60"
-            style={{
-              background: "#cfe3ff",
-              borderRadius: "60% 40% 50% 50% / 55% 50% 50% 45%",
-            }}
-          />
-          <div
-            className="absolute right-12 top-28 h-9 w-9 rounded-full opacity-50"
-            style={{ background: "#ffe08a" }}
+            className="absolute -right-6 top-6 h-28 w-28 rounded-full opacity-60 blur-2xl"
+            style={{ background: "rgba(0,72,240,0.14)" }}
           />
         </div>
 
