@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
-import { ArrowRight, Sparkles, Loader2 } from "lucide-react";
+import { ArrowRight, Sparkles, Loader2, Landmark, Briefcase, ScrollText } from "lucide-react";
 import { AppShell } from "@/components/shared/app-shell";
 import { BottomTabs } from "@/components/shared/bottom-tabs";
 import { Button } from "@/components/ui/button";
