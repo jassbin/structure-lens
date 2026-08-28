@@ -53,6 +53,8 @@ export interface AlignResult {
   confident: boolean;
   sources: SearchSource[];
   questions: string[];
+  /** 联网没搜到相关资料，需要用户手动粘贴概要/链接来对齐 */
+  needsManual?: boolean;
 }
 
 /** 一次完整的分析结果 */
