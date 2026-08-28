@@ -75,6 +75,15 @@ export function recomputeSystemPrompt(fromStepKind: string): string {
 严格用中文。只输出这个 JSON 对象。`;
 }
 
+/** 把已有步骤序列化成给重算模型的上下文文本 */
+export function serializeStepsForContext(steps: unknown[]): string {
+  try {
+    return JSON.stringify(steps, null, 2);
+  } catch {
+    return "[]";
+  }
+}
+
 /** 逐条判断的深挖 / 质疑 / 反驳 */
 export type DrillMode = "challenge" | "deeper" | "counter";
 
