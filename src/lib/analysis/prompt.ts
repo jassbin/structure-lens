@@ -2,6 +2,7 @@
  * 深度分析方法论 → 系统提示词集合。
  * 两部分：深度分析（强制抽象到最底层）、逐点深挖。
  */
+import { jsonrepair } from "jsonrepair";
 
 /** 深度分析。核心——强制多轮抽象 + 跨域验证，逼出底层通用结构 */
 export const ANALYSIS_SYSTEM_PROMPT = `你是「结构透镜」，一位极其锐利、克制、诚实的结构分析者。用户给你一个事件、政策、决策或复杂行为（有时还附上联网检索到的相关资料，仅供你对齐事实、若无关可忽略）。你要穿透它，找出背后真正的、底层的、可跨领域迁移的结构。
@@ -101,15 +102,7 @@ export function extractJson(text: string): unknown {
   try {
     return JSON.parse(raw);
   } catch {
-    // 轻量修复：去掉尾随逗号、补齐数组/对象元素间缺失的逗号
-    const repaired = raw
-      // 去掉 } 或 ] 前的尾随逗号
-      .replace(/,\s*([}\]])/g, "$1")
-      // 字符串结束后紧跟另一个字符串/对象/数组起始，补一个逗号
-      .replace(/"(\s*)"(?=\s*[:])/g, '"$1"') // 保护 key
-      .replace(/"(\s*)(?=")/g, '",$1')
-      .replace(/}(\s*){/g, "},$1{")
-      .replace(/](\s*)\[/g, "],$1[");
-    return JSON.parse(repaired);
+    // LLM 常见格式毛病（数组元素缺逗号、尾随逗号、单引号等）用 jsonrepair 兜底
+    return JSON.parse(jsonrepair(raw));
   }
 }
