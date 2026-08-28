@@ -72,7 +72,7 @@ export function AppShell({
 }) {
   const { t } = useTranslation();
   return (
-    <div className="flex h-full w-full flex-col bg-background">
+    <div data-shell className="flex h-full w-full flex-col bg-background">
       <header
         className="sticky top-0 z-30 flex items-center justify-between border-b border-border bg-card/90 px-4 py-3 backdrop-blur"
         style={{ paddingTop: "max(10px, env(safe-area-inset-top, 0px))" }}
@@ -86,7 +86,10 @@ export function AppShell({
             {t("home.brand")}
           </span>
         </div>
-        <LocaleControl />
+        <div className="flex items-center gap-2">
+          <LocaleControl />
+          <UserBadge />
+        </div>
       </header>
       <main className="min-h-0 flex-1 overflow-y-auto">{children}</main>
       {showTabs && (tab ?? null)}
