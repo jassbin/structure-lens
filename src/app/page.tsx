@@ -20,6 +20,18 @@ const CATEGORY_COLOR: Record<string, string> = {
   history: "text-[#5647d6]",
 };
 
+const CATEGORY_ICON = {
+  policy: Landmark,
+  business: Briefcase,
+  history: ScrollText,
+} as const;
+
+const CATEGORY_ICON_BG: Record<string, string> = {
+  policy: "bg-primary/10 text-primary",
+  business: "bg-secondary/10 text-secondary",
+  history: "bg-[#6b5cff]/10 text-[#5647d6]",
+};
+
 export default function HomePage() {
   const { t } = useTranslation();
   const router = useRouter();
