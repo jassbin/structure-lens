@@ -2,9 +2,7 @@
 
 import { request } from "@/lib/api/request";
 import type {
-  AlignResult,
   AnalysisResult,
-  SearchSource,
   StructureNode,
   TriageResult,
 } from "@/lib/analysis/types";
@@ -13,27 +11,12 @@ export type AnalyzeResponse =
   | { status: "diggable"; result: AnalysisResult; persisted?: boolean }
   | { status: "too_shallow" | "not_applicable"; triage: TriageResult };
 
-/** 事实对齐：联网搜索 + AI 概要，供用户确认/修正。免登录。 */
-export async function alignEvent(input: string): Promise<AlignResult> {
-  const res = await request("/api/align", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ input }),
-  });
-  if (!res.ok) throw new Error(`align failed: ${res.status}`);
-  const data = (await res.json()) as { align: AlignResult };
-  return data.align;
-}
-
-/** 提交事件做深度分析；可携带对齐后的概要与来源。免登录。 */
-export async function analyze(
-  input: string,
-  extra?: { alignedSummary?: string; sources?: SearchSource[] },
-): Promise<AnalyzeResponse> {
+/** 提交事件做深度分析。服务端会对“具体事件”后台静默联网搜索（搜到才用）。免登录。 */
+export async function analyze(input: string): Promise<AnalyzeResponse> {
   const res = await request("/api/analyze", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ input, ...extra }),
+    body: JSON.stringify({ input }),
   });
   if (!res.ok) throw new Error(`analyze failed: ${res.status}`);
   return (await res.json()) as AnalyzeResponse;
