@@ -41,11 +41,29 @@ export interface WalkHook {
   reason: string;
 }
 
+/** 联网搜索出的来源 */
+export interface SearchSource {
+  title: string;
+  url: string;
+}
+
+/** 事实对齐结果：搜索后整理的事件概要，供用户确认/修正 */
+export interface AlignResult {
+  summary: string;
+  confident: boolean;
+  sources: SearchSource[];
+  questions: string[];
+}
+
 /** 一次完整的分析结果 */
 export interface AnalysisResult {
   id: string;
   /** 用户输入的原始事件 */
   input: string;
+  /** 对齐后使用的事件概要（若走了搜索对齐） */
+  alignedSummary?: string;
+  /** 分析所依据的来源 */
+  sources?: SearchSource[];
   /** 一句命名式金句暴击 */
   verdict: string;
   /** 逐层展开 */
