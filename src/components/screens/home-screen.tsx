@@ -4,36 +4,31 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
-import { ArrowRight, Sparkles, Loader2, Search } from "lucide-react";
+import { ArrowRight, Sparkles, Loader2 } from "lucide-react";
 import { AppShell } from "@/components/shared/app-shell";
 import { BottomTabs } from "@/components/shared/bottom-tabs";
 import { DeepTopics } from "@/components/home/deep-topics";
 import { ProbePanel, NotApplicablePanel } from "@/components/home/entry-panels";
-import { AlignCard } from "@/components/home/align-card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { cacheAnalysis } from "@/lib/analysis/store";
 import { saveLocalAnalysis, mergeLocalStructure } from "@/lib/analysis/local-map";
-import { alignEvent, analyze } from "@/lib/api/analysis";
+import { analyze } from "@/lib/api/analysis";
 import { AppAIClientUnavailableError } from "@/lib/api/app-ai-request";
-import type { AlignResult, SearchSource, TriageResult } from "@/lib/analysis/types";
-
-type Phase = "idle" | "aligning" | "confirm" | "analyzing";
+import type { TriageResult } from "@/lib/analysis/types";
 
 export function HomeScreen() {
   const { t } = useTranslation();
   const router = useRouter();
   const [input, setInput] = useState("");
-  const [phase, setPhase] = useState<Phase>("idle");
-  const [align, setAlign] = useState<AlignResult | null>(null);
-  const [editedSummary, setEditedSummary] = useState("");
+  const [busy, setBusy] = useState(false);
   const [triage, setTriage] = useState<TriageResult | null>(null);
   const [probeAnswer, setProbeAnswer] = useState("");
 
-  const busy = phase === "aligning" || phase === "analyzing";
-
   /** 免登录：本地缓存 + 本地结构地图并入，登录用户服务端已落库 */
-  function persistLocally(res: Extract<Awaited<ReturnType<typeof analyze>>, { status: "diggable" }>) {
+  function persistLocally(
+    res: Extract<Awaited<ReturnType<typeof analyze>>, { status: "diggable" }>,
+  ) {
     cacheAnalysis(res.result);
     saveLocalAnalysis(res.result);
     if (!res.persisted) {
@@ -41,49 +36,25 @@ export function HomeScreen() {
     }
   }
 
-  async function runAnalysis(
-    text: string,
-    extra?: { alignedSummary?: string; sources?: SearchSource[] },
-  ) {
-    if (phase === "analyzing") return;
-    setPhase("analyzing");
+  /** 输入 → 直接穿透。联网搜索由服务端后台静默进行，搜不到也照常分析。 */
+  async function runAnalysis(text: string) {
+    if (busy) return;
+    setBusy(true);
     setTriage(null);
     try {
-      const res = await analyze(text, extra);
+      const res = await analyze(text);
       if (res.status === "diggable") {
         persistLocally(res);
         router.push(`/analysis/${res.result.id}`);
       } else {
         setTriage(res.triage);
-        setPhase("idle");
+        setBusy(false);
       }
     } catch (error) {
       if (!(error instanceof AppAIClientUnavailableError)) {
         toast.error(t("home.failed", "分析失败，请稍后重试"));
       }
-      setPhase("idle");
-    }
-  }
-
-  /** 第一步：先联网对齐事实 */
-  async function startAlign(text: string) {
-    if (busy) return;
-    setPhase("aligning");
-    setTriage(null);
-    setAlign(null);
-    try {
-      const result = await alignEvent(text);
-      setAlign(result);
-      setEditedSummary(result.summary);
-      setPhase("confirm");
-    } catch (error) {
-      // 对齐失败不阻断：直接用原文分析
-      if (error instanceof AppAIClientUnavailableError) {
-        setPhase("idle");
-        return;
-      }
-      toast.message(t("align.skip", "联网对齐失败，直接开始分析"));
-      void runAnalysis(text);
+      setBusy(false);
     }
   }
 
@@ -99,7 +70,7 @@ export function HomeScreen() {
       });
       return;
     }
-    void startAlign(text);
+    void runAnalysis(text);
   }
 
   return (
@@ -143,8 +114,6 @@ export function HomeScreen() {
               onChange={(e) => {
                 setInput(e.target.value);
                 setTriage(null);
-                setAlign(null);
-                if (phase === "confirm") setPhase("idle");
               }}
               placeholder={t("home.inputPlaceholder")}
               rows={4}
@@ -156,12 +125,7 @@ export function HomeScreen() {
               className="h-12 rounded-2xl bg-[#0C5FFD] text-base font-bold text-white shadow-[0_10px_24px_rgba(12,95,253,0.45)] hover:bg-[#0048F0] disabled:opacity-100"
               data-el="home-analyze"
             >
-              {phase === "aligning" ? (
-                <>
-                  <Search className="mr-1 h-4 w-4 animate-pulse" />
-                  {t("align.searching", "联网对齐事实…")}
-                </>
-              ) : phase === "analyzing" ? (
+              {busy ? (
                 <>
                   <Loader2 className="mr-1 h-4 w-4 animate-spin" />
                   {t("home.analyzing")}
@@ -175,28 +139,13 @@ export function HomeScreen() {
             </Button>
           </div>
 
-          {(phase === "confirm" || (phase === "analyzing" && align)) && align && (
-            <AlignCard
-              align={align}
-              edited={editedSummary}
-              onEdit={setEditedSummary}
-              busy={phase === "analyzing"}
-              onConfirm={() =>
-                void runAnalysis(input.trim(), {
-                  alignedSummary: editedSummary.trim(),
-                  sources: align.sources,
-                })
-              }
-            />
-          )}
-
           {triage?.verdict === "too_shallow" && (
             <ProbePanel
               probes={triage.probes ?? []}
               answer={probeAnswer}
               onAnswer={setProbeAnswer}
               onContinue={() =>
-                void startAlign(`${input.trim()}\n${probeAnswer.trim()}`.trim())
+                void runAnalysis(`${input.trim()}\n${probeAnswer.trim()}`.trim())
               }
               busy={busy}
             />
@@ -216,7 +165,7 @@ export function HomeScreen() {
             disabled={busy}
             onPick={(prompt) => {
               setInput(prompt);
-              void startAlign(prompt);
+              void runAnalysis(prompt);
             }}
           />
         </div>
