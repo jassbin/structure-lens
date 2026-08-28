@@ -17,22 +17,19 @@ import type { StructureNode } from "@/lib/analysis/types";
 export function MapScreen() {
   const { t } = useTranslation();
   const user = useEazo((s) => s.auth.user);
-  const [nodes, setNodes] = useState<StructureNode[] | null>(null);
-  const [localCount, setLocalCount] = useState(0);
+  const [nodes, setNodes] = useState<StructureNode[] | null>(() =>
+    getLocalStructureMap(),
+  );
+  const [localCount] = useState(() => getAllLocalAnalyses().length);
   const [syncing, setSyncing] = useState(false);
 
   useEffect(() => {
+    if (!user) return;
     let alive = true;
-    setLocalCount(getAllLocalAnalyses().length);
-    if (user) {
-      // 登录：读云端
-      getStructureMap()
-        .then((n) => alive && setNodes(n))
-        .catch(() => alive && setNodes(getLocalStructureMap()));
-    } else {
-      // 免登录：读本地
-      setNodes(getLocalStructureMap());
-    }
+    // 登录：读云端覆盖本地展示
+    getStructureMap()
+      .then((n) => alive && setNodes(n))
+      .catch(() => {});
     return () => {
       alive = false;
     };
