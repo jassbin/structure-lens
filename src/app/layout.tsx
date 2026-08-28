@@ -87,7 +87,7 @@ export default async function RootLayout({
     <html
       lang={locale}
       suppressHydrationWarning
-      className={cn("h-full antialiased", "font-sans", geist.variable)}
+      className={cn("h-full antialiased", "font-sans", inter.variable, nunito.variable)}
     >
       <body
         className="h-full flex flex-col"
