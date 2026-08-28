@@ -65,9 +65,12 @@ export function ReportScreen({ id }: { id: string }) {
     return (
       <div className="flex flex-col items-center gap-3 p-10 text-center">
         <p className="text-sm text-muted-foreground">{t("analysis.notFound")}</p>
-        <Button asChild variant="outline" className="rounded-xl">
-          <Link href="/">{t("analysis.back")}</Link>
-        </Button>
+        <Link
+          href="/"
+          className="inline-flex h-9 items-center rounded-xl border border-border bg-card px-4 text-sm font-semibold text-foreground"
+        >
+          {t("analysis.back")}
+        </Link>
       </div>
     );
   }
