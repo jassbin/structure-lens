@@ -34,6 +34,9 @@
       "backHome": "Back to home"
     }
   },
+  "auth": {
+    "needLogin": "Sign in to start deep analysis and let structures settle into your map."
+  },
   "nav": {
     "analyze": "Analyze",
     "map": "Structure Map"
