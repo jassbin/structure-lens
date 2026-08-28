@@ -49,8 +49,12 @@ export default function HomePage() {
   }
 
   function handleSubmit() {
+    if (busy) return;
     const text = input.trim();
-    if (!text || busy) return;
+    if (!text) {
+      setTriage(triageLocally(""));
+      return;
+    }
     const verdict = triageLocally(text);
     if (verdict.verdict === "diggable") runAnalysis(text);
     else setTriage(verdict);
