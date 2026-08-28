@@ -42,7 +42,27 @@ export async function drill(payload: {
   return data.text;
 }
 
-/** 读取某次分析 */(id: string): Promise<AnalysisResult | null> {
+/** 「我不同意」：从某步开始重算下游。免登录。 */
+export async function recompute(payload: {
+  result: AnalysisResult;
+  fromStepKind: StepKind;
+  disagreement: string;
+}): Promise<{ result: AnalysisResult; changeNote: string; persisted: boolean }> {
+  const res = await request("/api/recompute", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) throw new Error(`recompute failed: ${res.status}`);
+  return (await res.json()) as {
+    result: AnalysisResult;
+    changeNote: string;
+    persisted: boolean;
+  };
+}
+
+/** 读取某次分析 */
+export async function getAnalysis(id: string): Promise<AnalysisResult | null> {
   const res = await request(`/api/analyses/${id}`);
   if (res.status === 404) return null;
   if (!res.ok) throw new Error(`getAnalysis failed: ${res.status}`);
