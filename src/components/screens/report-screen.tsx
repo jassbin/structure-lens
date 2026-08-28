@@ -9,7 +9,12 @@ import { ArrowLeft, ShieldAlert, Compass, ArrowRight, Check } from "lucide-react
 import { LayerAccordion } from "@/components/analysis/layer-accordion";
 import { SkeletonCard } from "@/components/analysis/skeleton-card";
 import { getCachedAnalysis, cacheAnalysis } from "@/lib/analysis/store";
-import { analyze, getAnalysis } from "@/lib/api/analysis";
+import {
+  getLocalAnalysis,
+  saveLocalAnalysis,
+  mergeLocalStructure,
+} from "@/lib/analysis/local-map";
+import { alignEvent, analyze, getAnalysis } from "@/lib/api/analysis";
 import { AppAIClientUnavailableError } from "@/lib/api/app-ai-request";
 import type { AnalysisResult } from "@/lib/analysis/types";
 
@@ -17,7 +22,7 @@ export function ReportScreen({ id }: { id: string }) {
   const { t } = useTranslation();
   const router = useRouter();
   const [result, setResult] = useState<AnalysisResult | null | undefined>(
-    () => getCachedAnalysis(id) ?? undefined,
+    () => getCachedAnalysis(id) ?? getLocalAnalysis(id) ?? undefined,
   );
   const [digging, setDigging] = useState(false);
 
@@ -25,8 +30,8 @@ export function ReportScreen({ id }: { id: string }) {
     if (result !== undefined) return;
     let alive = true;
     getAnalysis(id)
-      .then((r) => alive && setResult(r))
-      .catch(() => alive && setResult(null));
+      .then((r) => alive && setResult(r ?? getLocalAnalysis(id)))
+      .catch(() => alive && setResult(getLocalAnalysis(id)));
     return () => {
       alive = false;
     };
@@ -36,9 +41,15 @@ export function ReportScreen({ id }: { id: string }) {
     if (digging) return;
     setDigging(true);
     try {
-      const res = await analyze(title);
+      // 游走时先对齐一下同构事件的事实（失败不阻断）
+      const aligned = await alignEvent(title).catch(() => null);
+      const res = await analyze(title, aligned
+        ? { alignedSummary: aligned.summary, sources: aligned.sources }
+        : undefined);
       if (res.status === "diggable") {
         cacheAnalysis(res.result);
+        saveLocalAnalysis(res.result);
+        if (!res.persisted) mergeLocalStructure(res.result.skeleton, res.result.verdict);
         router.push(`/analysis/${res.result.id}`);
       } else {
         toast.message(res.triage.suggestion ?? "这个方向还需要更具体一些");
@@ -98,7 +109,7 @@ export function ReportScreen({ id }: { id: string }) {
         </p>
       </div>
 
-      <LayerAccordion layers={result.layers} />
+      <LayerAccordion layers={result.layers} verdict={result.verdict} />
       <SkeletonCard skeleton={result.skeleton} />
 
       <div
