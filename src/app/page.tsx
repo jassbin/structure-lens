@@ -1,74 +1,183 @@
-// EAZO_TEMPLATE_PLACEHOLDER_PAGE
 "use client";
 
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
-import { UserBadge } from "@/components/user-profile/user-badge";
-import { LanguageSwitcher } from "@/components/i18n/language-switcher";
+import { ArrowRight, Sparkles, Loader2 } from "lucide-react";
+import { AppShell } from "@/components/shared/app-shell";
+import { BottomTabs } from "@/components/shared/bottom-tabs";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { cn } from "@/utils/utils";
+import { DEEP_TOPICS } from "@/lib/analysis/mock";
+import { analyzeLocally, makeId, triageLocally } from "@/lib/analysis/engine";
+import { saveAnalysis } from "@/lib/analysis/store";
+import type { TriageResult } from "@/lib/analysis/types";
 
-const STEP_KEYS = [
-  "readDocs",
-  "replacePage",
-  "firstFeature",
-  "translations",
-] as const;
+const CATEGORY_COLOR: Record<string, string> = {
+  policy: "text-primary",
+  business: "text-secondary",
+  history: "text-[#5647d6]",
+};
 
-export default function Home() {
+export default function HomePage() {
   const { t } = useTranslation();
+  const router = useRouter();
+  const [input, setInput] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [triage, setTriage] = useState<TriageResult | null>(null);
+  const [probeAnswer, setProbeAnswer] = useState("");
+
+  function runAnalysis(text: string) {
+    setBusy(true);
+    const id = makeId();
+    const result = analyzeLocally(text, id);
+    saveAnalysis(result);
+    setTimeout(() => router.push(`/analysis/${id}`), 450);
+  }
+
+  function handleSubmit() {
+    const text = input.trim();
+    if (!text || busy) return;
+    const verdict = triageLocally(text);
+    if (verdict.verdict === "diggable") runAnalysis(text);
+    else setTriage(verdict);
+  }
+
+  function handleProbeContinue() {
+    const merged = `${input.trim()}\n${probeAnswer.trim()}`.trim();
+    runAnalysis(merged);
+  }
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-background">
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,theme(colors.orange.500/0.18),transparent_50%)]"
-      />
-
-      <header className="absolute right-4 top-4 z-10 flex items-center gap-2">
-        <LanguageSwitcher />
-        <UserBadge />
-      </header>
-
-      <main className="relative z-10 mx-auto flex min-h-screen w-full max-w-5xl flex-col justify-center gap-10 px-6 py-20 md:px-10">
-        <section className="space-y-4 text-center md:text-left">
-          <span className="inline-flex rounded-full border border-orange-500/20 bg-orange-500/10 px-3 py-1 text-xs font-medium text-orange-600 dark:text-orange-300">
-            {t("starter.badge")}
+    <AppShell tab={<BottomTabs />}>
+      <div className="mx-auto flex w-full max-w-md flex-col gap-6 px-4 py-6">
+        <div className="pt-2 text-center" data-el="home-hero">
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card px-3 py-1 text-xs font-semibold text-muted-foreground">
+            <Sparkles className="h-3.5 w-3.5 text-accent" aria-hidden />
+            {t("home.brand")}
           </span>
-          <h1 className="text-4xl font-semibold tracking-tight text-balance md:text-5xl">
-            {t("starter.title")}
+          <h1 className="mt-3 font-heading text-2xl font-black leading-snug tracking-tight text-foreground">
+            {t("home.tagline")}
           </h1>
-          <p className="max-w-2xl text-sm leading-6 text-muted-foreground">
-            {t("starter.subtitle")}
-          </p>
-        </section>
+        </div>
 
-        <section className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-          {STEP_KEYS.map((key) => (
-            <article
-              key={key}
-              className="rounded-2xl border bg-card/60 p-5 shadow-sm backdrop-blur"
+        <div className="flex flex-col gap-3" data-el="home-input">
+          <Textarea
+            value={input}
+            onChange={(e) => {
+              setInput(e.target.value);
+              setTriage(null);
+            }}
+            placeholder={t("home.inputPlaceholder")}
+            rows={4}
+            className="resize-none rounded-2xl border-border bg-card text-[15px] shadow-sm focus-visible:ring-primary"
+          />
+          <Button
+            onClick={handleSubmit}
+            disabled={!input.trim() || busy}
+            className="h-12 rounded-2xl text-base font-bold shadow-[0_8px_18px_rgba(12,95,253,0.18)]"
+            data-el="home-analyze"
+          >
+            {busy ? (
+              <>
+                <Loader2 className="mr-1 h-4 w-4 animate-spin" />
+                {t("home.analyzing")}
+              </>
+            ) : (
+              <>
+                {t("home.analyze")}
+                <ArrowRight className="ml-1 h-4 w-4" />
+              </>
+            )}
+          </Button>
+        </div>
+
+        {triage?.verdict === "too_shallow" && (
+          <div className="rounded-2xl border border-primary/25 bg-primary/5 p-4" data-el="probe-panel">
+            <p className="font-heading text-sm font-extrabold text-foreground">
+              {t("home.probeTitle")}
+            </p>
+            <p className="mt-1 text-xs text-muted-foreground">{t("home.probeIntro")}</p>
+            <ul className="mt-3 space-y-1.5">
+              {triage.probes?.map((p, i) => (
+                <li key={i} className="flex gap-2 text-sm text-foreground">
+                  <span className="font-bold text-primary">{i + 1}.</span>
+                  {p}
+                </li>
+              ))}
+            </ul>
+            <Textarea
+              value={probeAnswer}
+              onChange={(e) => setProbeAnswer(e.target.value)}
+              placeholder={t("home.probeAnswerPlaceholder")}
+              rows={2}
+              className="mt-3 resize-none rounded-xl border-border bg-card text-sm"
+            />
+            <Button
+              onClick={handleProbeContinue}
+              disabled={!probeAnswer.trim() || busy}
+              className="mt-3 h-10 w-full rounded-xl font-bold"
+              data-el="probe-continue"
             >
-              <h2 className="text-base font-medium">
-                {t(`starter.steps.${key}.title`)}
-              </h2>
-              <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                {t(`starter.steps.${key}.desc`)}
-              </p>
-              <code className="mt-4 inline-block rounded-md bg-muted px-2 py-1 text-xs text-muted-foreground">
-                {t(`starter.steps.${key}.code`)}
-              </code>
-            </article>
-          ))}
-        </section>
+              {t("home.probeContinue")}
+            </Button>
+          </div>
+        )}
 
-        <section className="rounded-2xl border bg-card/50 p-5 md:p-6">
-          <h3 className="text-sm font-medium">{t("starter.nextCommand.title")}</h3>
-          <p className="mt-2 text-sm text-muted-foreground">
-            {t("starter.nextCommand.desc")}
-          </p>
-          <pre className="mt-4 overflow-x-auto rounded-lg bg-muted p-3 text-sm">
-            <code>{t("starter.nextCommand.command")}</code>
-          </pre>
-        </section>
-      </main>
-    </div>
+        {triage?.verdict === "not_applicable" && (
+          <div className="rounded-2xl border border-accent/50 bg-accent/10 p-4" data-el="not-applicable-panel">
+            <p className="font-heading text-sm font-extrabold text-foreground">
+              {t("home.notApplicableTitle")}
+            </p>
+            <p className="mt-1 text-sm text-muted-foreground">{triage.suggestion}</p>
+            <Button
+              variant="outline"
+              onClick={() => {
+                setInput("");
+                setTriage(null);
+              }}
+              className="mt-3 h-9 rounded-xl font-semibold"
+            >
+              {t("home.notApplicableBack")}
+            </Button>
+          </div>
+        )}
+
+        <div className="flex flex-col gap-3" data-el="deep-topics">
+          <p className="text-sm font-bold text-muted-foreground">{t("home.topicsTitle")}</p>
+          <div className="grid grid-cols-1 gap-2.5">
+            {DEEP_TOPICS.map((topic) => (
+              <button
+                key={topic.id}
+                type="button"
+                disabled={busy}
+                onClick={() => {
+                  setInput(topic.prompt);
+                  runAnalysis(topic.prompt);
+                }}
+                data-el="topic-card"
+                className="group flex items-center gap-3 rounded-2xl border border-border bg-card p-3.5 text-left shadow-sm transition-all hover:border-primary/40 hover:shadow-md disabled:opacity-60"
+              >
+                <div className="min-w-0 flex-1">
+                  <span
+                    className={cn(
+                      "text-[11px] font-bold uppercase tracking-wide",
+                      CATEGORY_COLOR[topic.category],
+                    )}
+                  >
+                    {t(`home.category.${topic.category}`)}
+                  </span>
+                  <p className="mt-0.5 truncate text-sm font-semibold text-foreground">
+                    {topic.title}
+                  </p>
+                </div>
+                <ArrowRight className="h-4 w-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5 group-hover:text-primary" />
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+    </AppShell>
   );
 }
