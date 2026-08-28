@@ -53,6 +53,7 @@ export async function ddgSearch(query: string, limit = 6): Promise<SearchResult[
     });
     if (!res.ok) return [];
     const html = await res.text();
+    console.log(`[ddg] status=${res.status} htmlLen=${html.length}`);
 
     const results: SearchResult[] = [];
     // 结果链接
