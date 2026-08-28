@@ -94,6 +94,58 @@
     "back": "返回",
     "notFound": "没有找到这次分析"
   },
+  "pipeline": {
+    "title": "推理流水线",
+    "steps": "步",
+    "recomputed": "已重算至",
+    "recomputeFailed": "重算失败，请重试",
+    "disagree": "我不同意这一步",
+    "disagreeHint": "写下你的反对：合理我就采纳并重算这一步及所有下游步骤。",
+    "disagreePlaceholder": "例如：这个异常入口选错了，真正的关键是……",
+    "recomputeCta": "重算下游",
+    "recomputingDownstream": "正在重排下游步骤…",
+    "revisionLog": "修订记录",
+    "grade": {
+      "strong": "强",
+      "medium": "中",
+      "weak": "弱",
+      "unverifiable": "无法核实"
+    },
+    "anomaly": {
+      "baseline": "预期基线",
+      "entry": "分析入口",
+      "leverage": "杠杆率",
+      "why": "为何选它"
+    },
+    "skeleton": {
+      "subject": "主体",
+      "object": "对象",
+      "mechanism": "机制",
+      "harmed": "受损方",
+      "benefited": "受益方"
+    },
+    "mechanism": {
+      "surface": "表面",
+      "deep": "深层",
+      "bottom": "底层",
+      "flow": "利益流向",
+      "renaming": "结构重命名"
+    },
+    "game": {
+      "variable": "可变结构参数（胜负手）"
+    },
+    "scenario": {
+      "signal": "预警信号"
+    },
+    "judgment": {
+      "falsifiable": "可证伪条件"
+    },
+    "adversarial": {
+      "challenge": "魔鬼代言人",
+      "response": "回应",
+      "meta": "元认知审计"
+    }
+  },
   "map": {
     "title": "结构地图",
     "intro": "你挖过的事件在这里沉淀成结构。多次同构碰撞后，假设会被点亮为验证过的结构。",
