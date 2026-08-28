@@ -3,6 +3,7 @@
 import { request } from "@/lib/api/request";
 import type {
   AnalysisResult,
+  StepKind,
   StructureNode,
   TriageResult,
 } from "@/lib/analysis/types";
@@ -41,8 +42,7 @@ export async function drill(payload: {
   return data.text;
 }
 
-/** 读取某次分析 */
-export async function getAnalysis(id: string): Promise<AnalysisResult | null> {
+/** 读取某次分析 */(id: string): Promise<AnalysisResult | null> {
   const res = await request(`/api/analyses/${id}`);
   if (res.status === 404) return null;
   if (!res.ok) throw new Error(`getAnalysis failed: ${res.status}`);
