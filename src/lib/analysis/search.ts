@@ -39,6 +39,58 @@ function unwrapDdgUrl(href: string): string {
  * 解析 html.duckduckgo.com 的结果块，返回前若干条。失败时返回空数组，绝不抛断整个流程。
  */
 export async function ddgSearch(query: string, limit = 6): Promise<SearchResult[]> {
+  // 先试 lite 端点（更抗封锁、更易解析），失败再退回 html 端点
+  const lite = await ddgLite(query, limit);
+  if (lite.length > 0) return lite;
+  return ddgHtml(query, limit);
+}
+
+/** lite.duckduckgo.com/lite/ —— 表格式结果，最耐爬 */
+async function ddgLite(query: string, limit: number): Promise<SearchResult[]> {
+  try {
+    const res = await fetch("https://lite.duckduckgo.com/lite/", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+        "User-Agent": "Mozilla/5.0",
+        Accept: "text/html",
+      },
+      body: new URLSearchParams({ q: query }).toString(),
+      cache: "no-store",
+      signal: AbortSignal.timeout(9000),
+    });
+    const html = await res.text();
+    console.log(`[ddg-lite] status=${res.status} htmlLen=${html.length}`);
+
+    const results: SearchResult[] = [];
+    // 结果链接：<a rel="nofollow" href="..." class="result-link">Title</a>
+    const linkRe =
+      /<a[^>]*class="[^"]*result-link[^"]*"[^>]*href="([^"]+)"[^>]*>([\s\S]*?)<\/a>/g;
+    // 摘要：<td class="result-snippet">...</td>
+    const snippetRe = /<td[^>]*class="[^"]*result-snippet[^"]*"[^>]*>([\s\S]*?)<\/td>/g;
+
+    const links: Array<{ url: string; title: string }> = [];
+    let m: RegExpExecArray | null;
+    while ((m = linkRe.exec(html)) && links.length < limit) {
+      links.push({ url: unwrapDdgUrl(m[1]), title: stripTags(m[2]) });
+    }
+    const snippets: string[] = [];
+    let s: RegExpExecArray | null;
+    while ((s = snippetRe.exec(html)) && snippets.length < limit) {
+      snippets.push(stripTags(s[1]));
+    }
+    for (let i = 0; i < links.length; i++) {
+      if (!links[i].title) continue;
+      results.push({ title: links[i].title, url: links[i].url, snippet: snippets[i] ?? "" });
+    }
+    return results;
+  } catch {
+    return [];
+  }
+}
+
+/** html.duckduckgo.com/html/ 回退 */
+async function ddgHtml(query: string, limit: number): Promise<SearchResult[]> {
   try {
     const res = await fetch("https://html.duckduckgo.com/html/", {
       method: "POST",
@@ -51,9 +103,8 @@ export async function ddgSearch(query: string, limit = 6): Promise<SearchResult[
       cache: "no-store",
       signal: AbortSignal.timeout(9000),
     });
-    if (!res.ok) return [];
     const html = await res.text();
-    console.log(`[ddg] status=${res.status} htmlLen=${html.length}`);
+    console.log(`[ddg-html] status=${res.status} htmlLen=${html.length}`);
 
     const results: SearchResult[] = [];
     // 结果链接
