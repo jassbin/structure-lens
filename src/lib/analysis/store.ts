@@ -1,13 +1,12 @@
 "use client";
 
 import type { AnalysisResult } from "@/lib/analysis/types";
-import { DEMO_ANALYSIS } from "@/lib/analysis/mock";
 
 /**
- * 前端演示阶段：用 sessionStorage 在入口页与报告页之间传递分析结果。
- * 后端阶段会替换为数据库读写（按 userId 归属）。
+ * 会话内缓存：入口页拿到 AI 分析结果后暂存，报告页可秒开。
+ * 真实持久化在数据库（按 userId），报告页缓存未命中时回退到 API。
  */
-const KEY = "structure-lens:analyses";
+const KEY = "structure-lens:cache";
 
 function readAll(): Record<string, AnalysisResult> {
   if (typeof window === "undefined") return {};
@@ -19,17 +18,13 @@ function readAll(): Record<string, AnalysisResult> {
   }
 }
 
-export function saveAnalysis(result: AnalysisResult): void {
+export function cacheAnalysis(result: AnalysisResult): void {
   if (typeof window === "undefined") return;
   const all = readAll();
   all[result.id] = result;
   window.sessionStorage.setItem(KEY, JSON.stringify(all));
 }
 
-export function getAnalysis(id: string): AnalysisResult | null {
-  if (id === DEMO_ANALYSIS.id) {
-    const all = readAll();
-    return all[id] ?? DEMO_ANALYSIS;
-  }
+export function getCachedAnalysis(id: string): AnalysisResult | null {
   return readAll()[id] ?? null;
 }
