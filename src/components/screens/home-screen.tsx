@@ -175,7 +175,7 @@ export function HomeScreen() {
             </Button>
           </div>
 
-          {phase === "confirm" && align && (
+          {(phase === "confirm" || (phase === "analyzing" && align)) && align && (
             <AlignCard
               align={align}
               edited={editedSummary}
