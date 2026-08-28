@@ -44,8 +44,8 @@ export async function ddgSearch(query: string, limit = 6): Promise<SearchResult[
       method: "POST",
       headers: {
         "Content-Type": "application/x-www-form-urlencoded",
-        "User-Agent":
-          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Safari/537.36",
+        "User-Agent": "Mozilla/5.0",
+        Accept: "text/html",
       },
       body: new URLSearchParams({ q: query, kl: "cn-zh" }).toString(),
       cache: "no-store",
