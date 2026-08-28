@@ -110,6 +110,8 @@ export interface StructureNode {
   confidence: number;
   /** 它出现过的事件标题 */
   events: string[];
+  /** 碰撞次数（本地地图使用；云端由 events 推导） */
+  hits?: number;
 }
 
 export interface StructureEdge {
