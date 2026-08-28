@@ -192,36 +192,48 @@ export default function HomePage() {
         <div className="flex flex-col gap-3" data-el="deep-topics">
           <p className="text-sm font-bold text-muted-foreground">{t("home.topicsTitle")}</p>
           <div className="grid grid-cols-1 gap-2.5">
-            {DEEP_TOPICS.map((topic) => (
-              <button
-                key={topic.id}
-                type="button"
-                disabled={busy}
-                onClick={() => {
-                  setInput(topic.prompt);
-                  runAnalysis(topic.prompt);
-                }}
-                data-el="topic-card"
-                className="group flex items-center gap-3 rounded-2xl border border-border bg-card p-3.5 text-left shadow-sm transition-all hover:border-primary/40 hover:shadow-md disabled:opacity-60"
-              >
-                <div className="min-w-0 flex-1">
+            {DEEP_TOPICS.map((topic) => {
+              const Icon = CATEGORY_ICON[topic.category];
+              return (
+                <button
+                  key={topic.id}
+                  type="button"
+                  disabled={busy}
+                  onClick={() => {
+                    setInput(topic.prompt);
+                    runAnalysis(topic.prompt);
+                  }}
+                  data-el="topic-card"
+                  className="group flex items-center gap-3 rounded-2xl border border-border bg-card p-3.5 text-left shadow-sm transition-all hover:border-primary/40 hover:shadow-md disabled:opacity-60"
+                >
                   <span
                     className={cn(
-                      "text-[11px] font-bold uppercase tracking-wide",
-                      CATEGORY_COLOR[topic.category],
+                      "grid h-10 w-10 shrink-0 place-items-center rounded-xl",
+                      CATEGORY_ICON_BG[topic.category],
                     )}
                   >
-                    {t(`home.category.${topic.category}`)}
+                    <Icon className="h-5 w-5" aria-hidden />
                   </span>
-                  <p className="mt-0.5 truncate text-sm font-semibold text-foreground">
-                    {topic.title}
-                  </p>
-                </div>
-                <ArrowRight className="h-4 w-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5 group-hover:text-primary" />
-              </button>
-            ))}
+                  <div className="min-w-0 flex-1">
+                    <span
+                      className={cn(
+                        "text-[11px] font-bold uppercase tracking-wide",
+                        CATEGORY_COLOR[topic.category],
+                      )}
+                    >
+                      {t(`home.category.${topic.category}`)}
+                    </span>
+                    <p className="mt-0.5 truncate text-sm font-semibold text-foreground">
+                      {topic.title}
+                    </p>
+                  </div>
+                  <ArrowRight className="h-4 w-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5 group-hover:text-primary" />
+                </button>
+              );
+            })}
           </div>
         </div>
+      </div>
       </div>
     </AppShell>
   );
