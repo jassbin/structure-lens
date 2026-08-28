@@ -61,12 +61,14 @@ export function LayerAccordion({
             </button>
             {isOpen && (
               <div className="border-t border-border px-4 py-3">
-                <ul className="space-y-2">
+                <ul className="space-y-2.5">
                   {layer.points.map((p, j) => (
-                    <li key={j} className="flex gap-2 text-sm leading-relaxed text-foreground">
-                      <span className="mt-2 h-1 w-1 shrink-0 rounded-full bg-primary" />
-                      {p}
-                    </li>
+                    <DrillPoint
+                      key={j}
+                      verdict={verdict}
+                      layerTitle={layer.title}
+                      point={p}
+                    />
                   ))}
                 </ul>
                 <ConfidenceBar
