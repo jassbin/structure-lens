@@ -3,6 +3,7 @@ import { index, jsonb, pgTable, text, timestamp, varchar } from "drizzle-orm/pg-
 import { users } from "./users";
 import type {
   AnalysisLayer,
+  SearchSource,
   StructureSkeleton,
   WalkHook,
 } from "@/lib/analysis/types";
@@ -16,6 +17,8 @@ export const analyses = pgTable(
       .notNull()
       .references(() => users.id),
     input: text("input").notNull(),
+    alignedSummary: text("aligned_summary"),
+    sources: jsonb("sources").$type<SearchSource[]>(),
     verdict: text("verdict").notNull(),
     layers: jsonb("layers").$type<AnalysisLayer[]>().notNull(),
     skeleton: jsonb("skeleton").$type<StructureSkeleton>().notNull(),
