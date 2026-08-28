@@ -96,7 +96,6 @@ async function ddgHtml(query: string, limit: number): Promise<SearchResult[]> {
       headers: {
         "Content-Type": "application/x-www-form-urlencoded",
         "User-Agent": "Mozilla/5.0",
-        Accept: "text/html",
       },
       body: new URLSearchParams({ q: query, kl: "cn-zh" }).toString(),
       cache: "no-store",
