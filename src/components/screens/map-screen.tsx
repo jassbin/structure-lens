@@ -3,26 +3,60 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useTranslation } from "react-i18next";
-import { Network, CheckCircle2, CircleDashed } from "lucide-react";
+import { toast } from "sonner";
+import { auth } from "@eazo/sdk";
+import { useEazo } from "@eazo/sdk/react";
+import { Network, CheckCircle2, CircleDashed, CloudUpload, Loader2 } from "lucide-react";
 import { RootBadge } from "@/components/shared/root-badge";
 import { ConfidenceBar } from "@/components/shared/confidence-bar";
 import { cn } from "@/utils/utils";
-import { getStructureMap } from "@/lib/api/analysis";
+import { getStructureMap, importLocalToCloud } from "@/lib/api/analysis";
+import { getLocalStructureMap, getAllLocalAnalyses } from "@/lib/analysis/local-map";
 import type { StructureNode } from "@/lib/analysis/types";
 
 export function MapScreen() {
   const { t } = useTranslation();
+  const user = useEazo((s) => s.auth.user);
   const [nodes, setNodes] = useState<StructureNode[] | null>(null);
+  const [localCount, setLocalCount] = useState(0);
+  const [syncing, setSyncing] = useState(false);
 
   useEffect(() => {
     let alive = true;
-    getStructureMap()
-      .then((n) => alive && setNodes(n))
-      .catch(() => alive && setNodes([]));
+    setLocalCount(getAllLocalAnalyses().length);
+    if (user) {
+      // 登录：读云端
+      getStructureMap()
+        .then((n) => alive && setNodes(n))
+        .catch(() => alive && setNodes(getLocalStructureMap()));
+    } else {
+      // 免登录：读本地
+      setNodes(getLocalStructureMap());
+    }
     return () => {
       alive = false;
     };
-  }, []);
+  }, [user]);
+
+  async function handleSync() {
+    if (!user) {
+      auth.login().catch(() => undefined);
+      return;
+    }
+    setSyncing(true);
+    try {
+      const n = await importLocalToCloud(getAllLocalAnalyses());
+      toast.success(t("map.synced", `已同步 ${n} 条到云端`));
+      const fresh = await getStructureMap();
+      setNodes(fresh);
+    } catch {
+      toast.error(t("map.syncFailed", "同步失败，请稍后重试"));
+    } finally {
+      setSyncing(false);
+    }
+  }
+
+  const showSync = localCount > 0;
 
   return (
     <div className="mx-auto flex w-full max-w-md flex-col gap-5 px-4 py-6">
@@ -37,6 +71,32 @@ export function MapScreen() {
           {t("map.intro")}
         </p>
       </div>
+
+      {showSync && (
+        <button
+          type="button"
+          onClick={handleSync}
+          disabled={syncing}
+          data-el="map-sync"
+          className="flex items-center justify-between gap-3 rounded-2xl border border-primary/30 bg-primary/[0.06] px-4 py-3 text-left"
+        >
+          <div className="min-w-0">
+            <p className="text-sm font-bold text-primary">
+              {user
+                ? t("map.syncCloud", "同步到云端")
+                : t("map.loginToSync", "登录后把结构地图存到云端")}
+            </p>
+            <p className="mt-0.5 text-xs text-muted-foreground">
+              {t("map.localCount", `本地已有 ${localCount} 条分析`)}
+            </p>
+          </div>
+          {syncing ? (
+            <Loader2 className="h-5 w-5 shrink-0 animate-spin text-primary" />
+          ) : (
+            <CloudUpload className="h-5 w-5 shrink-0 text-primary" />
+          )}
+        </button>
+      )}
 
       {nodes === null ? (
         <div className="py-16 text-center text-sm text-muted-foreground">
