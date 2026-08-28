@@ -47,16 +47,6 @@ export interface SearchSource {
   url: string;
 }
 
-/** 事实对齐结果：搜索后整理的事件概要，供用户确认/修正 */
-export interface AlignResult {
-  summary: string;
-  confident: boolean;
-  sources: SearchSource[];
-  questions: string[];
-  /** 联网没搜到相关资料，需要用户手动粘贴概要/链接来对齐 */
-  needsManual?: boolean;
-}
-
 /** 一次完整的分析结果 */
 export interface AnalysisResult {
   id: string;
