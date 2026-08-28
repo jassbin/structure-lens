@@ -14,7 +14,7 @@ import {
   saveLocalAnalysis,
   mergeLocalStructure,
 } from "@/lib/analysis/local-map";
-import { alignEvent, analyze, getAnalysis } from "@/lib/api/analysis";
+import { analyze, getAnalysis } from "@/lib/api/analysis";
 import { AppAIClientUnavailableError } from "@/lib/api/app-ai-request";
 import type { AnalysisResult } from "@/lib/analysis/types";
 
@@ -41,11 +41,7 @@ export function ReportScreen({ id }: { id: string }) {
     if (digging) return;
     setDigging(true);
     try {
-      // 游走时先对齐一下同构事件的事实（失败不阻断）
-      const aligned = await alignEvent(title).catch(() => null);
-      const res = await analyze(title, aligned
-        ? { alignedSummary: aligned.summary, sources: aligned.sources }
-        : undefined);
+      const res = await analyze(title);
       if (res.status === "diggable") {
         cacheAnalysis(res.result);
         saveLocalAnalysis(res.result);
