@@ -64,7 +64,7 @@ export default function HomePage() {
   return (
     <AppShell tab={<BottomTabs />}>
       <div className="relative">
-        {/* 柔和蓝色氛围背景（简洁高级） */}
+        {/* 钴蓝氛围背景（清晰可见、简洁高级） */}
         <div
           aria-hidden
           className="pointer-events-none absolute inset-x-0 top-0 z-0 h-80 overflow-hidden"
@@ -73,16 +73,16 @@ export default function HomePage() {
             className="absolute inset-0"
             style={{
               background:
-                "linear-gradient(180deg, rgba(12,95,253,0.10) 0%, rgba(12,95,253,0.05) 45%, rgba(255,248,236,0) 100%)",
+                "linear-gradient(180deg, rgba(12,95,253,0.28) 0%, rgba(12,95,253,0.12) 40%, rgba(255,248,236,0) 100%)",
             }}
           />
           <div
-            className="absolute -left-10 -top-6 h-40 w-40 rounded-full opacity-70 blur-2xl"
-            style={{ background: "rgba(12,95,253,0.16)" }}
+            className="absolute -left-12 -top-8 h-48 w-48 rounded-full opacity-90 blur-3xl"
+            style={{ background: "rgba(12,95,253,0.35)" }}
           />
           <div
-            className="absolute -right-6 top-6 h-28 w-28 rounded-full opacity-60 blur-2xl"
-            style={{ background: "rgba(0,72,240,0.14)" }}
+            className="absolute -right-8 top-4 h-36 w-36 rounded-full opacity-80 blur-3xl"
+            style={{ background: "rgba(0,72,240,0.30)" }}
           />
         </div>
 
