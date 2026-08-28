@@ -12,15 +12,31 @@ export async function insertAnalysis(
     id: result.id,
     userId,
     input: result.input,
-    alignedSummary: result.alignedSummary ?? null,
+    version: result.version,
     sources: result.sources ?? null,
     verdict: result.verdict,
-    layers: result.layers,
+    steps: result.steps,
     skeleton: result.skeleton,
-    strongestRebuttal: result.strongestRebuttal,
-    blindSpot: result.blindSpot,
     walkHooks: result.walkHooks,
+    revisions: result.revisions ?? null,
   });
+}
+
+/** 重算后更新一次分析（版本、步骤、结论、修订记录） */
+export async function updateAnalysis(
+  userId: string,
+  result: AnalysisResult,
+): Promise<void> {
+  await db
+    .update(analyses)
+    .set({
+      version: result.version,
+      verdict: result.verdict,
+      steps: result.steps,
+      skeleton: result.skeleton,
+      revisions: result.revisions ?? null,
+    })
+    .where(and(eq(analyses.id, result.id), eq(analyses.userId, userId)));
 }
 
 /** 读取本人某次分析 */
@@ -38,14 +54,13 @@ export async function getAnalysisById(
   return {
     id: row.id,
     input: row.input,
-    alignedSummary: row.alignedSummary ?? undefined,
+    version: row.version,
     sources: row.sources ?? undefined,
     verdict: row.verdict,
-    layers: row.layers,
+    steps: row.steps,
     skeleton: row.skeleton,
-    strongestRebuttal: row.strongestRebuttal,
-    blindSpot: row.blindSpot,
     walkHooks: row.walkHooks,
+    revisions: row.revisions ?? undefined,
     createdAt: row.createdAt.toISOString(),
   };
 }
