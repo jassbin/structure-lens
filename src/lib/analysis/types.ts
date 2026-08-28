@@ -1,43 +1,126 @@
 // 结构透镜 —— 分析领域类型定义（前后端共享契约）
+// v2：7 步推理流水线（材料分级 → 异常锁定 → 中性骨架 → 机制穿透 → 博弈类比 → 情景分支 → 核心判断+可证伪 → 对抗质检）
 
 /** 三类根结构 */
 export type RootStructure = "extraction" | "delegation" | "power";
 
-/** 一次分析中每个可展开层的类型 */
-export type LayerKind =
-  | "skeleton" // 事件抽象骨架
-  | "drill" // 三层下钻
-  | "dark" // 谁获益 / 暗黑逻辑
-  | "game" // 多方博弈均衡
-  | "probability"; // 概率判断
+/** 信源可信度分级 */
+export type SourceGrade = "strong" | "medium" | "weak" | "unverifiable";
 
-export interface AnalysisLayer {
-  kind: LayerKind;
-  /** 该层小标题 */
-  title: string;
-  /** 主体内容，若干要点 */
-  points: string[];
-  /** 0-100 置信度；概率层则表示该判断概率 */
-  confidence: number;
+/** 一条材料 + 信源分级 */
+export interface MaterialItem {
+  fact: string;
+  grade: SourceGrade;
+  /** 可选来源链接 */
+  url?: string;
 }
 
-/** 结构骨架卡：主体→机制→被提取方 的拓扑 */
-export interface StructureSkeleton {
-  /** 命名式结构名，可迁移 */
-  name: string;
-  root: RootStructure;
+/** 异常候选（步骤1） */
+export interface AnomalyCandidate {
+  id: string; // "A" | "B" | "C" ...
+  content: string;
+  /** 杠杆率 1-5：解释力越强越高 */
+  leverage: number;
+}
+
+/** 中性骨架五要素（步骤2） */
+export interface NeutralSkeleton {
   subject: string; // 主体
-  mechanism: string; // 通过什么机制
-  extracted: string; // 提取了谁的什么
-  /** 单次分析给出的是"假设"，置信度诚实标注 */
+  object: string; // 对象
+  mechanism: string; // 机制
+  harmed: string; // 受损方
+  benefited: string; // 受益方
+  naming: string; // 中性命名
+}
+
+/** 机制穿透（步骤3） */
+export interface MechanismPenetration {
+  surface: string; // 表面
+  deep: string; // 深层
+  bottom: string; // 底层（可迁移的通用结构）
+  interestFlow: string[]; // 利益流向，每条一行
+  renaming: string; // 骨架重命名（结构事实）
+}
+
+/** 博弈与类比（步骤4） */
+export interface GameAndAnalogy {
+  gameSummary: string; // 博弈均衡推演
+  /** 跨域同构候选 */
+  analogs: { title: string; isomorphism: string }[];
+  /** 提炼出的可变结构参数（胜负手） */
+  variableParameter: string;
+}
+
+/** 情景分支（步骤5） */
+export interface ScenarioBranch {
+  label: string; // 分支名
+  narrative: string; // 叙事
+  probability: number; // 0-100
+  warningSignals: string; // 预警信号
+}
+
+/** 核心判断 + 可证伪条件（步骤6） */
+export interface CoreJudgment {
+  claim: string;
+  confidence: number; // 0-100
+  /** 可证伪条件：出现什么就说明这条判断错了 */
+  falsifiable: string;
+}
+
+/** 对抗质检（步骤7） */
+export interface AdversarialCheck {
+  /** 魔鬼代言人：最强反方 + 回应 */
+  devilsAdvocate: { challenge: string; response: string }[];
+  /** 元认知审计：偏差 + 检查结果 */
+  metacognition: { bias: string; check: string }[];
+}
+
+/** 7 步之一的判别式联合 */
+export type PipelineStep =
+  | { kind: "materials"; title: string; materials: MaterialItem[]; note: string }
+  | {
+      kind: "anomaly";
+      title: string;
+      baseline: string; // 预期基线
+      candidates: AnomalyCandidate[];
+      selectedId: string; // 当前选中的入口
+      reason: string; // 选它的理由
+    }
+  | { kind: "skeleton"; title: string; skeleton: NeutralSkeleton }
+  | { kind: "mechanism"; title: string; mechanism: MechanismPenetration }
+  | { kind: "game"; title: string; game: GameAndAnalogy }
+  | { kind: "scenario"; title: string; variables: string[]; branches: ScenarioBranch[] }
+  | { kind: "judgment"; title: string; judgments: CoreJudgment[] }
+  | { kind: "adversarial"; title: string; check: AdversarialCheck };
+
+export type StepKind = PipelineStep["kind"];
+
+/** 步骤顺序（固定） */
+export const STEP_ORDER: StepKind[] = [
+  "materials",
+  "anomaly",
+  "skeleton",
+  "mechanism",
+  "game",
+  "scenario",
+  "judgment",
+  "adversarial",
+];
+
+/** 结构骨架卡（供结构地图沉淀，从步骤3底层结构提炼） */
+export interface StructureSkeleton {
+  name: string; // 可迁移的命名式结构名
+  root: RootStructure;
+  subject: string;
+  mechanism: string;
+  extracted: string;
   confidence: number;
 }
 
-/** 游走钩子：结构同构的候选事件 */
+/** 游走钩子：结构同构候选事件 */
 export interface WalkHook {
   id: string;
   title: string;
-  /** 为什么它可能同构 */
   reason: string;
 }
 
@@ -47,27 +130,33 @@ export interface SearchSource {
   url: string;
 }
 
-/** 一次完整的分析结果 */
+/** 一次完整分析（7 步流水线） */
 export interface AnalysisResult {
   id: string;
-  /** 用户输入的原始事件 */
   input: string;
-  /** 对齐后使用的事件概要（若走了搜索对齐） */
-  alignedSummary?: string;
+  /** 报告版本，随「我不同意」重算递增：1.0 → 1.1 … */
+  version: string;
+  /** 一句命名式金句结论 */
+  verdict: string;
+  /** 7 步流水线 */
+  steps: PipelineStep[];
+  /** 结构骨架卡（沉淀进结构地图用） */
+  skeleton: StructureSkeleton;
+  /** 游走钩子 */
+  walkHooks: WalkHook[];
   /** 分析所依据的来源 */
   sources?: SearchSource[];
-  /** 一句命名式金句暴击 */
-  verdict: string;
-  /** 逐层展开 */
-  layers: AnalysisLayer[];
-  /** 结构骨架卡（结构假设） */
-  skeleton: StructureSkeleton;
-  /** 反噬保护：最强反驳 + 这个结论最可能错在哪 */
-  strongestRebuttal: string;
-  blindSpot: string;
-  /** 游走钩子：同构候选事件 */
-  walkHooks: WalkHook[];
+  /** 修订记录：用户「我不同意」触发的下游重算 */
+  revisions?: RevisionEntry[];
   createdAt: string;
+}
+
+/** 一次修订记录 */
+export interface RevisionEntry {
+  version: string; // 修订后版本号
+  stepKind: StepKind; // 被干预的步骤
+  disagreement: string; // 用户的反对意见
+  at: string; // ISO 时间
 }
 
 /** 首屏深度题库条目 */
@@ -75,7 +164,7 @@ export interface DeepTopic {
   id: string;
   category: "policy" | "business" | "history";
   title: string;
-  prompt: string; // 点选后送入分析的完整事件描述
+  prompt: string;
 }
 
 /** 可挖掘性判断结果 */
@@ -83,9 +172,7 @@ export type DiggableVerdict = "diggable" | "too_shallow" | "not_applicable";
 
 export interface TriageResult {
   verdict: DiggableVerdict;
-  /** too_shallow 时的反问，用于对话探井 */
   probes?: string[];
-  /** not_applicable 时的温和建议 */
   suggestion?: string;
 }
 
@@ -98,11 +185,8 @@ export interface StructureNode {
   name: string;
   root: RootStructure;
   state: StructureNodeState;
-  /** 置信度随碰撞提升 */
   confidence: number;
-  /** 它出现过的事件标题 */
   events: string[];
-  /** 碰撞次数（本地地图使用；云端由 events 推导） */
   hits?: number;
 }
 
@@ -123,10 +207,20 @@ export const ROOT_LABELS: Record<RootStructure, { zh: string; en: string }> = {
   power: { zh: "权力竞争-均衡", en: "Power" },
 };
 
-export const LAYER_ORDER: LayerKind[] = [
-  "skeleton",
-  "drill",
-  "dark",
-  "game",
-  "probability",
-];
+export const SOURCE_GRADE_LABELS: Record<SourceGrade, { zh: string; en: string }> = {
+  strong: { zh: "强", en: "Strong" },
+  medium: { zh: "中", en: "Medium" },
+  weak: { zh: "弱", en: "Weak" },
+  unverifiable: { zh: "无法核实", en: "Unverifiable" },
+};
+
+export const STEP_LABELS: Record<StepKind, { zh: string; en: string }> = {
+  materials: { zh: "材料与信源分级", en: "Materials & Sourcing" },
+  anomaly: { zh: "异常锁定", en: "Anomaly Lock" },
+  skeleton: { zh: "中性骨架", en: "Neutral Skeleton" },
+  mechanism: { zh: "机制穿透", en: "Mechanism" },
+  game: { zh: "博弈与类比", en: "Game & Analogy" },
+  scenario: { zh: "情景分支", en: "Scenarios" },
+  judgment: { zh: "核心判断", en: "Core Judgment" },
+  adversarial: { zh: "对抗质检", en: "Adversarial Audit" },
+};
