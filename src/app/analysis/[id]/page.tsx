@@ -10,9 +10,8 @@ import { BottomTabs } from "@/components/shared/bottom-tabs";
 import { LayerAccordion } from "@/components/analysis/layer-accordion";
 import { SkeletonCard } from "@/components/analysis/skeleton-card";
 import { Button } from "@/components/ui/button";
-import { getAnalysis } from "@/lib/analysis/store";
+import { getAnalysis, saveAnalysis } from "@/lib/analysis/store";
 import { analyzeLocally, makeId } from "@/lib/analysis/engine";
-import { saveAnalysis } from "@/lib/analysis/store";
 import type { AnalysisResult } from "@/lib/analysis/types";
 
 export default function AnalysisPage({
