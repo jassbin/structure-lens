@@ -12,6 +12,8 @@ export async function insertAnalysis(
     id: result.id,
     userId,
     input: result.input,
+    alignedSummary: result.alignedSummary ?? null,
+    sources: result.sources ?? null,
     verdict: result.verdict,
     layers: result.layers,
     skeleton: result.skeleton,
@@ -36,6 +38,8 @@ export async function getAnalysisById(
   return {
     id: row.id,
     input: row.input,
+    alignedSummary: row.alignedSummary ?? undefined,
+    sources: row.sources ?? undefined,
     verdict: row.verdict,
     layers: row.layers,
     skeleton: row.skeleton,
