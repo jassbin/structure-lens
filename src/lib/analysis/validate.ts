@@ -81,6 +81,8 @@ export function normalizeAnalysis(
   return {
     id,
     input,
+    alignedSummary: extra?.alignedSummary,
+    sources: extra?.sources,
     verdict: str(o.verdict, skeleton.name),
     layers,
     skeleton,
