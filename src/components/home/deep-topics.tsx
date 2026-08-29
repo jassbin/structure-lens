@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { ArrowRight, Landmark, Briefcase, ScrollText } from "lucide-react";
 import { cn } from "@/utils/utils";
