@@ -105,14 +105,15 @@ export function MapScreen() {
     if (analyzingEvent) return;
     setAnalyzingEvent(title);
     try {
-      // aligned:true —— 用户明确点击要分析这个已在结构地图里的事件，
-      // 跳过"太模糊"分诊拦截（仍会照常联网对齐事实），直接跑完整分析
+      // 该事件已是结构地图里的具体事件，无需再筛选，直接跑完整分析。
+      // aligned:true —— 跳过"太模糊"分诊拦截（仍会照常联网对齐事实）
       const res = await analyze(title, { aligned: true });
       if (res.status === "diggable") {
         cacheAnalysis(res.result);
         saveLocalAnalysis(res.result);
         if (!res.persisted) mergeLocalStructure(res.result.skeleton, res.result.verdict);
         router.push(`/analysis/${res.result.id}`);
+        // 保持遮罩直到路由切走
       } else {
         toast.message(
           res.triage.suggestion ?? t("home.tooShallow", "这个方向还需要更具体一些"),
