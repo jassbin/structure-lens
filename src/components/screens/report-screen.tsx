@@ -27,7 +27,7 @@ export function ReportScreen({ id }: { id: string }) {
   const [result, setResult] = useState<AnalysisResult | null | undefined>(
     () => getCachedAnalysis(id) ?? getLocalAnalysis(id) ?? undefined,
   );
-  const [digging, setDigging] = useState(false);
+  const { walk, walking, phase, lockedTitle } = useWalk();
 
   useEffect(() => {
     if (result !== undefined) return;
