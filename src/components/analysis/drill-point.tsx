@@ -51,7 +51,7 @@ export function DrillPoint({
   }
 
   return (
-    <li className="rounded-xl border border-transparent px-0 py-0" data-el="drill-point">
+    <div className="rounded-xl border border-transparent px-0 py-0" data-el="drill-point">
       <div className="flex gap-2 text-sm leading-relaxed text-foreground">
         <span className="mt-2 h-1 w-1 shrink-0 rounded-full bg-primary" />
         <span className="flex-1">{point}</span>
