@@ -126,9 +126,21 @@
     "steps": "steps",
     "recomputed": "Recomputed to",
     "recomputeFailed": "Recompute failed, please retry",
-    "disagree": "I disagree with this step",
-    "disagreeHint": "Write your objection: if sound, I'll adopt it and recompute this step and all downstream steps.",
+    "disagree": "I disagree with this section",
+    "keepRebutting": "Keep rebutting",
+    "submitObjection": "Submit & let AI respond",
+    "thinking": "AI is weighing your objection…",
+    "disagreeHint": "Write your objection: AI first takes a stance (absorb / compromise / hold) with reasons; only absorb or compromise adjusts downstream.",
     "disagreePlaceholder": "e.g. The anomaly entry is wrong; the real key is…",
+    "stance": {
+      "absorb": "Absorbed",
+      "compromise": "Compromised",
+      "hold": "Held"
+    },
+    "overlay": {
+      "obsolete": "No longer applicable",
+      "addendum": "Added in this revision"
+    },
     "recomputeCta": "Recompute downstream",
     "recomputingDownstream": "Re-sequencing downstream steps…",
     "revisionLog": "Revision log",
