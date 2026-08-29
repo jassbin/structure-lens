@@ -80,6 +80,7 @@
     },
     "skeletonCard": {
       "title": "Structure skeleton",
+      "tip": "Distills the underlying structure from this analysis into a transferable card that lights up from 'hypothesis' to 'verified' as more isomorphic cases collide.",
       "hypothesisTag": "Hypothesis",
       "subject": "Subject",
       "mechanism": "Mechanism",
@@ -93,6 +94,7 @@
     },
     "walk": {
       "title": "Keep walking",
+      "tip": "Suggests other events that may be isomorphic (not just superficially similar) to this structure — dig one to test whether the structure holds elsewhere.",
       "intro": "This structure may be isomorphic with the events below — dig one to test it.",
       "dig": "Dig this"
     },
@@ -103,6 +105,17 @@
   },
   "pipeline": {
     "title": "Reasoning pipeline",
+    "tips": {
+      "title": "Breaks one analysis into 7 visible reasoning steps — each one you can see and challenge, instead of being handed a conclusion.",
+      "materials": "Lists the facts used, each tagged by reliability (strong/medium/weak/unverifiable); it never fakes what it couldn't verify.",
+      "anomaly": "Picks the most 'off', highest-explanatory anomaly as the entry point — anomalies are the cracks in a structure.",
+      "skeleton": "Strips emotion and stance, reducing the event to five neutral elements: subject / object / mechanism / harmed / benefited.",
+      "mechanism": "Digs the causal chain surface -> deeper -> bottom, down to a transferable underlying structure, and maps the flow of interests.",
+      "game": "Works out where the players' game settles, and tests the structure against isomorphic cases from other domains.",
+      "scenario": "Lists key variables and possible branches, each with a probability and observable early-warning signals.",
+      "judgment": "Gives core judgments with confidence, each carrying a 'falsifiable condition' — what would prove it wrong.",
+      "adversarial": "Attacks its own conclusion from the strongest opposing view (devil's advocate) and audits its own cognitive biases."
+    },
     "steps": "steps",
     "recomputed": "Recomputed to",
     "recomputeFailed": "Recompute failed, please retry",
