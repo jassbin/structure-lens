@@ -25,6 +25,10 @@
     "title": "Same \"{{name}}\" skeleton again",
     "body": "Your earlier dig into \"{{title}}\" runs on the same underlying structure — open it and see if it's the same playbook."
   },
+  "intro": {
+    "tagline": "Every event hides an invisible skeleton",
+    "skip": "Skip"
+  },
   "common": {
     "signIn": "Sign in",
     "signOut": "Sign out",
