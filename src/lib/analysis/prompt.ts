@@ -119,7 +119,7 @@ ${
 ## 输出格式（只输出一个 JSON 对象）
 {
   "stance": "absorb | compromise | hold",
-  "reason": "你为什么这样表态（针对用户的具体反对，认真回应）",
+  "reason": "针对用户的具体反驳、落在客观依据上的表态理由；absorb=说清他哪点在依据上成立并推翻了原来哪一步；hold=先承认他反驳里对的部分，再说清为何仍不足以推翻原判断；compromise=逐条拆清「接受哪块+依据」与「保留哪块+依据」",
   "revisedStep": ${isSkeletonCard ? "null（骨架卡走增量记录，不给整段替换）" : "{ 被反对这一节修订后的完整内容；absorb/compromise 时给出（结构与原节一致，含 kind 及各自字段）；hold 时留 null }"},${
     isSkeletonCard
       ? `\n  "skeletonOverlay": { "obsoleteReason":"原骨架为何不再完全适用", "addendum":["采纳了你的XX → 把某处改为……","其他修订要点"], "rootChange": { "from":"extraction|delegation|power", "to":"..." } 或省略 rootChange }，absorb/compromise 时给出；hold 时为 null,`
