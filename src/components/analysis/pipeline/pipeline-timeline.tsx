@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { ChevronDown, Loader2, MessageSquareX, Send } from "lucide-react";
 import { StepBody } from "@/components/analysis/pipeline/step-body";
+import { InfoTip } from "@/components/shared/info-tip";
 import { recompute } from "@/lib/api/analysis";
 import { AppAIClientUnavailableError } from "@/lib/api/app-ai-request";
 import { STEP_LABELS, STEP_ORDER } from "@/lib/analysis/types";
