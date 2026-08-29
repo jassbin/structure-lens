@@ -168,6 +168,8 @@
       "surface": "表面",
       "deep": "深层",
       "bottom": "底层",
+      "anchor": "锁定异常",
+      "bedrock": "见底基岩",
       "flow": "利益流向",
       "renaming": "结构重命名"
     },
