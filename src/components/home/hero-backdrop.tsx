@@ -104,7 +104,7 @@ export function HeroBackdrop() {
         </g>
 
         {/* 漂浮粒子 / 星点 */}
-        <g fill="#9DE7FF" opacity="0.75">
+        <g fill="#3B82F6" opacity="0.6">
           <circle cx="66" cy="150" r="1.3" />
           <circle cx="172" cy="44" r="1.1" />
           <circle cx="244" cy="58" r="1.4" />
