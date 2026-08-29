@@ -34,10 +34,21 @@ export interface NeutralSkeleton {
 }
 
 /** 机制穿透（步骤3） */
+/** 机制穿透（步骤3）—— 递归钻探链：锁定异常 → 逐层 why 追问 → 每层爆破 → 见底基岩 */
+export type BedrockKind = "human_nature" | "incentive" | "power" | "information" | "scarcity";
+
+/** 一钻：对上一层的追问 + 钻开后的发现 + 这一层的反直觉爆破点 */
+export interface DrillLayer {
+  ask: string; // 这一层要追问什么（对上一层结论的 why 追问）
+  finding: string; // 钻开后看到的机制
+  breakthrough: string; // 这一层的爆破/反直觉落点（颠覆了上一层的什么认知）
+}
+
 export interface MechanismPenetration {
-  surface: string; // 表面
-  deep: string; // 深层
-  bottom: string; // 底层（可迁移的通用结构）
+  anchorAnomaly: string; // 锁定：这条钻探顺着哪个异常点往下（对应异常锁定选中的入口）
+  layers: DrillLayer[]; // 递归钻探层（2-5 层，从表层往基岩逐层向下）
+  bedrockKind: BedrockKind; // 见底基岩类别
+  bedrock: string; // 触到基岩的一句话结构命题
   interestFlow: string[]; // 利益流向，每条一行
   renaming: string; // 骨架重命名（结构事实）
 }
