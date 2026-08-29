@@ -8,6 +8,7 @@ import { ArrowRight, Sparkles, Loader2 } from "lucide-react";
 import { AppShell } from "@/components/shared/app-shell";
 import { BottomTabs } from "@/components/shared/bottom-tabs";
 import { DeepTopics } from "@/components/home/deep-topics";
+import { HeroBackdrop } from "@/components/home/hero-backdrop";
 import { ProbePanel, NotApplicablePanel, AlignCard } from "@/components/home/entry-panels";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
