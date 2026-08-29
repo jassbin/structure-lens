@@ -6,6 +6,7 @@ import { ConfidenceBar } from "@/components/shared/confidence-bar";
 import { DrillPoint } from "@/components/analysis/drill-point";
 import { GradeBadge } from "@/components/analysis/pipeline/grade-badge";
 import { cn } from "@/utils/utils";
+import { BEDROCK_LABELS } from "@/lib/analysis/types";
 import type { PipelineStep } from "@/lib/analysis/types";
 
 function LeverageDots({ n }: { n: number }) {
