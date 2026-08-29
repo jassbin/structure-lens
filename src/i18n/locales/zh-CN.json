@@ -82,9 +82,16 @@
       "title": "结构骨架",
       "tip": "把本次分析提炼出的底层结构沉淀成一张可迁移的卡片，随同构碰撞逐步从“假设”点亮为“已验证”。",
       "hypothesisTag": "结构假设",
+      "perceivedAs": "原本以为是",
+      "actualStructure": "真实运作是",
+      "whySo": "为什么是这样",
+      "parts": "结构内部零件",
       "subject": "主体",
+      "object": "对象",
       "mechanism": "机制",
       "extracted": "被提取",
+      "flow": "利益流向",
+      "altStructure": "或许更准",
       "root": "归属根结构"
     },
     "rebuttal": {
