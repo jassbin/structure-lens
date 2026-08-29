@@ -186,13 +186,34 @@ export function HomeScreen() {
             </Button>
           </div>
 
+          {align && (
+            <AlignCard
+              summary={align.summary}
+              sources={align.sources}
+              edited={alignDraft}
+              onEdit={setAlignDraft}
+              onConfirm={confirmAlign}
+              onReject={() => {
+                setAlign(null);
+                setTriage({
+                  verdict: "too_shallow",
+                  probes: [
+                    "这件事里，最让你觉得‘不对劲’的具体决定或动作是什么？",
+                    "涉及哪些主体？他们各自想要什么？",
+                  ],
+                });
+              }}
+              busy={busy}
+            />
+          )}
+
           {triage?.verdict === "too_shallow" && (
             <ProbePanel
               probes={triage.probes ?? []}
               answer={probeAnswer}
               onAnswer={setProbeAnswer}
               onContinue={() =>
-                void runAnalysis(`${input.trim()}\n${probeAnswer.trim()}`.trim())
+                void submitText(`${input.trim()}\n${probeAnswer.trim()}`.trim())
               }
               busy={busy}
             />
