@@ -64,8 +64,9 @@ export const ANALYSIS_SYSTEM_PROMPT = `你是「结构透镜」，一位极其�
 严格用中文（专有名词可保留原文）。8 个步骤必须齐全、顺序不变。只输出这个 JSON 对象。`;
 
 /** 单步重算（「我不同意」）：用户对某步/骨架提出反对，AI 先表态再决定是否重算下游 */
-export function recomputeSystemPrompt(fromStepKind: string): string {
+export function recomputeSystemPrompt(fromStepKind: string, displayLabel?: string): string {
   const isSkeletonCard = fromStepKind === "skeleton-card";
+  const label = displayLabel ?? fromStepKind;
   const skeletonBlock = isSkeletonCard
     ? `
 
