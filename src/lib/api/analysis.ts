@@ -43,6 +43,28 @@ export async function analyze(
   return (await res.json()) as AnalyzeResponse;
 }
 
+export type WalkFocusResponse = {
+  picked: boolean;
+  title: string;
+  summary: string;
+  hotness?: "hot" | "typical";
+  reason?: string;
+};
+
+/** 游走事件筛选：给宽泛同构方向，联网锁定最火/最典型的具体真实事件。免登录。 */
+export async function walkFocus(payload: {
+  direction: string;
+  reason?: string;
+}): Promise<WalkFocusResponse> {
+  const res = await request("/api/walk-focus", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) throw new Error(`walkFocus failed: ${res.status}`);
+  return (await res.json()) as WalkFocusResponse;
+}
+
 export type DrillMode = "challenge" | "deeper" | "counter";
 
 /** 对某一条判断继续深挖 / 质疑 / 反驳。免登录。 */
