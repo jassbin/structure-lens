@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
-import { toast } from "sonner";
 import { ArrowLeft, Compass, ArrowRight, Check, History } from "lucide-react";
 import { PipelineTimeline } from "@/components/analysis/pipeline/pipeline-timeline";
 import { SkeletonCard } from "@/components/analysis/skeleton-card";
@@ -165,8 +164,8 @@ export function ReportScreen({ id }: { id: string }) {
             <button
               key={hook.id}
               type="button"
-              disabled={digging}
-              onClick={() => digHook(hook.title)}
+              disabled={walking}
+              onClick={() => digHook(hook.title, hook.reason)}
               data-el="walk-hook"
               className="group flex items-start gap-3 rounded-2xl border border-border bg-card p-3.5 text-left shadow-sm transition-all hover:border-primary/40 hover:shadow-md disabled:opacity-60"
             >
