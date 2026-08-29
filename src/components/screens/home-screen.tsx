@@ -132,8 +132,8 @@ export function HomeScreen() {
           <div className="pt-6 text-center" data-el="home-hero">
             <h1 className="font-heading font-black tracking-tight text-[#0B0B0F]">
               <span className="block text-[27px] leading-[1.22] tracking-[-0.01em] [text-shadow:0_1px_0_rgba(255,255,255,0.4)]">
-                {t("home.taglineLead")}
-                {t("home.taglineHighlight")}
+                <span className="block">{t("home.taglineLead")}{t("home.taglineHighlightHead")}</span>
+                <span className="block">{t("home.taglineHighlightTail")}</span>
               </span>
               <span className="mt-2 block text-[16px] font-extrabold leading-snug tracking-[0.02em] text-[#0B0B0F]/85 [text-shadow:0_1px_0_rgba(255,255,255,0.4)]">
                 {t("home.taglineSub")}
