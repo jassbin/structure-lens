@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { ArrowRight, Landmark, Briefcase, ScrollText } from "lucide-react";
 import { cn } from "@/utils/utils";
@@ -40,14 +40,18 @@ export function DeepTopics({
   onPick: (prompt: string) => void;
 }) {
   const { t } = useTranslation();
-  // 方案 A：每次挂载随机洗牌，做到每次打开都新鲜。
-  // 顺序在 SSR 与 CSR 间会不同，属刻意行为，用 suppressHydrationWarning 抑制水合告警。
-  const topics = useMemo(() => shuffle(DEEP_TOPICS).slice(0, VISIBLE_COUNT), []);
+  // 首帧用确定顺序（SSR 与 CSR 一致，避免 hydration 不匹配）；
+  // 挂载后再随机洗牌轮换（方案 A：每次打开都新鲜）。
+  const [topics, setTopics] = useState(() => DEEP_TOPICS.slice(0, VISIBLE_COUNT));
+
+  useEffect(() => {
+    setTopics(shuffle(DEEP_TOPICS).slice(0, VISIBLE_COUNT));
+  }, []);
 
   return (
     <div className="flex flex-col gap-3" data-el="deep-topics">
       <p className="text-sm font-bold text-muted-foreground">{t("home.topicsTitle")}</p>
-      <div className="grid grid-cols-1 gap-2.5" suppressHydrationWarning>
+      <div className="grid grid-cols-1 gap-2.5">
         {topics.map((topic) => {
           const Icon = CATEGORY_ICON[topic.category];
           return (
