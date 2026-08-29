@@ -281,50 +281,104 @@ export function normalizeAnalysis(
 }
 
 /**
- * 把重算返回的部分步骤合并进已有结果，产出新版本。
- * revisedSteps 只含被重算的步骤，按 kind 覆盖原步骤。
+ * 应用一次「我不同意」的结果（人机共同推演）：
+ * - AI 先给 stance(吸收/折中/保持) + reason，追加为该节的一轮辩论留痕。
+ * - absorb/compromise：修订被反对的这一节（revisedStep），下游受影响步骤以"增量覆盖层"追加
+ *   （不覆盖原内容，标注原内容为何不再适用 + 新增内容）。
+ * - hold：不动任何内容，只留辩论记录。
+ * fromStepKind 可为某个 StepKind，或 "skeleton-card"（表示反驳的是结构骨架卡本身）。
  */
 export function applyRecompute(
   base: AnalysisResult,
   raw: unknown,
-  fromStepKind: StepKind,
+  fromStepKind: StepKind | "skeleton-card",
   disagreement: string,
 ): AnalysisResult {
   const o = obj(raw);
-  const rawRevised = Array.isArray(o.revisedSteps) ? o.revisedSteps : [];
-  const fromIdx = STEP_ORDER.indexOf(fromStepKind);
-
-  const revisedByKind = new Map<StepKind, PipelineStep>();
-  for (const kind of STEP_ORDER) {
-    if (STEP_ORDER.indexOf(kind) < fromIdx) continue;
-    const rawStep = pickRawStep(rawRevised, kind);
-    if (!rawStep) continue;
-    const norm = normalizeStep(kind, rawStep);
-    if (norm) revisedByKind.set(kind, norm);
-  }
-
-  const steps: PipelineStep[] = base.steps.map((s) => revisedByKind.get(s.kind) ?? s);
+  const stance = normalizeStance(o.stance);
+  const reason = str(o.reason, "（未给出理由）");
+  const at = new Date().toISOString();
 
   const parts = base.version.split(".");
   const minor = (parseInt(parts[1] ?? "0", 10) || 0) + 1;
   const version = `${parts[0] ?? "1"}.${minor}`;
 
-  const sk = obj(o.skeleton);
-  const skeleton = sk.name
-    ? normalizeSkeletonCard(sk, base.skeleton.name)
-    : base.skeleton;
+  const turn: DebateTurn = { objection: disagreement, stance, reason, at };
+  const willEdit = stance !== "hold";
+
+  // 下游增量覆盖层（仅 absorb/compromise）
+  const rawRevised =
+    willEdit && Array.isArray(o.revisedSteps) ? o.revisedSteps : [];
+  const overlayByKind = new Map<StepKind, StepOverlay>();
+  const downstreamStart =
+    fromStepKind === "skeleton-card" ? 0 : STEP_ORDER.indexOf(fromStepKind);
+  for (const item of rawRevised) {
+    const it = obj(item);
+    const kind = it.kind as StepKind;
+    if (!STEP_ORDER.includes(kind)) continue;
+    // 只接受下游步骤（骨架卡反驳时允许影响所有步骤）
+    if (fromStepKind !== "skeleton-card" && STEP_ORDER.indexOf(kind) <= downstreamStart)
+      continue;
+    const addendum = strArray(it.addendum);
+    const obsoleteReason = str(it.obsoleteReason);
+    if (addendum.length === 0 && !obsoleteReason) continue;
+    overlayByKind.set(kind, { version, obsoleteReason, addendum, at });
+  }
+
+  // 被反对这一节的修订
+  let steps = base.steps;
+  let skeleton = base.skeleton;
+
+  if (fromStepKind === "skeleton-card") {
+    // 骨架卡被反对：附辩论；absorb/compromise 时用 revisedStep(skeleton) 更新
+    const revised = willEdit ? obj(obj(o.revisedStep).skeleton ?? o.revisedStep) : null;
+    skeleton = {
+      ...(revised && (revised.name || revised.actualStructure)
+        ? normalizeSkeletonCard(revised, base.skeleton.name)
+        : base.skeleton),
+      debate: [...(base.skeleton.debate ?? []), turn],
+    };
+  } else {
+    const revisedRaw = willEdit ? o.revisedStep : null;
+    const revisedStep =
+      revisedRaw && obj(revisedRaw).kind === fromStepKind
+        ? normalizeStep(fromStepKind, revisedRaw)
+        : null;
+    steps = base.steps.map((s) => {
+      if (s.kind === fromStepKind) {
+        const merged = revisedStep ? { ...revisedStep } : { ...s };
+        return {
+          ...merged,
+          debate: [...(s.debate ?? []), turn],
+          overlays: s.overlays,
+        } as PipelineStep;
+      }
+      return s;
+    });
+  }
+
+  // 把下游覆盖层叠加到对应步骤（不覆盖原内容）
+  if (overlayByKind.size > 0) {
+    steps = steps.map((s) => {
+      const ov = overlayByKind.get(s.kind);
+      if (!ov) return s;
+      return { ...s, overlays: [...(s.overlays ?? []), ov] } as PipelineStep;
+    });
+  }
 
   const revision: RevisionEntry = {
-    version,
+    version: willEdit ? version : base.version,
     stepKind: fromStepKind,
     disagreement,
-    at: new Date().toISOString(),
+    stance,
+    reason,
+    at,
   };
 
   return {
     ...base,
-    version,
-    verdict: str(o.verdict, base.verdict),
+    version: willEdit ? version : base.version,
+    verdict: willEdit ? str(o.verdict, base.verdict) : base.verdict,
     steps,
     skeleton,
     revisions: [...(base.revisions ?? []), revision],
