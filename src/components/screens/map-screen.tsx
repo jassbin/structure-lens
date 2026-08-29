@@ -74,7 +74,7 @@ export function MapScreen() {
     }
   }
 
-  const showSync = localCount > 0;
+  const showSync = localCount > 0 || Boolean(user);
 
   return (
     <div className="mx-auto flex w-full max-w-md flex-col gap-5 px-4 py-6">
