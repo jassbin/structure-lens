@@ -1,4 +1,11 @@
 {
+  "walk": {
+    "focusing": "正在联网锁定最火的同构事件",
+    "analyzing": "正在深度穿透这件事",
+    "focusHint": "在这个结构方向下筛选当前最火、最典型的真实事件，请稍候，别关页面",
+    "analyzeHint": "正在跑完整 8 步穿透，通常需要几秒",
+    "analyzeLocked": "已锁定「{{title}}」，正在跑完整 8 步穿透"
+  },
   "common": {
     "signIn": "登录",
     "signOut": "退出登录",
