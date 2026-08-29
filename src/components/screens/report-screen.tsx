@@ -17,7 +17,7 @@ import {
 } from "@/lib/analysis/local-map";
 import { analyze, getAnalysis } from "@/lib/api/analysis";
 import { AppAIClientUnavailableError } from "@/lib/api/app-ai-request";
-import { STEP_LABELS } from "@/lib/analysis/types";
+import { STEP_LABELS, STANCE_LABELS } from "@/lib/analysis/types";
 import type { AnalysisResult } from "@/lib/analysis/types";
 
 export function ReportScreen({ id }: { id: string }) {
@@ -124,7 +124,7 @@ export function ReportScreen({ id }: { id: string }) {
 
       <PipelineTimeline result={result} onResult={handleResult} />
 
-      <SkeletonCard skeleton={result.skeleton} />
+      <SkeletonCard result={result} onResult={handleResult} />
 
       {revisions.length > 0 && (
         <div
@@ -143,7 +143,13 @@ export function ReportScreen({ id }: { id: string }) {
                 <span className="font-black text-primary">v{r.version}</span>
                 {" · "}
                 <span className="font-semibold text-foreground">
-                  {STEP_LABELS[r.stepKind]?.zh ?? r.stepKind}
+                  {r.stepKind === "skeleton-card"
+                    ? t("analysis.skeletonCard.title")
+                    : (STEP_LABELS[r.stepKind]?.zh ?? r.stepKind)}
+                </span>
+                {" · "}
+                <span className="font-semibold text-secondary">
+                  {STANCE_LABELS[r.stance].zh}
                 </span>
                 {" — "}
                 {r.disagreement}
