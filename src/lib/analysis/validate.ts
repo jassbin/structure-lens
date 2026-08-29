@@ -364,13 +364,36 @@ export function applyRecompute(
   let skeleton = base.skeleton;
 
   if (fromStepKind === "skeleton-card") {
-    // 骨架卡被反对：附辩论；absorb/compromise 时用 revisedStep(skeleton) 更新
-    const revised = willEdit ? obj(obj(o.revisedStep).skeleton ?? o.revisedStep) : null;
+    // 骨架卡被反对：增量不覆盖——保留原骨架，附辩论；absorb/compromise 时追加一条"本次调整"overlay
+    let skeletonOverlay: StepOverlay | undefined;
+    if (willEdit) {
+      const so = obj(o.skeletonOverlay);
+      const addendum = strArray(so.addendum);
+      const obsoleteReason = str(so.obsoleteReason);
+      if (addendum.length > 0 || obsoleteReason) {
+        const rc = obj(so.rootChange);
+        const roots: RootStructure[] = ["extraction", "delegation", "power"];
+        const from = roots.includes(rc.from as RootStructure)
+          ? (rc.from as RootStructure)
+          : undefined;
+        const to = roots.includes(rc.to as RootStructure)
+          ? (rc.to as RootStructure)
+          : undefined;
+        skeletonOverlay = {
+          version,
+          obsoleteReason,
+          addendum,
+          ...(from && to && from !== to ? { rootChange: { from, to } } : {}),
+          at,
+        };
+      }
+    }
     skeleton = {
-      ...(revised && (revised.name || revised.actualStructure)
-        ? normalizeSkeletonCard(revised, base.skeleton.name)
-        : base.skeleton),
+      ...base.skeleton,
       debate: [...(base.skeleton.debate ?? []), turn],
+      overlays: skeletonOverlay
+        ? [...(base.skeleton.overlays ?? []), skeletonOverlay]
+        : base.skeleton.overlays,
     };
   } else {
     const revisedRaw = willEdit ? o.revisedStep : null;
