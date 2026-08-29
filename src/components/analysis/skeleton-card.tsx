@@ -112,32 +112,24 @@ export function SkeletonCard({
         ))}
       </div>
 
-      {/* 结构内部零件 */}
-      <div className="mt-3 border-t border-border/60 pt-2.5">
-        <p className="text-[11px] font-bold uppercase tracking-wide text-muted-foreground">
-          {t("analysis.skeletonCard.parts")}
-        </p>
-        <dl className="mt-1.5 space-y-1.5">
-          {parts.map((r) => (
-            <div key={r.label} className="flex gap-2 text-sm">
-              <dt className="w-14 shrink-0 font-bold text-muted-foreground">{r.label}</dt>
-              <dd className="min-w-0 flex-1 text-foreground">{r.value}</dd>
-            </div>
-          ))}
-          {sk.interestFlow.length > 0 && (
-            <div className="flex gap-2 text-sm">
-              <dt className="w-14 shrink-0 font-bold text-muted-foreground">
-                {t("analysis.skeletonCard.flow")}
-              </dt>
-              <dd className="min-w-0 flex-1 space-y-0.5 text-foreground">
-                {sk.interestFlow.map((f, i) => (
-                  <p key={i}>{f}</p>
-                ))}
-              </dd>
-            </div>
-          )}
-        </dl>
-      </div>
+      {/* 结构内部动态零件（由结构本身决定） */}
+      {sk.parts.length > 0 && (
+        <div className="mt-3 border-t border-border/60 pt-2.5">
+          <p className="text-[11px] font-bold uppercase tracking-wide text-muted-foreground">
+            {t("analysis.skeletonCard.parts")}
+          </p>
+          <dl className="mt-1.5 space-y-1.5">
+            {sk.parts.map((r, i) => (
+              <div key={i} className="rounded-lg bg-secondary/[0.05] px-2.5 py-1.5">
+                <dt className="text-xs font-bold text-secondary">{r.label}</dt>
+                <dd className="mt-0.5 text-sm leading-relaxed text-foreground">
+                  {r.value}
+                </dd>
+              </div>
+            ))}
+          </dl>
+        </div>
+      )}
 
       {/* root 主判定 + 开放位 */}
       <div className="mt-3 flex flex-wrap items-center gap-2">
