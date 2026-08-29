@@ -226,16 +226,42 @@ function normalizeSkeletonCard(
     ? (sk.root as RootStructure)
     : "extraction";
   const alt = str(sk.altStructure);
+
+  // 动态零件：优先用 AI 返回的 parts；否则从旧固定字段回退映射，保证老数据仍可读
+  let parts: { label: string; value: string }[] = [];
+  if (Array.isArray(sk.parts)) {
+    parts = sk.parts
+      .map((p) => {
+        const pp = obj(p);
+        const label = str(pp.label);
+        const value = str(pp.value);
+        if (!label && !value) return null;
+        return { label: label || "零件", value };
+      })
+      .filter((x): x is { label: string; value: string } => Boolean(x))
+      .slice(0, 6);
+  }
+  if (parts.length === 0) {
+    // 兼容旧结构：把曾经写死的字段映射为零件
+    const legacy: Array<[string, unknown]> = [
+      ["主体", sk.subject],
+      ["对象", sk.object],
+      ["机制", sk.mechanism],
+      ["被提取", sk.extracted],
+    ];
+    parts = legacy
+      .map(([label, v]) => ({ label, value: str(v) }))
+      .filter((p) => p.value);
+    const flow = strArray(sk.interestFlow);
+    if (flow.length > 0) parts.push({ label: "利益流向", value: flow.join("；") });
+  }
+
   return {
     name: str(sk.name, fallbackName),
     perceivedAs: str(sk.perceivedAs, "—"),
     actualStructure: str(sk.actualStructure, str(sk.name, "—")),
     whySo: str(sk.whySo, "—"),
-    subject: str(sk.subject, "—"),
-    object: str(sk.object, "—"),
-    mechanism: str(sk.mechanism, "—"),
-    extracted: str(sk.extracted, "—"),
-    interestFlow: strArray(sk.interestFlow),
+    parts,
     root,
     ...(alt ? { altStructure: alt } : {}),
     confidence: clampConf(sk.confidence),
