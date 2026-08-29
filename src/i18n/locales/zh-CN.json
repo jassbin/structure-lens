@@ -244,6 +244,15 @@
       "extraction": "提取-分配",
       "delegation": "委托-执行",
       "power": "权力竞争-均衡"
+    },
+    "view": {
+      "list": "列表",
+      "cluster": "套路聚类"
+    },
+    "cluster": {
+      "badge": "套路聚类",
+      "headline": "你挖了 {{events}} 件事，其实就 {{kinds}} 种底层套路",
+      "count": "{{nodes}} 副骨架 · {{events}} 件事"
     }
   }
 }
