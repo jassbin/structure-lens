@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { Boxes } from "lucide-react";
 import { RootBadge } from "@/components/shared/root-badge";
 import { ConfidenceBar } from "@/components/shared/confidence-bar";
+import { InfoTip } from "@/components/shared/info-tip";
 import type { StructureSkeleton } from "@/lib/analysis/types";
 
 /** 结构骨架卡：主体→机制→被提取，诚实标注"结构假设 + 置信度" */
@@ -23,8 +24,9 @@ export function SkeletonCard({ skeleton }: { skeleton: StructureSkeleton }) {
       <div className="flex items-center justify-between gap-2">
         <div className="flex items-center gap-2">
           <Boxes className="h-4 w-4 text-secondary" aria-hidden />
-          <span className="font-heading text-sm font-extrabold text-foreground">
+          <span className="flex items-center gap-1.5 font-heading text-sm font-extrabold text-foreground">
             {t("analysis.skeletonCard.title")}
+            <InfoTip content={t("analysis.skeletonCard.tip")} />
           </span>
         </div>
         <span className="rounded-full border border-accent/50 bg-accent/20 px-2 py-0.5 text-[10px] font-bold text-foreground">
