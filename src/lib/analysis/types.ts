@@ -112,6 +112,8 @@ export interface StepOverlay {
   addendum: string[];
   /** 仅骨架卡使用：本次调整若改动了根结构判定，记录前后（如 extraction → delegation） */
   rootChange?: { from: RootStructure; to: RootStructure };
+  /** 仅骨架卡使用：本次骨架留痕是被哪个下游步骤的辩论带动的（步骤 kind）；直接反驳骨架本身时为空 */
+  triggeredBy?: StepKind;
   at: string; // ISO
 }
 
