@@ -153,23 +153,64 @@ export function StepBody({
 
     case "mechanism": {
       const m = step.mechanism;
-      const layers = [
-        { k: t("pipeline.mechanism.surface"), v: m.surface },
-        { k: t("pipeline.mechanism.deep"), v: m.deep },
-        { k: t("pipeline.mechanism.bottom"), v: m.bottom },
-      ];
       return (
         <div className="space-y-2.5">
-          <ul className="space-y-1.5">
-            {layers.map((l, i) => (
-              <DrillPoint
-                key={i}
-                verdict={verdict}
-                layerTitle={step.title}
-                point={`${l.k}：${l.v}`}
-              />
+          {m.anchorAnomaly && (
+            <p className="flex items-start gap-1.5 rounded-lg bg-muted/60 px-3 py-2 text-[13px] leading-relaxed text-foreground">
+              <Target className="mt-0.5 h-3.5 w-3.5 shrink-0 text-primary" />
+              <span>
+                <span className="font-bold">{t("pipeline.mechanism.anchor")}：</span>
+                {m.anchorAnomaly}
+              </span>
+            </p>
+          )}
+
+          {/* 逐层下钻 */}
+          <ol className="relative space-y-2 pl-4">
+            <span
+              className="absolute left-[7px] top-1 bottom-6 w-px bg-gradient-to-b from-primary/50 to-secondary/60"
+              aria-hidden
+            />
+            {m.layers.map((l, i) => (
+              <li key={i} className="relative" style={{ marginLeft: i * 8 }}>
+                <span className="absolute -left-4 top-1.5 flex h-3.5 w-3.5 items-center justify-center rounded-full border border-primary/60 bg-background text-[9px] font-black text-primary">
+                  {i + 1}
+                </span>
+                <div className="rounded-lg border border-border/70 bg-card/60 px-3 py-2">
+                  {l.ask && (
+                    <p className="text-[11px] font-bold text-muted-foreground">
+                      ↳ {l.ask}
+                    </p>
+                  )}
+                  <DrillPoint
+                    verdict={verdict}
+                    layerTitle={step.title}
+                    point={l.finding}
+                  />
+                  {l.breakthrough && (
+                    <p className="mt-1.5 flex items-start gap-1 rounded-md bg-secondary/10 px-2 py-1 text-[12px] font-semibold leading-snug text-secondary">
+                      <span aria-hidden>💥</span>
+                      <span>{l.breakthrough}</span>
+                    </p>
+                  )}
+                </div>
+              </li>
             ))}
-          </ul>
+          </ol>
+
+          {/* 见底基岩 */}
+          <div className="rounded-lg border border-secondary/50 bg-secondary/[0.08] px-3 py-2">
+            <p className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wide text-secondary">
+              {t("pipeline.mechanism.bedrock")}
+              <span className="rounded-full border border-secondary/50 px-1.5 py-0.5 text-[10px]">
+                {BEDROCK_LABELS[m.bedrockKind].zh}
+              </span>
+            </p>
+            <p className="mt-1 text-sm font-bold leading-snug text-foreground">
+              {m.bedrock}
+            </p>
+          </div>
+
           {m.interestFlow.length > 0 && (
             <div className="rounded-lg bg-muted/60 px-3 py-2">
               <p className="text-[11px] font-bold uppercase tracking-wide text-muted-foreground">
