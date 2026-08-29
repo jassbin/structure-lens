@@ -5,12 +5,6 @@ import { ArrowRight, Landmark, Briefcase, ScrollText } from "lucide-react";
 import { cn } from "@/utils/utils";
 import { DEEP_TOPICS } from "@/lib/analysis/topics";
 
-const CATEGORY_COLOR: Record<string, string> = {
-  policy: "text-primary",
-  business: "text-secondary",
-  history: "text-[#5647d6]",
-};
-
 const CATEGORY_ICON = {
   policy: Landmark,
   business: Briefcase,
