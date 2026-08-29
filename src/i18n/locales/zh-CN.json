@@ -205,7 +205,7 @@
       "hypothesis": "假设",
       "verified": "已点亮"
     },
-    "appearsIn": "出现于",
+    "appearsIn": "出现于这些分析（点击查看）",
     "root": {
       "extraction": "提取-分配",
       "delegation": "委托-执行",
