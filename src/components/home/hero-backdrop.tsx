@@ -10,27 +10,27 @@ export function HeroBackdrop() {
       className="pointer-events-none absolute inset-x-0 top-0 z-0 h-96 overflow-hidden"
       data-el="hero-backdrop"
     >
-      {/* 深空底 + 顶部霓虹渐隐 */}
+      {/* 淡蓝天幕底：明亮淡蓝渐隐，给黑色标题足够反差 */}
       <div
         className="absolute inset-0"
         style={{
           background:
-            "radial-gradient(120% 80% at 78% 8%, rgba(107,92,255,0.35) 0%, rgba(12,95,253,0.22) 34%, rgba(6,10,30,0.9) 78%, rgba(255,248,236,0) 100%)",
+            "radial-gradient(125% 85% at 72% 6%, rgba(120,170,255,0.55) 0%, rgba(150,195,255,0.38) 30%, rgba(205,225,255,0.22) 58%, rgba(240,247,255,0) 100%)",
         }}
       />
 
-      {/* 霓虹辉光斑：蓝 / 紫 / 琥珀 */}
+      {/* 淡蓝 / 紫 / 琥珀柔光斑（清透，不压暗） */}
       <div
-        className="absolute -left-16 -top-12 h-56 w-56 rounded-full opacity-70 blur-3xl"
-        style={{ background: "rgba(12,95,253,0.45)" }}
+        className="absolute -left-16 -top-12 h-56 w-56 rounded-full opacity-55 blur-3xl"
+        style={{ background: "rgba(70,140,255,0.40)" }}
       />
       <div
-        className="absolute right-8 -top-8 h-48 w-48 rounded-full opacity-60 blur-3xl"
-        style={{ background: "rgba(107,92,255,0.42)" }}
+        className="absolute right-8 -top-8 h-48 w-48 rounded-full opacity-45 blur-3xl"
+        style={{ background: "rgba(127,120,255,0.34)" }}
       />
       <div
-        className="absolute left-28 top-10 h-28 w-28 rounded-full opacity-45 blur-3xl"
-        style={{ background: "rgba(255,176,32,0.32)" }}
+        className="absolute left-28 top-10 h-28 w-28 rounded-full opacity-35 blur-3xl"
+        style={{ background: "rgba(255,190,80,0.28)" }}
       />
 
       <svg
