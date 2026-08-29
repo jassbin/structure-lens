@@ -100,6 +100,8 @@ export interface StepOverlay {
   obsoleteReason: string;
   /** 追加/修订后的新内容（纯文本增量，按行展示） */
   addendum: string[];
+  /** 仅骨架卡使用：本次调整若改动了根结构判定，记录前后（如 extraction → delegation） */
+  rootChange?: { from: RootStructure; to: RootStructure };
   at: string; // ISO
 }
 
@@ -163,6 +165,8 @@ export interface StructureSkeleton {
   confidence: number;
   /** 骨架卡自身的辩论留痕（用户也可反驳骨架） */
   debate?: DebateTurn[];
+  /** 骨架被吸收/折中调整时的增量记录（不覆盖，追加"本次调整改了什么"，含 root 变更） */
+  overlays?: StepOverlay[];
 }
 
 /** 游走钩子：结构同构候选事件 */
