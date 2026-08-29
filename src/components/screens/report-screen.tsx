@@ -78,6 +78,7 @@ export function ReportScreen({ id }: { id: string }) {
 
   return (
     <div className="mx-auto flex w-full max-w-md flex-col gap-5 px-4 py-4">
+      <WalkOverlay open={walking} phase={phase} lockedTitle={lockedTitle} />
       <button
         type="button"
         onClick={() => router.push("/")}
