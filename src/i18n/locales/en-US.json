@@ -6,6 +6,21 @@
     "analyzeHint": "Running the full 8-step pierce, usually takes a few seconds",
     "analyzeLocked": "Locked onto \"{{title}}\" — running the full 8-step pierce"
   },
+  "share": {
+    "brand": "Structure Lens",
+    "generate": "Generate share card",
+    "copy": "Copy",
+    "copied": "Copied",
+    "perceivedAs": "Looks like",
+    "actual": "Actually",
+    "whySo": "Why so",
+    "disclaimer": "A structural reading based on a personal lens and AI reasoning — for reference only, not a factual verdict.",
+    "privacyNote": "Read-only link with just this one skeleton card. It never exposes your other analyses or your structure map.",
+    "notFound": "This share doesn't exist or has expired",
+    "tryYours": "Lens your own event's skeleton",
+    "failed": "Failed to generate the share link, please retry",
+    "copyFailed": "Copy failed, please copy manually"
+  },
   "common": {
     "signIn": "Sign in",
     "signOut": "Sign out",
