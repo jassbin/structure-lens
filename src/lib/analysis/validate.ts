@@ -128,10 +128,38 @@ function normalizeStep(kind: StepKind, raw: unknown): PipelineStep | null {
     }
     case "mechanism": {
       const m = obj(o.mechanism);
+      // 解析递归钻探层
+      let layers = Array.isArray(m.layers)
+        ? m.layers
+            .map((it) => {
+              const l = obj(it);
+              return {
+                ask: str(l.ask),
+                finding: str(l.finding),
+                breakthrough: str(l.breakthrough),
+              };
+            })
+            .filter((l) => l.finding || l.ask || l.breakthrough)
+        : [];
+      // 兼容旧数据：surface/deep/bottom 三段回退为 layers
+      if (layers.length === 0 && (m.surface || m.deep || m.bottom)) {
+        layers = [
+          { ask: "表面看到什么", finding: str(m.surface, "—"), breakthrough: "" },
+          { ask: "再往深追问", finding: str(m.deep, "—"), breakthrough: "" },
+          { ask: "钻到底层", finding: str(m.bottom, "—"), breakthrough: "" },
+        ].filter((l) => l.finding !== "—");
+      }
+      if (layers.length === 0) {
+        layers = [{ ask: "—", finding: "—", breakthrough: "" }];
+      }
+      const bedrockKind: BedrockKind = BEDROCKS.includes(m.bedrockKind as BedrockKind)
+        ? (m.bedrockKind as BedrockKind)
+        : "incentive";
       const mechanism: MechanismPenetration = {
-        surface: str(m.surface, "—"),
-        deep: str(m.deep, "—"),
-        bottom: str(m.bottom, "—"),
+        anchorAnomaly: str(m.anchorAnomaly, ""),
+        layers,
+        bedrockKind,
+        bedrock: str(m.bedrock, str(m.bottom, "—")),
         interestFlow: strArray(m.interestFlow),
         renaming: str(m.renaming, "—"),
       };
