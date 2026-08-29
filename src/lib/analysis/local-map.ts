@@ -111,3 +111,60 @@ export function getAllLocalAnalyses(): AnalysisResult[] {
 export function hasLocalData(): boolean {
   return readMap().length > 0;
 }
+
+/**
+ * 用「全量分析」重建本地结构地图（幂等，不会重复累计 hits）。
+ * 用于双向同步后：把合并后的分析集合确定性地折叠成结构节点。
+ */
+export function rebuildLocalMapFrom(analyses: AnalysisResult[]): StructureNode[] {
+  const byName = new Map<string, StructureNode>();
+  // 按时间正序，保证 events 顺序稳定
+  const ordered = [...analyses].sort((a, b) =>
+    (a.createdAt ?? "").localeCompare(b.createdAt ?? ""),
+  );
+  for (const a of ordered) {
+    const sk = a.skeleton;
+    const title = a.verdict || a.input;
+    const found = byName.get(sk.name);
+    if (found) {
+      const events = Array.from(new Set([...found.events, title]));
+      const hits = (found.hits ?? found.events.length) + 1;
+      const verified = hits >= VERIFY_HITS && events.length >= 2;
+      byName.set(sk.name, {
+        ...found,
+        events,
+        hits,
+        state: verified ? "verified" : "hypothesis",
+        confidence: verified
+          ? verifiedConfidence(hits, sk.confidence)
+          : sk.confidence,
+      });
+    } else {
+      byName.set(sk.name, {
+        id: crypto.randomUUID().slice(0, 16),
+        name: sk.name,
+        root: sk.root,
+        state: "hypothesis",
+        confidence: sk.confidence,
+        events: [title],
+        hits: 1,
+      });
+    }
+  }
+  const nodes = Array.from(byName.values()).reverse();
+  writeMap(nodes);
+  return nodes;
+}
+
+/** 批量把分析写入本地存储（用于云端→本地回流） */
+export function saveLocalAnalyses(analyses: AnalysisResult[]): void {
+  if (typeof window === "undefined") return;
+  try {
+    const raw = window.localStorage.getItem(ANALYSES_KEY);
+    const all = raw ? (JSON.parse(raw) as Record<string, AnalysisResult>) : {};
+    for (const a of analyses) if (a?.id) all[a.id] = a;
+    window.localStorage.setItem(ANALYSES_KEY, JSON.stringify(all));
+  } catch {
+    /* ignore quota */
+  }
+}
