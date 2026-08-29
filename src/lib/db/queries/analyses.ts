@@ -79,3 +79,28 @@ export async function listRecentAnalyses(userId: string, limit = 20) {
     .orderBy(desc(analyses.createdAt))
     .limit(limit);
 }
+
+/** 本人云端全部分析（完整体，用于云端→本地回流合并） */
+export async function listAllAnalysesFull(
+  userId: string,
+  limit = 500,
+): Promise<AnalysisResult[]> {
+  const rows = await db
+    .select()
+    .from(analyses)
+    .where(eq(analyses.userId, userId))
+    .orderBy(desc(analyses.createdAt))
+    .limit(limit);
+  return rows.map((row) => ({
+    id: row.id,
+    input: row.input,
+    version: row.version,
+    sources: row.sources ?? undefined,
+    verdict: row.verdict,
+    steps: row.steps,
+    skeleton: row.skeleton,
+    walkHooks: row.walkHooks,
+    revisions: row.revisions ?? undefined,
+    createdAt: row.createdAt.toISOString(),
+  }));
+}
