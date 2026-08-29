@@ -155,9 +155,18 @@ function normalizeStep(kind: StepKind, raw: unknown): PipelineStep | null {
       const bedrockKind: BedrockKind = BEDROCKS.includes(m.bedrockKind as BedrockKind)
         ? (m.bedrockKind as BedrockKind)
         : "incentive";
+      const sideAnomalies = Array.isArray(m.sideAnomalies)
+        ? m.sideAnomalies
+            .map((it) => {
+              const s = obj(it);
+              return { anomaly: str(s.anomaly), whyDig: str(s.whyDig) };
+            })
+            .filter((s) => s.anomaly)
+        : [];
       const mechanism: MechanismPenetration = {
         anchorAnomaly: str(m.anchorAnomaly, ""),
         layers,
+        sideAnomalies,
         bedrockKind,
         bedrock: str(m.bedrock, str(m.bottom, "—")),
         interestFlow: strArray(m.interestFlow),
