@@ -41,25 +41,23 @@ export function DeepTopics({
               data-el="topic-card"
               className="group flex items-center gap-3 rounded-2xl border border-border bg-card p-3.5 text-left shadow-sm transition-all hover:border-primary/40 hover:shadow-md disabled:opacity-60"
             >
-              <span
-                className={cn(
-                  "grid h-10 w-10 shrink-0 place-items-center rounded-xl",
-                  CATEGORY_ICON_BG[topic.category],
-                )}
-              >
-                <Icon className="h-5 w-5" aria-hidden />
+              <span className="flex shrink-0 flex-col items-center gap-1">
+                <span
+                  className={cn(
+                    "grid h-10 w-10 place-items-center rounded-xl",
+                    CATEGORY_ICON_BG[topic.category],
+                  )}
+                >
+                  <Icon className="h-5 w-5" aria-hidden />
+                </span>
+                <span className="text-[10px] font-medium tracking-wide text-muted-foreground/70">
+                  {t(`home.category.${topic.category}`)}
+                </span>
               </span>
               <div className="min-w-0 flex-1">
                 <p className="text-[15px] font-bold leading-snug text-foreground">
                   {topic.title}
                 </p>
-                <span
-                  className={cn(
-                    "mt-1 inline-block text-[10px] font-medium tracking-wide text-muted-foreground/70",
-                  )}
-                >
-                  {t(`home.category.${topic.category}`)}
-                </span>
               </div>
               <ArrowRight className="h-4 w-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5 group-hover:text-primary" />
             </button>
