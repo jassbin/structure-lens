@@ -45,13 +45,13 @@ export function HeroBackdrop() {
             <stop offset="100%" stopColor="#0C5FFD" stopOpacity="0" />
           </linearGradient>
           <linearGradient id="hb-ring" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stopColor="#00E0FF" />
+            <stop offset="0%" stopColor="#2B7CFF" />
             <stop offset="55%" stopColor="#6B5CFF" />
             <stop offset="100%" stopColor="#0C5FFD" />
           </linearGradient>
           <linearGradient id="hb-line" x1="0" y1="0" x2="1" y2="0">
-            <stop offset="0%" stopColor="#00E0FF" stopOpacity="0.7" />
-            <stop offset="100%" stopColor="#6B5CFF" stopOpacity="0.1" />
+            <stop offset="0%" stopColor="#2B7CFF" stopOpacity="0.8" />
+            <stop offset="100%" stopColor="#6B5CFF" stopOpacity="0.12" />
           </linearGradient>
           <radialGradient id="hb-core" cx="50%" cy="50%" r="50%">
             <stop offset="0%" stopColor="#9DE7FF" />
@@ -67,7 +67,7 @@ export function HeroBackdrop() {
         </defs>
 
         {/* 透视网格：科幻地平线 */}
-        <g stroke="url(#hb-grid)" strokeWidth="0.8" opacity="0.5">
+        <g stroke="url(#hb-grid)" strokeWidth="0.8" opacity="0.35">
           <line x1="0" y1="150" x2="390" y2="150" />
           <line x1="0" y1="120" x2="390" y2="120" />
           <line x1="0" y1="96" x2="390" y2="96" />
@@ -85,8 +85,8 @@ export function HeroBackdrop() {
             <circle cx="308" cy="78" r="46" strokeWidth="1.3" opacity="0.7" />
             <circle cx="308" cy="78" r="26" strokeWidth="1.4" opacity="0.9" />
           </g>
-          <line x1="308" y1="2" x2="308" y2="154" stroke="#00E0FF" strokeWidth="0.6" opacity="0.4" />
-          <line x1="230" y1="78" x2="386" y2="78" stroke="#00E0FF" strokeWidth="0.6" opacity="0.4" />
+          <line x1="308" y1="2" x2="308" y2="154" stroke="#2B7CFF" strokeWidth="0.6" opacity="0.45" />
+          <line x1="230" y1="78" x2="386" y2="78" stroke="#2B7CFF" strokeWidth="0.6" opacity="0.45" />
           <circle cx="308" cy="78" r="7" fill="url(#hb-core)" />
         </g>
 
@@ -96,10 +96,10 @@ export function HeroBackdrop() {
           <line x1="118" y1="112" x2="196" y2="80" stroke="url(#hb-line)" strokeWidth="1.2" />
           <line x1="118" y1="112" x2="150" y2="186" stroke="url(#hb-line)" strokeWidth="1.2" />
           <line x1="196" y1="80" x2="252" y2="132" stroke="url(#hb-line)" strokeWidth="1.2" />
-          <circle cx="40" cy="70" r="3.4" fill="#00E0FF" />
+          <circle cx="40" cy="70" r="3.4" fill="#2B7CFF" />
           <circle cx="118" cy="112" r="4.6" fill="#6B5CFF" />
           <circle cx="196" cy="80" r="3.4" fill="#FFB020" />
-          <circle cx="150" cy="186" r="3" fill="#00E0FF" />
+          <circle cx="150" cy="186" r="3" fill="#2B7CFF" />
           <circle cx="252" cy="132" r="3" fill="#6B5CFF" />
         </g>
 
