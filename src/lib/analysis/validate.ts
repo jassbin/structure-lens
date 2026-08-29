@@ -217,12 +217,19 @@ function normalizeSkeletonCard(
   const root = ROOTS.includes(sk.root as RootStructure)
     ? (sk.root as RootStructure)
     : "extraction";
+  const alt = str(sk.altStructure);
   return {
     name: str(sk.name, fallbackName),
-    root,
+    perceivedAs: str(sk.perceivedAs, "—"),
+    actualStructure: str(sk.actualStructure, str(sk.name, "—")),
+    whySo: str(sk.whySo, "—"),
     subject: str(sk.subject, "—"),
+    object: str(sk.object, "—"),
     mechanism: str(sk.mechanism, "—"),
     extracted: str(sk.extracted, "—"),
+    interestFlow: strArray(sk.interestFlow),
+    root,
+    ...(alt ? { altStructure: alt } : {}),
     confidence: clampConf(sk.confidence),
   };
 }
