@@ -69,8 +69,7 @@ export function HomeScreen() {
   }
 
   /** 提交：先预检——够具体直接分析；太短先搜，搜到弹对齐卡、搜不到弹反问。 */
-  async function handleSubmit() {
-    const text = input.trim();
+  async function submitText(text: string) {
     if (busy) return;
     setBusy(true);
     setTriage(null);
@@ -106,6 +105,19 @@ export function HomeScreen() {
       }
       setBusy(false);
     }
+  }
+
+  function handleSubmit() {
+    void submitText(input.trim());
+  }
+
+  /** 用户在对齐卡确认：用（可能已编辑的）概要 + 来源直接分析 */
+  function confirmAlign() {
+    if (!align) return;
+    void runAnalysis(alignDraft.trim(), {
+      alignedSources: align.sources,
+      aligned: true,
+    });
   }
 
   return (
