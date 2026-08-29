@@ -65,7 +65,7 @@ export async function drill(payload: {
 /** 「我不同意」：从某步开始重算下游。免登录。 */
 export async function recompute(payload: {
   result: AnalysisResult;
-  fromStepKind: StepKind;
+  fromStepKind: StepKind | "skeleton-card";
   disagreement: string;
 }): Promise<{ result: AnalysisResult; changeNote: string; persisted: boolean }> {
   const res = await request("/api/recompute", {
