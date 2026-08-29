@@ -9,6 +9,7 @@ import { auth } from "@eazo/sdk";
 import { useEazo } from "@eazo/sdk/react";
 import { Network, CheckCircle2, CircleDashed, CloudUpload, Loader2, ChevronRight } from "lucide-react";
 import { RootBadge } from "@/components/shared/root-badge";
+import { WalkOverlay } from "@/components/shared/walk-overlay";
 import { ConfidenceBar } from "@/components/shared/confidence-bar";
 import { cn } from "@/utils/utils";
 import { getStructureMap, syncStructureMap, analyze } from "@/lib/api/analysis";
