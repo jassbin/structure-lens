@@ -142,7 +142,8 @@
     "overlay": {
       "obsolete": "No longer applicable",
       "addendum": "Added in this revision",
-      "rootChange": "Root reclassified"
+      "rootChange": "Root reclassified",
+      "triggeredBy": "Updated because you challenged 【{{step}}】"
     },
     "recomputeCta": "Recompute downstream",
     "recomputingDownstream": "Re-sequencing downstream steps…",
