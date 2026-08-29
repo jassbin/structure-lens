@@ -21,6 +21,10 @@
     "failed": "Failed to generate the share link, please retry",
     "copyFailed": "Copy failed, please copy manually"
   },
+  "isomorph": {
+    "title": "Same \"{{name}}\" skeleton again",
+    "body": "Your earlier dig into \"{{title}}\" runs on the same underlying structure — open it and see if it's the same playbook."
+  },
   "common": {
     "signIn": "Sign in",
     "signOut": "Sign out",
