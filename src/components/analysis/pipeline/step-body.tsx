@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslation } from "react-i18next";
-import { Target, TrendingUp } from "lucide-react";
+import { Target, TrendingUp, Zap } from "lucide-react";
 import { ConfidenceBar } from "@/components/shared/confidence-bar";
 import { DrillPoint } from "@/components/analysis/drill-point";
 import { GradeBadge } from "@/components/analysis/pipeline/grade-badge";
@@ -189,8 +189,8 @@ export function StepBody({
                     point={l.finding}
                   />
                   {l.breakthrough && (
-                    <p className="mt-1.5 flex items-start gap-1 rounded-md bg-secondary/10 px-2 py-1 text-[12px] font-semibold leading-snug text-secondary">
-                      <span aria-hidden>💥</span>
+                    <p className="mt-1.5 flex items-start gap-1.5 rounded-md bg-secondary/10 px-2 py-1 text-[12px] font-semibold leading-snug text-secondary">
+                      <Zap className="mt-0.5 h-3 w-3 shrink-0" aria-hidden />
                       <span>{l.breakthrough}</span>
                     </p>
                   )}
