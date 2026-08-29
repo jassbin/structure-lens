@@ -18,6 +18,7 @@ import { getAnalysis } from "@/lib/api/analysis";
 import { useWalk } from "@/lib/hooks/use-walk";
 import { WalkOverlay } from "@/components/shared/walk-overlay";
 import { ShareButton } from "@/components/share/share-button";
+import { IsomorphHint } from "@/components/analysis/isomorph-hint";
 import { STEP_LABELS, STANCE_LABELS } from "@/lib/analysis/types";
 import type { AnalysisResult } from "@/lib/analysis/types";
 
