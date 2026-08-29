@@ -146,7 +146,8 @@ export const STEP_ORDER: StepKind[] = [
 ];
 
 /**
- * 结构骨架卡：既揭示"真实运作/可复用结构"，又保留"主体-机制-被提取"的零件分解。
+ * 结构骨架卡：既揭示"真实运作/可复用结构"，又用"动态零件"说清这个结构本身怎么运作。
+ * 零件不写死——由 AI 根据具体结构决定列哪几个（提取型/委托型/权力型各不相同）。
  */
 export interface StructureSkeleton {
   name: string; // 可迁移、可复用的命名式结构名
@@ -154,12 +155,8 @@ export interface StructureSkeleton {
   perceivedAs: string; // 原本以为是（表面叙事）
   actualStructure: string; // 真实运作是（底层真实、可迁移复用的结构）
   whySo: string; // 为什么是这样（结构成立的根本原因）
-  /** 结构内部零件（说清这结构本身怎么运作） */
-  subject: string; // 主体
-  object: string; // 对象
-  mechanism: string; // 机制（结构本身如何运转）
-  extracted: string; // 提取/背离了什么
-  interestFlow: string[]; // 利益流向，每条一行
+  /** 结构内部动态零件：由结构本身决定的 2-5 个关键零件（名称+内容） */
+  parts: { label: string; value: string }[];
   /** 主判定 + 开放位 */
   root: RootStructure; // 主流根结构判定
   altStructure?: string; // 或许更准的结构（三分类都不够贴时）
