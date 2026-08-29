@@ -24,6 +24,16 @@ import {
 import { AppAIClientUnavailableError } from "@/lib/api/app-ai-request";
 import type { StructureNode } from "@/lib/analysis/types";
 
+/** 从本地全部分析构建「事件标题 → 分析 id」索引 */
+function buildIndex(): Record<string, string> {
+  const map: Record<string, string> = {};
+  for (const a of getAllLocalAnalyses()) {
+    const title = a.verdict || a.input;
+    if (title) map[title] = a.id;
+  }
+  return map;
+}
+
 export function MapScreen() {
   const { t } = useTranslation();
   const router = useRouter();
@@ -36,20 +46,11 @@ export function MapScreen() {
   // 正在当场分析的游走事件标题（点击库里没有的事件时，跑完整 8 步再跳转）
   const [analyzingEvent, setAnalyzingEvent] = useState<string | null>(null);
   // 事件标题 → 分析 id，用于把地图节点里的历史事件做成可点击入口（复用现有分析，不新增数据）
-  const [titleToId, setTitleToId] = useState<Record<string, string>>({});
+  const [titleToId, setTitleToId] = useState<Record<string, string>>(buildIndex);
 
   function rebuildIndex() {
-    const map: Record<string, string> = {};
-    for (const a of getAllLocalAnalyses()) {
-      const title = a.verdict || a.input;
-      if (title) map[title] = a.id;
-    }
-    setTitleToId(map);
+    setTitleToId(buildIndex());
   }
-
-  useEffect(() => {
-    rebuildIndex();
-  }, []);
 
   useEffect(() => {
     if (!user) return;
