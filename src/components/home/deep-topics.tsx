@@ -40,21 +40,14 @@ export function DeepTopics({
   onPick: (prompt: string) => void;
 }) {
   const { t } = useTranslation();
-  // 首帧用稳定的前 N 条（保证 SSR/CSR 一致、无 hydration 报错）；
-  // mount 后置 mounted=true，切换为随机洗牌结果，做到每次打开都新鲜。
-  const [mounted, setMounted] = useState(false);
-  const shuffled = useMemo(() => shuffle(DEEP_TOPICS).slice(0, VISIBLE_COUNT), []);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  const topics = mounted ? shuffled : DEEP_TOPICS.slice(0, VISIBLE_COUNT);
+  // 方案 A：每次挂载随机洗牌，做到每次打开都新鲜。
+  // 顺序在 SSR 与 CSR 间会不同，属刻意行为，用 suppressHydrationWarning 抑制水合告警。
+  const topics = useMemo(() => shuffle(DEEP_TOPICS).slice(0, VISIBLE_COUNT), []);
 
   return (
     <div className="flex flex-col gap-3" data-el="deep-topics">
       <p className="text-sm font-bold text-muted-foreground">{t("home.topicsTitle")}</p>
-      <div className="grid grid-cols-1 gap-2.5">
+      <div className="grid grid-cols-1 gap-2.5" suppressHydrationWarning>
         {topics.map((topic) => {
           const Icon = CATEGORY_ICON[topic.category];
           return (
