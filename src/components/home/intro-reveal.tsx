@@ -44,7 +44,8 @@ export function IntroReveal() {
       /* ignore */
     }
     if (seen || reduce) return;
-    setShow(true);
+    // rAF 推迟 setState 到 effect 外，避免 set-state-in-effect 级联渲染告警
+    const raf = requestAnimationFrame(() => setShow(true));
     try {
       sessionStorage.setItem(SEEN_KEY, "1");
     } catch {
@@ -52,6 +53,7 @@ export function IntroReveal() {
     }
     timer.current = setTimeout(() => setShow(false), 2600);
     return () => {
+      cancelAnimationFrame(raf);
       if (timer.current) clearTimeout(timer.current);
     };
   }, [reduce]);
