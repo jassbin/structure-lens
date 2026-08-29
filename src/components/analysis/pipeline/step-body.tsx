@@ -173,7 +173,7 @@ export function StepBody({
               aria-hidden
             />
             {m.layers.map((l, i) => (
-              <li key={i} className="relative" style={{ marginLeft: i * 8 }}>
+              <li key={i} className="relative min-w-0" style={{ marginLeft: Math.min(i, 3) * 8 }}>
                 <span className="absolute -left-4 top-1.5 flex h-3.5 w-3.5 items-center justify-center rounded-full border border-primary/60 bg-background text-[9px] font-black text-primary">
                   {i + 1}
                 </span>
