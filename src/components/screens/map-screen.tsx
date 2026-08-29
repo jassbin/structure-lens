@@ -47,6 +47,7 @@ export function MapScreen() {
   const [syncing, setSyncing] = useState(false);
   // 正在当场分析的游走事件标题（点击库里没有的事件时，跑完整 8 步再跳转）
   const [analyzingEvent, setAnalyzingEvent] = useState<string | null>(null);
+  const [view, setView] = useState<"list" | "cluster">("list");
   // 事件标题 → 分析 id，用于把地图节点里的历史事件做成可点击入口（复用现有分析，不新增数据）
   const [titleToId, setTitleToId] = useState<Record<string, string>>(buildIndex);
 
