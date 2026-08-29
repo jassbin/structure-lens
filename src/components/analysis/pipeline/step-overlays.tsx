@@ -24,7 +24,7 @@ export function StepOverlays({ overlays }: { overlays?: StepOverlay[] }) {
             <p className="mb-1 flex items-center gap-1.5 text-[11px] font-bold text-secondary">
               <GitBranch className="h-3 w-3 shrink-0" aria-hidden />
               {t("pipeline.overlay.triggeredBy", {
-                step: STEP_LABELS[ov.triggeredBy].zh,
+                step: stepName(ov.triggeredBy),
               })}
             </p>
           )}
