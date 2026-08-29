@@ -164,8 +164,9 @@ export function ReportScreen({ id }: { id: string }) {
       <div className="flex flex-col gap-3" data-el="walk-hooks">
         <div className="flex items-center gap-2">
           <Compass className="h-4 w-4 text-primary" aria-hidden />
-          <span className="font-heading text-sm font-extrabold text-foreground">
+          <span className="flex items-center gap-1.5 font-heading text-sm font-extrabold text-foreground">
             {t("analysis.walk.title")}
+            <InfoTip content={t("analysis.walk.tip")} />
           </span>
         </div>
         <p className="text-xs text-muted-foreground">{t("analysis.walk.intro")}</p>
