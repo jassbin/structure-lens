@@ -212,6 +212,25 @@ export function StepBody({
             </p>
           </div>
 
+          {m.sideAnomalies && m.sideAnomalies.length > 0 && (
+            <div className="rounded-lg border border-dashed border-accent/50 bg-accent/[0.06] px-3 py-2">
+              <p className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wide text-muted-foreground">
+                <GitBranch className="h-3.5 w-3.5 text-accent" aria-hidden />
+                {t("pipeline.mechanism.sideAnomalies")}
+              </p>
+              <ul className="mt-1.5 space-y-1.5">
+                {m.sideAnomalies.map((s, i) => (
+                  <li key={i} className="text-[13px] leading-relaxed">
+                    <span className="font-semibold text-foreground">{s.anomaly}</span>
+                    {s.whyDig && (
+                      <span className="text-muted-foreground">　—　{s.whyDig}</span>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
           {m.interestFlow.length > 0 && (
             <div className="rounded-lg bg-muted/60 px-3 py-2">
               <p className="text-[11px] font-bold uppercase tracking-wide text-muted-foreground">
