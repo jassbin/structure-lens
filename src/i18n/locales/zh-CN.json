@@ -196,8 +196,11 @@
     "intro": "你挖过的事件在这里沉淀成结构。多次同构碰撞后，假设会被点亮为验证过的结构。",
     "empty": "还没有结构。去挖一个事件，结构会自动沉淀到这里。",
     "goAnalyze": "去挖一个",
-    "syncCloud": "同步到云端",
-    "loginToSync": "登录后把结构地图存到云端",
+    "syncCloud": "同步（云端 ⇄ 本地，缺的都补齐）",
+    "loginToSync": "登录后与云端双向同步，跨设备不丢",
+    "synced": "已同步：云端与本地合并为 {{count}} 条（新增上云 {{pushed}} 条）",
+    "syncFailed": "同步失败，请稍后重试",
+    "localCount": "本地已有 {{count}} 条分析",
     "state": {
       "hypothesis": "假设",
       "verified": "已点亮"
