@@ -3,6 +3,7 @@
 import { request } from "@/lib/api/request";
 import type {
   AnalysisResult,
+  SearchSource,
   StepKind,
   StructureNode,
   TriageResult,
@@ -12,12 +13,31 @@ export type AnalyzeResponse =
   | { status: "diggable"; result: AnalysisResult; persisted?: boolean }
   | { status: "too_shallow" | "not_applicable"; triage: TriageResult };
 
-/** 提交事件做深度分析。服务端会对“具体事件”后台静默联网搜索（搜到才用）。免登录。 */
-export async function analyze(input: string): Promise<AnalyzeResponse> {
-  const res = await request("/api/analyze", {
+export type PrecheckResponse =
+  | { status: "diggable" }
+  | { status: "align"; input: string; summary: string; sources: SearchSource[] }
+  | { status: "too_shallow" | "not_applicable"; triage: TriageResult };
+
+/** 分诊预检：够具体直接放行；太短先静默搜——搜到走对齐、搜不到走反问。免登录。 */
+export async function precheck(input: string): Promise<PrecheckResponse> {
+  const res = await request("/api/precheck", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ input }),
+  });
+  if (!res.ok) throw new Error(`precheck failed: ${res.status}`);
+  return (await res.json()) as PrecheckResponse;
+}
+
+/** 提交事件做深度分析。可带对齐后的来源（跳过分诊与重复搜索）。免登录。 */
+export async function analyze(
+  input: string,
+  opts?: { alignedSources?: SearchSource[]; aligned?: boolean },
+): Promise<AnalyzeResponse> {
+  const res = await request("/api/analyze", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ input, ...opts }),
   });
   if (!res.ok) throw new Error(`analyze failed: ${res.status}`);
   return (await res.json()) as AnalyzeResponse;
