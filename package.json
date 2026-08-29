@@ -50,6 +50,7 @@
     "eslint": "^9",
     "eslint-config-next": "16.2.4",
     "happy-dom": "^20.11.1",
+    "pptxgenjs": "^4.0.1",
     "puppeteer": "^25.9.0",
     "tailwindcss": "^4",
     "typescript": "^5"
