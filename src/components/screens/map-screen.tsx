@@ -105,7 +105,7 @@ export function MapScreen() {
                 : t("map.loginToSync", "登录后把结构地图存到云端")}
             </p>
             <p className="mt-0.5 text-xs text-muted-foreground">
-              {t("map.localCount", `本地已有 ${localCount} 条分析`)}
+              {t("map.localCount", { count: localCount })}
             </p>
           </div>
           {syncing ? (
