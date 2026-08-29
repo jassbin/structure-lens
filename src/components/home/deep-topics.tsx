@@ -1,11 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { ArrowRight, Landmark, Briefcase, ScrollText } from "lucide-react";
 import { cn } from "@/utils/utils";
 import { DEEP_TOPICS } from "@/lib/analysis/topics";
-import type { DeepTopic } from "@/lib/analysis/types";
 
 const CATEGORY_ICON = {
   policy: Landmark,
@@ -42,14 +41,15 @@ export function DeepTopics({
 }) {
   const { t } = useTranslation();
   // 首帧用稳定的前 N 条（保证 SSR/CSR 一致、无 hydration 报错）；
-  // mount 后在客户端随机洗牌替换，做到每次打开都新鲜。
-  const [topics, setTopics] = useState<DeepTopic[]>(() =>
-    DEEP_TOPICS.slice(0, VISIBLE_COUNT),
-  );
+  // mount 后置 mounted=true，切换为随机洗牌结果，做到每次打开都新鲜。
+  const [mounted, setMounted] = useState(false);
+  const shuffled = useMemo(() => shuffle(DEEP_TOPICS).slice(0, VISIBLE_COUNT), []);
 
   useEffect(() => {
-    setTopics(shuffle(DEEP_TOPICS).slice(0, VISIBLE_COUNT));
+    setMounted(true);
   }, []);
+
+  const topics = mounted ? shuffled : DEEP_TOPICS.slice(0, VISIBLE_COUNT);
 
   return (
     <div className="flex flex-col gap-3" data-el="deep-topics">
