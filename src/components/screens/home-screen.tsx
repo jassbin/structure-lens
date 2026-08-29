@@ -127,12 +127,8 @@ export function HomeScreen() {
         <HeroBackdrop />
 
         <div className="relative z-10 mx-auto flex w-full max-w-md flex-col gap-6 px-4 py-6">
-          <div className="pt-2 text-center" data-el="home-hero">
-            <span className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card px-3 py-1 text-xs font-semibold text-muted-foreground">
-              <Sparkles className="h-3.5 w-3.5 text-accent" aria-hidden />
-              {t("home.brand")}
-            </span>
-            <h1 className="mt-3 font-heading text-2xl font-black leading-snug tracking-tight text-foreground">
+          <div className="pt-4 text-center" data-el="home-hero">
+            <h1 className="font-heading text-2xl font-black leading-snug tracking-tight text-foreground">
               {t("home.tagline")}
             </h1>
           </div>
