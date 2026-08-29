@@ -123,26 +123,7 @@ export function HomeScreen() {
   return (
     <AppShell tab={<BottomTabs />}>
       <div className="relative">
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-x-0 top-0 z-0 h-80 overflow-hidden"
-        >
-          <div
-            className="absolute inset-0"
-            style={{
-              background:
-                "linear-gradient(180deg, rgba(12,95,253,0.28) 0%, rgba(12,95,253,0.12) 40%, rgba(255,248,236,0) 100%)",
-            }}
-          />
-          <div
-            className="absolute -left-12 -top-8 h-48 w-48 rounded-full opacity-90 blur-3xl"
-            style={{ background: "rgba(12,95,253,0.35)" }}
-          />
-          <div
-            className="absolute -right-8 top-4 h-36 w-36 rounded-full opacity-80 blur-3xl"
-            style={{ background: "rgba(0,72,240,0.30)" }}
-          />
-        </div>
+        <HeroBackdrop />
 
         <div className="relative z-10 mx-auto flex w-full max-w-md flex-col gap-6 px-4 py-6">
           <div className="pt-2 text-center" data-el="home-hero">
