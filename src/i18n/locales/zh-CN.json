@@ -6,6 +6,21 @@
     "analyzeHint": "正在跑完整 8 步穿透，通常需要几秒",
     "analyzeLocked": "已锁定「{{title}}」，正在跑完整 8 步穿透"
   },
+  "share": {
+    "brand": "结构透镜",
+    "generate": "生成分享卡",
+    "copy": "复制",
+    "copied": "已复制",
+    "perceivedAs": "表面以为",
+    "actual": "底层其实",
+    "whySo": "为何成立",
+    "disclaimer": "这是基于个人视角与 AI 推演的结构解读，仅供参考，非事实定论。",
+    "privacyNote": "只读链接，仅包含这一条的骨架卡，不会暴露你的其他分析或结构地图。",
+    "notFound": "分享不存在或已失效",
+    "tryYours": "拿你的事件也照一副骨架",
+    "failed": "生成分享链接失败，请重试",
+    "copyFailed": "复制失败，请手动复制"
+  },
   "common": {
     "signIn": "登录",
     "signOut": "退出登录",
