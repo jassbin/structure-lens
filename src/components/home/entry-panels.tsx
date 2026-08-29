@@ -85,7 +85,6 @@ export type { TriageResult };
 
 /** 事实对齐卡：搜到资料后，先给中性概要+来源让用户确认/纠正，再进入分析 */
 export function AlignCard({
-  summary,
   sources,
   edited,
   onEdit,
@@ -93,7 +92,6 @@ export function AlignCard({
   onReject,
   busy,
 }: {
-  summary: string;
   sources: { title: string; url: string }[];
   edited: string;
   onEdit: (v: string) => void;

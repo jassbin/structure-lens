@@ -188,7 +188,6 @@ export function HomeScreen() {
 
           {align && (
             <AlignCard
-              summary={align.summary}
               sources={align.sources}
               edited={alignDraft}
               onEdit={setAlignDraft}
