@@ -1,6 +1,5 @@
 import { AppShell } from "@/components/shared/app-shell";
 import { BottomTabs } from "@/components/shared/bottom-tabs";
-import { AuthGate } from "@/components/shared/auth-gate";
 import { ReportScreen } from "@/components/screens/report-screen";
 
 export default async function AnalysisPage({
