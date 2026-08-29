@@ -4,6 +4,7 @@ import { request } from "@/lib/api/request";
 import type {
   AnalysisResult,
   SearchSource,
+  StructureSkeleton,
   StepKind,
   StructureNode,
   TriageResult,
