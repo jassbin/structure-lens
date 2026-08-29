@@ -58,7 +58,14 @@
     "probeAnswerPlaceholder": "补充一下具体的人、事、异常点…",
     "probeContinue": "养好了，开始挖",
     "notApplicableTitle": "这件事可能不适合结构分析",
-    "notApplicableBack": "换一个事件"
+    "notApplicableBack": "换一个事件",
+    "align": {
+      "title": "先对齐一下事实",
+      "intro": "你给的关键词有点短，我先联网查了下——这是我理解到的事件。确认或纠正后再开始穿透（你可以直接编辑下面这段）。",
+      "sources": "参考来源",
+      "confirm": "没错，开始穿透",
+      "reject": "都不对，我自己补充"
+    }
   },
   "analysis": {
     "verdictLabel": "核心暴击",
