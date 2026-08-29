@@ -110,6 +110,8 @@ export function ReportScreen({ id }: { id: string }) {
 
       <SkeletonCard result={result} onResult={handleResult} />
 
+      <ShareButton result={result} />
+
       {revisions.length > 0 && (
         <div
           className="rounded-2xl border border-border bg-card p-4"
