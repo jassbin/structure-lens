@@ -240,6 +240,15 @@
       "delegation": "Delegation",
       "power": "Power balance"
     },
+    "view": {
+      "list": "List",
+      "cluster": "Clusters"
+    },
+    "cluster": {
+      "badge": "Pattern clusters",
+      "headline": "You dug {{events}} events — they run on just {{kinds}} underlying patterns",
+      "count": "{{nodes}} skeletons · {{events}} events"
+    },
     "syncCloud": "Sync (cloud ⇄ local, fill in whatever's missing)",
     "loginToSync": "Sign in to two-way sync with the cloud, safe across devices",
     "synced": "Synced: cloud and local merged to {{count}} ({{pushed}} newly uploaded)",
