@@ -294,3 +294,11 @@ export const STANCE_LABELS: Record<DebateStance, { zh: string; en: string }> = {
   compromise: { zh: "折中处理", en: "Compromised" },
   hold: { zh: "保持不变", en: "Held" },
 };
+
+export const BEDROCK_LABELS: Record<BedrockKind, { zh: string; en: string }> = {
+  human_nature: { zh: "人性", en: "Human nature" },
+  incentive: { zh: "激励", en: "Incentive" },
+  power: { zh: "权力", en: "Power" },
+  information: { zh: "信息不对称", en: "Information asymmetry" },
+  scarcity: { zh: "稀缺分配", en: "Scarcity allocation" },
+};
