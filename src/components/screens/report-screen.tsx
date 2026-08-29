@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import { ArrowLeft, Compass, ArrowRight, Check, History } from "lucide-react";
 import { PipelineTimeline } from "@/components/analysis/pipeline/pipeline-timeline";
 import { SkeletonCard } from "@/components/analysis/skeleton-card";
+import { InfoTip } from "@/components/shared/info-tip";
 import { getCachedAnalysis, cacheAnalysis } from "@/lib/analysis/store";
 import {
   getLocalAnalysis,
