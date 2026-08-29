@@ -252,12 +252,21 @@ export function MapScreen() {
                         );
                       }
                       return (
-                        <span
+                        <button
                           key={ev}
-                          className="rounded-full border border-border bg-card px-2.5 py-0.5 text-xs font-medium text-foreground"
+                          type="button"
+                          disabled={analyzingEvent !== null}
+                          onClick={() => analyzeEvent(ev)}
+                          data-el="map-event-analyze"
+                          className="inline-flex items-center gap-1 rounded-full border border-dashed border-border bg-card px-2.5 py-0.5 text-xs font-medium text-foreground transition-colors hover:border-primary/40 hover:text-primary disabled:opacity-60"
                         >
                           {ev}
-                        </span>
+                          {analyzingEvent === ev ? (
+                            <Loader2 className="h-3 w-3 shrink-0 animate-spin" aria-hidden />
+                          ) : (
+                            <ChevronRight className="h-3 w-3 shrink-0 opacity-50" aria-hidden />
+                          )}
+                        </button>
                       );
                     })}
                   </div>
