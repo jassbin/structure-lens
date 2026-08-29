@@ -12,42 +12,57 @@ import { applyRecompute } from "@/lib/analysis/validate";
 import { STEP_ORDER, STEP_LABELS } from "@/lib/analysis/types";
 import type { AnalysisResult, StepKind } from "@/lib/analysis/types";
 
+type Target = StepKind | "skeleton-card";
+
 /**
  * POST /api/recompute { result, fromStepKind, disagreement }
- * 用户对某一步「我不同意」→ 从该步开始重算它及所有下游步骤。
- * 上游步骤作为上下文喂给模型；免登录也可用（前端本地保存新版本）。
+ * 用户对某一节「我不同意」→ AI 先表态(吸收/折中/保持)+理由，仅吸收/折中才动下游。
+ * fromStepKind 可为某个 StepKind，或 "skeleton-card"（反驳结构骨架卡）。免登录。
  */
 export async function POST(request: NextRequest) {
   const user = getOptionalUser(request);
 
   const body = (await request.json().catch(() => ({}))) as {
     result?: AnalysisResult;
-    fromStepKind?: StepKind;
+    fromStepKind?: Target;
     disagreement?: string;
   };
   const base = body.result;
   const fromStepKind = body.fromStepKind;
   const disagreement = (body.disagreement ?? "").trim();
 
-  if (!base || !fromStepKind || !STEP_ORDER.includes(fromStepKind)) {
+  const isSkeletonCard = fromStepKind === "skeleton-card";
+  const validTarget =
+    isSkeletonCard || (fromStepKind && STEP_ORDER.includes(fromStepKind as StepKind));
+  if (!base || !fromStepKind || !validTarget) {
     return NextResponse.json({ error: "参数不完整" }, { status: 400 });
   }
   if (!disagreement) {
     return NextResponse.json({ error: "请先写下你的反对意见" }, { status: 400 });
   }
 
-  const fromIdx = STEP_ORDER.indexOf(fromStepKind);
-  const upstream = base.steps.filter((s) => STEP_ORDER.indexOf(s.kind) < fromIdx);
-  const downstream = base.steps.filter((s) => STEP_ORDER.indexOf(s.kind) >= fromIdx);
+  const fromIdx = isSkeletonCard ? -1 : STEP_ORDER.indexOf(fromStepKind as StepKind);
+  const upstream = isSkeletonCard
+    ? []
+    : base.steps.filter((s) => STEP_ORDER.indexOf(s.kind) < fromIdx);
+  const downstream = isSkeletonCard
+    ? base.steps
+    : base.steps.filter((s) => STEP_ORDER.indexOf(s.kind) >= fromIdx);
 
-  const stepLabel = STEP_LABELS[fromStepKind]?.zh ?? fromStepKind;
+  const stepLabel = isSkeletonCard
+    ? "结构骨架卡"
+    : (STEP_LABELS[fromStepKind as StepKind]?.zh ?? String(fromStepKind));
+
+  const targetContent = isSkeletonCard
+    ? `\n【被反对的这一节：结构骨架卡（当前内容）】\n${serializeStepsForContext([base.skeleton])}`
+    : `\n【被反对的这一节及其下游（当前内容，供参考）】\n${serializeStepsForContext(downstream)}`;
 
   const userContent = [
     `原始输入：${base.input}`,
-    `\n【已确定的上游步骤（保持不变，作为约束）】\n${serializeStepsForContext(upstream)}`,
-    `\n【需要被重算的步骤及其下游（当前版本，供参考）】\n${serializeStepsForContext(downstream)}`,
-    `\n【用户对「${stepLabel}」这一步的反对意见】\n${disagreement}`,
-    `\n请从「${stepLabel}」开始重算这些步骤，输出约定的 JSON。`,
+    `\n【已确定的上游（保持不变，作为约束）】\n${serializeStepsForContext(upstream)}`,
+    targetContent,
+    `\n【用户对「${stepLabel}」这一节的反对意见】\n${disagreement}`,
+    `\n请先对「${stepLabel}」表态（absorb/compromise/hold）并给理由，再按约定输出 JSON。`,
   ].join("\n");
 
   let content: string;
