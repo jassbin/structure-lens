@@ -83,6 +83,6 @@ export function DrillPoint({
           {text[mode]}
         </p>
       )}
-    </li>
+    </div>
   );
 }
