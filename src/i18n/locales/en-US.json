@@ -202,6 +202,8 @@
       "extraction": "Extraction",
       "delegation": "Delegation",
       "power": "Power balance"
-    }
+    },
+    "syncCloud": "Sync to cloud",
+    "loginToSync": "Sign in to save your structure map to the cloud"
   }
 }
