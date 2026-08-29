@@ -376,13 +376,20 @@ export function applyRecompute(
   const o = obj(raw);
   const stance = normalizeStance(o.stance);
   const reason = str(o.reason, "（未给出理由）");
+  const answer = str(o.answer, "");
   const at = new Date().toISOString();
 
   const parts = base.version.split(".");
   const minor = (parseInt(parts[1] ?? "0", 10) || 0) + 1;
   const version = `${parts[0] ?? "1"}.${minor}`;
 
-  const turn: DebateTurn = { objection: disagreement, stance, reason, at };
+  const turn: DebateTurn = {
+    objection: disagreement,
+    stance,
+    reason,
+    ...(answer ? { answer } : {}),
+    at,
+  };
   const willEdit = stance !== "hold";
 
   // 下游增量覆盖层（仅 absorb/compromise）
