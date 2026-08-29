@@ -64,9 +64,25 @@ export function DisagreeThread({
                     {t(`pipeline.stance.${turn.stance}`, STANCE_LABELS[turn.stance].zh)}
                   </span>
                 </span>
-                <p className="mt-1 text-[13px] leading-relaxed text-foreground">
-                  {turn.reason}
-                </p>
+                {turn.answer ? (
+                  <>
+                    {/* 直接回答/解释——追问的答案在这里 */}
+                    <p className="mt-1.5 text-[13px] leading-relaxed text-foreground">
+                      {turn.answer}
+                    </p>
+                    {/* 裁定说明降级为小字附注 */}
+                    <p className="mt-1.5 border-t border-border/50 pt-1.5 text-[11px] leading-relaxed text-muted-foreground">
+                      <span className="font-semibold">
+                        {t("pipeline.verdictNote", "裁定说明")}：
+                      </span>
+                      {turn.reason}
+                    </p>
+                  </>
+                ) : (
+                  <p className="mt-1 text-[13px] leading-relaxed text-foreground">
+                    {turn.reason}
+                  </p>
+                )}
               </div>
             </li>
           ))}
