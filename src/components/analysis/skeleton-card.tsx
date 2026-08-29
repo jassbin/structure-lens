@@ -8,6 +8,7 @@ import { RootBadge } from "@/components/shared/root-badge";
 import { ConfidenceBar } from "@/components/shared/confidence-bar";
 import { InfoTip } from "@/components/shared/info-tip";
 import { DisagreeThread } from "@/components/analysis/pipeline/disagree-thread";
+import { StepOverlays } from "@/components/analysis/pipeline/step-overlays";
 import { recompute } from "@/lib/api/analysis";
 import { AppAIClientUnavailableError } from "@/lib/api/app-ai-request";
 import { STANCE_LABELS } from "@/lib/analysis/types";
@@ -149,6 +150,9 @@ export function SkeletonCard({
         value={sk.confidence}
         label={t("analysis.confidence")}
       />
+
+      {/* 骨架被讨论推动的动态优化：增量不覆盖，保留原骨架，追加"本次调整"记录 */}
+      <StepOverlays overlays={sk.overlays} />
 
       <DisagreeThread
         debate={sk.debate}
