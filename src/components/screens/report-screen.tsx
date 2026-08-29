@@ -51,7 +51,9 @@ export function ReportScreen({ id }: { id: string }) {
     if (digging) return;
     setDigging(true);
     try {
-      const res = await analyze(title);
+      // aligned:true —— 游走钩子是明确推荐的同构事件，点击即要分析，
+      // 跳过"太模糊"分诊拦截（仍会照常联网对齐事实），直接跑完整分析
+      const res = await analyze(title, { aligned: true });
       if (res.status === "diggable") {
         cacheAnalysis(res.result);
         saveLocalAnalysis(res.result);
