@@ -1,4 +1,11 @@
 {
+  "walk": {
+    "focusing": "Locking onto the hottest isomorphic event",
+    "analyzing": "Piercing into this event",
+    "focusHint": "Filtering the hottest, most typical real event in this structural direction — hang on, don't close the page",
+    "analyzeHint": "Running the full 8-step pierce, usually takes a few seconds",
+    "analyzeLocked": "Locked onto \"{{title}}\" — running the full 8-step pierce"
+  },
   "common": {
     "signIn": "Sign in",
     "signOut": "Sign out",
