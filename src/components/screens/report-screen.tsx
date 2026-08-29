@@ -48,28 +48,9 @@ export function ReportScreen({ id }: { id: string }) {
     mergeLocalStructure(next.skeleton, next.verdict);
   }
 
-  async function digHook(title: string) {
-    if (digging) return;
-    setDigging(true);
-    try {
-      // aligned:true —— 游走钩子是明确推荐的同构事件，点击即要分析，
-      // 跳过"太模糊"分诊拦截（仍会照常联网对齐事实），直接跑完整分析
-      const res = await analyze(title, { aligned: true });
-      if (res.status === "diggable") {
-        cacheAnalysis(res.result);
-        saveLocalAnalysis(res.result);
-        if (!res.persisted) mergeLocalStructure(res.result.skeleton, res.result.verdict);
-        router.push(`/analysis/${res.result.id}`);
-      } else {
-        toast.message(res.triage.suggestion ?? t("home.tooShallow", "这个方向还需要更具体一些"));
-        setDigging(false);
-      }
-    } catch (error) {
-      if (!(error instanceof AppAIClientUnavailableError)) {
-        toast.error(t("home.failed", "分析失败，请稍后重试"));
-      }
-      setDigging(false);
-    }
+  async function digHook(title: string, reason?: string) {
+    // 走统一游走编排：先联网锁定最火/最典型的具体事件，再跑完整分析，全程遮罩
+    await walk(title, reason);
   }
 
   if (result === undefined) {
