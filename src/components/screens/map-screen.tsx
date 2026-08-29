@@ -99,6 +99,31 @@ export function MapScreen() {
     }
   }
 
+  /** 点击库里没有的游走事件：当场把它当新输入跑完整 8 步，生成报告后跳转 */
+  async function analyzeEvent(title: string) {
+    if (analyzingEvent) return;
+    setAnalyzingEvent(title);
+    try {
+      const res = await analyze(title);
+      if (res.status === "diggable") {
+        cacheAnalysis(res.result);
+        saveLocalAnalysis(res.result);
+        if (!res.persisted) mergeLocalStructure(res.result.skeleton, res.result.verdict);
+        router.push(`/analysis/${res.result.id}`);
+      } else {
+        toast.message(
+          res.triage.suggestion ?? t("home.tooShallow", "这个方向还需要更具体一些"),
+        );
+        setAnalyzingEvent(null);
+      }
+    } catch (error) {
+      if (!(error instanceof AppAIClientUnavailableError)) {
+        toast.error(t("home.failed", "分析失败，请稍后重试"));
+      }
+      setAnalyzingEvent(null);
+    }
+  }
+
   const showSync = localCount > 0 || Boolean(user);
 
   return (
