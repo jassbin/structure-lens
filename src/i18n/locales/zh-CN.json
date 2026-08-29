@@ -142,7 +142,8 @@
     "overlay": {
       "obsolete": "原内容不再适用",
       "addendum": "本次调整补充",
-      "rootChange": "根结构改判"
+      "rootChange": "根结构改判",
+      "triggeredBy": "因你对【{{step}}】的反驳，本结论随之更新"
     },
     "recomputeCta": "重算下游",
     "recomputingDownstream": "正在重排下游步骤…",
