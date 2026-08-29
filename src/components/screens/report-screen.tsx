@@ -58,12 +58,12 @@ export function ReportScreen({ id }: { id: string }) {
         if (!res.persisted) mergeLocalStructure(res.result.skeleton, res.result.verdict);
         router.push(`/analysis/${res.result.id}`);
       } else {
-        toast.message(res.triage.suggestion ?? "这个方向还需要更具体一些");
+        toast.message(res.triage.suggestion ?? t("home.tooShallow", "这个方向还需要更具体一些"));
         setDigging(false);
       }
     } catch (error) {
       if (!(error instanceof AppAIClientUnavailableError)) {
-        toast.error("分析失败，请稍后重试");
+        toast.error(t("home.failed", "分析失败，请稍后重试"));
       }
       setDigging(false);
     }
