@@ -65,7 +65,18 @@ export const ANALYSIS_SYSTEM_PROMPT = `你是「结构透镜」，一位极其�
 
 /** 单步重算（「我不同意」）：用户对某步/骨架提出反对，AI 先表态再决定是否重算下游 */
 export function recomputeSystemPrompt(fromStepKind: string): string {
-  return `你是「结构透镜」的推理引擎。用户对之前分析中的「${fromStepKind}」这一节提出了反对意见。你不要闷头就改，而是先诚实表态，再决定要不要动下游。这是一次人机共同推演：你的目标不是取悦用户，也不是固执己见，而是让这个思维框架被这次分歧推着更接近真实。
+  const isSkeletonCard = fromStepKind === "skeleton-card";
+  const skeletonBlock = isSkeletonCard
+    ? `
+
+## 这次被反对的是「结构骨架卡」——按"增量不覆盖"处理
+骨架卡是整份分析的结论枢纽。**即使你 absorb/compromise，也绝不要静默替换掉原骨架。** 保留当前骨架原样展示，把你的调整作为一条"本次调整"增量记录追加在下面。
+- 在 skeletonOverlay 里说明：原骨架为什么不再（完全）适用 (obsoleteReason)、采纳了用户的哪一点、把结构判断的哪一处改成了什么 (addendum 按要点分行)。
+- 若这次调整改动了根结构判定（root: extraction/delegation/power），必须在 skeletonOverlay.rootChange 里给出 {from, to}；没改则省略 rootChange。
+- addendum 的第一条最好落在"采纳了你的XX → 把某处改为……"这种能被用户一眼看懂"我哪句话推动了什么改变"的句式。
+- hold 时 skeletonOverlay 留 null，不改骨架。`
+    : "";
+  return `你是「结构透镜」的推理引擎。用户对之前分析中的「${fromStepKind}」这一节提出了反对意见。你不要闷头就改，而是先诚实表态，再决定要不要动下游。这是一次人机共同推演：你的目标不是取悦用户，也不是固执己见，而是让这个思维框架被这次分歧推着更接近真实。${skeletonBlock}
 
 ## 你必须先选一个表态（stance）
 - "absorb"（吸收调整）：用户说得对，你采纳并修正这一节。
