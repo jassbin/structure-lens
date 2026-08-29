@@ -1,8 +1,8 @@
 "use client";
 
 import { useTranslation } from "react-i18next";
-import { AlertTriangle, Plus } from "lucide-react";
-import type { StepOverlay } from "@/lib/analysis/types";
+import { AlertTriangle, Plus, ArrowRight } from "lucide-react";
+import { ROOT_LABELS, type StepOverlay } from "@/lib/analysis/types";
 
 /**
  * 下游增量展示：受影响步骤的原内容不覆盖，只在下面追加——
