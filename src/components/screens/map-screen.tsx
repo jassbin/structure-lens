@@ -10,8 +10,13 @@ import { Network, CheckCircle2, CircleDashed, CloudUpload, Loader2 } from "lucid
 import { RootBadge } from "@/components/shared/root-badge";
 import { ConfidenceBar } from "@/components/shared/confidence-bar";
 import { cn } from "@/utils/utils";
-import { getStructureMap, importLocalToCloud } from "@/lib/api/analysis";
-import { getLocalStructureMap, getAllLocalAnalyses } from "@/lib/analysis/local-map";
+import { getStructureMap, syncStructureMap } from "@/lib/api/analysis";
+import {
+  getLocalStructureMap,
+  getAllLocalAnalyses,
+  rebuildLocalMapFrom,
+  saveLocalAnalyses,
+} from "@/lib/analysis/local-map";
 import type { StructureNode } from "@/lib/analysis/types";
 
 export function MapScreen() {
@@ -20,16 +25,28 @@ export function MapScreen() {
   const [nodes, setNodes] = useState<StructureNode[] | null>(() =>
     getLocalStructureMap(),
   );
-  const [localCount] = useState(() => getAllLocalAnalyses().length);
+  const [localCount, setLocalCount] = useState(() => getAllLocalAnalyses().length);
   const [syncing, setSyncing] = useState(false);
 
   useEffect(() => {
     if (!user) return;
     let alive = true;
-    // 登录：读云端覆盖本地展示
-    getStructureMap()
-      .then((n) => alive && setNodes(n))
-      .catch(() => {});
+    // 登录后自动做一次双向同步：本地缺的从云端拉回、云端缺的推上去
+    (async () => {
+      try {
+        const local = getAllLocalAnalyses();
+        const { analyses } = await syncStructureMap(local);
+        if (!alive) return;
+        saveLocalAnalyses(analyses);
+        setNodes(rebuildLocalMapFrom(analyses));
+        setLocalCount(getAllLocalAnalyses().length);
+      } catch {
+        // 同步失败则退回云端只读展示，不影响本地已有数据
+        getStructureMap()
+          .then((n) => alive && setNodes(n))
+          .catch(() => {});
+      }
+    })();
     return () => {
       alive = false;
     };
@@ -42,10 +59,14 @@ export function MapScreen() {
     }
     setSyncing(true);
     try {
-      const n = await importLocalToCloud(getAllLocalAnalyses());
-      toast.success(t("map.synced", `已同步 ${n} 条到云端`));
-      const fresh = await getStructureMap();
-      setNodes(fresh);
+      const local = getAllLocalAnalyses();
+      const { pushed, analyses } = await syncStructureMap(local);
+      saveLocalAnalyses(analyses);
+      setNodes(rebuildLocalMapFrom(analyses));
+      setLocalCount(getAllLocalAnalyses().length);
+      toast.success(
+        t("map.synced", { count: analyses.length, pushed }),
+      );
     } catch {
       toast.error(t("map.syncFailed", "同步失败，请稍后重试"));
     } finally {
