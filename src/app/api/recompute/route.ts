@@ -69,7 +69,7 @@ export async function POST(request: NextRequest) {
   try {
     const completion = await appAi.chat({
       messages: [
-        { role: "system", content: recomputeSystemPrompt(stepLabel) },
+        { role: "system", content: recomputeSystemPrompt(fromStepKind, stepLabel) },
         { role: "user", content: userContent },
       ],
       ...(user ? { viewer_user_id: user.id } : {}),
