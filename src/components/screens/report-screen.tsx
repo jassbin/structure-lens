@@ -107,6 +107,8 @@ export function ReportScreen({ id }: { id: string }) {
         </p>
       </div>
 
+      <IsomorphHint result={result} />
+
       <PipelineTimeline result={result} onResult={handleResult} />
 
       <SkeletonCard result={result} onResult={handleResult} />
