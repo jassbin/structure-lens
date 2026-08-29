@@ -5,43 +5,57 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>照妖镜 · 摆摊速览</title>
 <style>
-  :root{ --cyan:#22d3ee; --bg:#05060a; }
+  :root{ --teal:#0d9488; --tealDeep:#0f766e; --ink:#0f172a; --sub:#475569; }
   *{ box-sizing:border-box; margin:0; padding:0; }
   html,body{ height:100%; }
   body{
     font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;
     background:
-      radial-gradient(1000px 600px at 30% 20%, rgba(34,211,238,.16), transparent 60%),
-      radial-gradient(900px 500px at 85% 90%, rgba(59,130,246,.14), transparent 60%),
-      var(--bg);
-    color:#fff; min-height:100vh;
+      radial-gradient(1100px 640px at 25% 15%, rgba(45,212,191,.35), transparent 60%),
+      radial-gradient(900px 520px at 88% 92%, rgba(125,211,252,.35), transparent 60%),
+      linear-gradient(135deg,#f0fdfa 0%,# effcff 55%,#f5f3ff 100%);
+    color:var(--ink); min-height:100vh;
     display:flex; align-items:center; justify-content:center; padding:5vh 6vw;
   }
-  .page{ width:100%; max-width:1120px; }
-  .brand{ font-size:clamp(48px,7vw,104px); font-weight:900; letter-spacing:-.02em; line-height:1; }
-  .en{ color:#9ca3af; font-size:clamp(16px,2vw,26px); font-weight:600; margin-left:.5rem; }
-  .slogan{ color:var(--cyan); font-size:clamp(22px,3.2vw,42px); font-weight:800; margin-top:1.2rem; line-height:1.4; }
-  .desc{ color:#cbd5e1; font-size:clamp(15px,1.8vw,22px); margin-top:1.4rem; max-width:640px; line-height:1.7; }
-  .row{ display:flex; gap:2.5rem; align-items:flex-end; margin-top:3rem; flex-wrap:wrap; }
+  .page{ width:100%; max-width:1120px; background:rgba(255,255,255,.55);
+    border:1px solid rgba(13,148,136,.18); border-radius:28px; padding:clamp(28px,4vw,56px);
+    box-shadow:0 24px 70px rgba(15,118,110,.15); backdrop-filter:blur(4px); }
+  .brand{ font-size:clamp(46px,7vw,100px); font-weight:900; letter-spacing:-.02em; line-height:1; color:var(--ink); }
+  .en{ color:#94a3b8; font-size:clamp(16px,2vw,26px); font-weight:700; margin-left:.5rem; }
+  .slogan{ color:var(--tealDeep); font-size:clamp(22px,3.2vw,42px); font-weight:800; margin-top:1.2rem; line-height:1.4; }
+  .desc{ color:var(--sub); font-size:clamp(15px,1.8vw,22px); margin-top:1.4rem; max-width:640px; line-height:1.7; }
+  .desc b{ color:var(--tealDeep); }
+  .row{ display:flex; gap:2.5rem; align-items:flex-end; margin-top:2.6rem; flex-wrap:wrap; }
   .col{ flex:1 1 380px; }
-  .pills span{ display:inline-block; border:1px solid rgba(34,211,238,.45); color:var(--cyan);
-    border-radius:999px; padding:.35rem 1rem; font-size:clamp(13px,1.5vw,18px); margin:.3rem .4rem .3rem 0; }
+  .pills span{ display:inline-block; border:1px solid rgba(13,148,136,.4); color:var(--tealDeep);
+    background:rgba(45,212,191,.12); border-radius:999px; padding:.4rem 1rem;
+    font-size:clamp(13px,1.5vw,18px); margin:.3rem .4rem .3rem 0; font-weight:600; }
   .qr{ text-align:center; flex:0 0 auto; }
-  .qr img{ width:clamp(180px,20vw,260px); height:auto; border-radius:18px; background:#fff; padding:14px; box-shadow:0 12px 40px rgba(34,211,238,.25); }
-  .qr .cta{ margin-top:1rem; font-size:clamp(16px,1.8vw,22px); font-weight:800; }
-  .qr .url{ color:#9ca3af; font-size:clamp(12px,1.3vw,15px); margin-top:.3rem; }
-  .core{ margin-top:.4rem; }
-  .core b{ color:var(--cyan); }
+  .qr img{ width:clamp(180px,20vw,260px); height:auto; border-radius:18px; background:#fff; padding:14px;
+    box-shadow:0 12px 40px rgba(13,148,136,.25); border:1px solid rgba(13,148,136,.15); }
+  .qr .cta{ margin-top:1rem; font-size:clamp(16px,1.8vw,22px); font-weight:800; color:var(--ink); }
+  .qr .url{ color:#64748b; font-size:clamp(12px,1.3vw,15px); margin-top:.3rem; }
+  .tools{ position:fixed; top:16px; right:16px; display:flex; gap:.6rem; }
+  .tools button{ font-family:inherit; font-weight:700; font-size:14px; cursor:pointer;
+    border:none; border-radius:999px; padding:.6rem 1.1rem; color:#fff; background:var(--teal);
+    box-shadow:0 6px 20px rgba(13,148,136,.3); }
+  .tools button.ghost{ background:#fff; color:var(--tealDeep); border:1px solid rgba(13,148,136,.35); }
+  @media print{ .tools{ display:none; } body{ padding:0; } .page{ box-shadow:none; border:none; } }
 </style>
 </head>
 <body>
-  <div class="page">
+  <div class="tools">
+    <button onclick="dl()">⬇︎ 下载为图片</button>
+    <button class="ghost" onclick="window.print()">🖨 打印 / PDF</button>
+  </div>
+
+  <div class="page" id="poster">
     <div class="brand">照妖镜<span class="en">Structure Lens</span></div>
     <div class="slogan">专治"表面一套、底下一套"</div>
     <div class="desc">
       把任意热点事件、政策或决策丢进来，AI 联网锁定真相，用一套固定的
-      <b class="core"><b>8 步深度穿透</b></b>层层剥开表面叙事，
-      还原背后的<b class="core">底层结构骨架</b>——谁在提取价值、谁被委托背锅、权力如何运作。
+      <b>8 步深度穿透</b>层层剥开表面叙事，
+      还原背后的<b>底层结构骨架</b>——谁在提取价值、谁被委托背锅、权力如何运作。
     </div>
 
     <div class="row">
@@ -52,11 +66,25 @@
         </div>
       </div>
       <div class="qr">
-        <img src="/qr-booth.png" alt="扫码体验照妖镜" />
+        <img src="/qr-booth.png" alt="扫码体验照妖镜" crossorigin="anonymous" />
         <div class="cta">📱 扫码，立即照一照</div>
         <div class="url">structure-lens-8c3bf836.eazo.dev</div>
       </div>
     </div>
   </div>
+
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<script>
+  async function dl(){
+    const el=document.getElementById('poster');
+    try{
+      const canvas=await html2canvas(el,{scale:2,backgroundColor:'#f0fdfa',useCORS:true});
+      const a=document.createElement('a');
+      a.download='照妖镜-摆摊速览.png';
+      a.href=canvas.toDataURL('image/png');
+      a.click();
+    }catch(e){ alert('下载失败，请改用「打印 / PDF」按钮导出。'); }
+  }
+</script>
 </body>
 </html>
