@@ -44,7 +44,7 @@ export const ANALYSIS_SYSTEM_PROMPT = `你是「结构透镜」，一位极其�
     {"kind":"materials","title":"材料与信源分级","materials":[{"fact":"...","grade":"strong|medium|weak|unverifiable","url":"可选"}],"note":"入料判断：核心事实是否充足、缺口在哪"},
     {"kind":"anomaly","title":"异常锁定","baseline":"预期基线：正常本该是什么","candidates":[{"id":"A","content":"...","leverage":5},{"id":"B","content":"...","leverage":4},{"id":"C","content":"...","leverage":3}],"selectedId":"A","reason":"选它做入口的理由"},
     {"kind":"skeleton","title":"中性骨架","skeleton":{"subject":"主体","object":"对象","mechanism":"机制","harmed":"受损方","benefited":"受益方","naming":"中性命名"}},
-    {"kind":"mechanism","title":"机制穿透","mechanism":{"surface":"表面","deep":"深层","bottom":"底层（可迁移的通用结构）","interestFlow":["消费者 ← 补贴","总部 ← 加盟商"],"renaming":"骨架重命名：一句可迁移的结构事实"}},
+    {"kind":"mechanism","title":"机制穿透","mechanism":{"anchorAnomaly":"顺着异常锁定选中的那个异常点（原文照应）","layers":[{"ask":"表层要追问什么","finding":"钻开看到的机制","breakthrough":"这一层的反直觉爆破点：颠覆了上一层的什么"},{"ask":"对上一层的 why 再追问","finding":"更深一层的机制","breakthrough":"更狠的反转落点"}],"bedrockKind":"human_nature | incentive | power | information | scarcity","bedrock":"触到基岩的一句话可迁移结构命题","interestFlow":["消费者 ← 补贴","总部 ← 加盟商"],"renaming":"骨架重命名：一句可迁移的结构事实"}},
     {"kind":"game","title":"博弈与类比","game":{"gameSummary":"博弈均衡推演","analogs":[{"title":"同构案例","isomorphism":"同构在哪"}],"variableParameter":"可变结构参数（胜负手）"}},
     {"kind":"scenario","title":"情景分支","variables":["关键变量1","关键变量2"],"branches":[{"label":"分支A","narrative":"...","probability":40,"warningSignals":"预警信号"}]},
     {"kind":"judgment","title":"核心判断","judgments":[{"claim":"判断1","confidence":70,"falsifiable":"若出现XX则本判断被证伪、需修订"}]},
