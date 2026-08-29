@@ -2,6 +2,7 @@ import type {
   AdversarialCheck,
   AnalysisResult,
   AnomalyCandidate,
+  BedrockKind,
   CoreJudgment,
   DebateStance,
   DebateTurn,
@@ -29,6 +30,13 @@ function normalizeStance(v: unknown): DebateStance {
   return STANCES.includes(v as DebateStance) ? (v as DebateStance) : "hold";
 }
 const GRADES: SourceGrade[] = ["strong", "medium", "weak", "unverifiable"];
+const BEDROCKS: BedrockKind[] = [
+  "human_nature",
+  "incentive",
+  "power",
+  "information",
+  "scarcity",
+];
 
 function clampConf(v: unknown, fallback = 60): number {
   const n = typeof v === "number" ? v : Number(v);
