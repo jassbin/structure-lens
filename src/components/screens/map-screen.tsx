@@ -6,7 +6,7 @@ import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { auth } from "@eazo/sdk";
 import { useEazo } from "@eazo/sdk/react";
-import { Network, CheckCircle2, CircleDashed, CloudUpload, Loader2 } from "lucide-react";
+import { Network, CheckCircle2, CircleDashed, CloudUpload, Loader2, ChevronRight } from "lucide-react";
 import { RootBadge } from "@/components/shared/root-badge";
 import { ConfidenceBar } from "@/components/shared/confidence-bar";
 import { cn } from "@/utils/utils";
