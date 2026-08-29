@@ -203,14 +203,30 @@ export function MapScreen() {
                     {t("map.appearsIn")}
                   </p>
                   <div className="mt-1.5 flex flex-wrap gap-1.5">
-                    {node.events.map((ev) => (
-                      <span
-                        key={ev}
-                        className="rounded-full border border-border bg-card px-2.5 py-0.5 text-xs font-medium text-foreground"
-                      >
-                        {ev}
-                      </span>
-                    ))}
+                    {node.events.map((ev) => {
+                      const id = titleToId[ev];
+                      if (id) {
+                        return (
+                          <Link
+                            key={ev}
+                            href={`/analysis/${id}`}
+                            data-el="map-event-link"
+                            className="inline-flex items-center gap-1 rounded-full border border-primary/40 bg-primary/[0.06] px-2.5 py-0.5 text-xs font-medium text-primary transition-colors hover:bg-primary/15"
+                          >
+                            {ev}
+                            <ChevronRight className="h-3 w-3 shrink-0" aria-hidden />
+                          </Link>
+                        );
+                      }
+                      return (
+                        <span
+                          key={ev}
+                          className="rounded-full border border-border bg-card px-2.5 py-0.5 text-xs font-medium text-foreground"
+                        >
+                          {ev}
+                        </span>
+                      );
+                    })}
                   </div>
                 </div>
               </div>
