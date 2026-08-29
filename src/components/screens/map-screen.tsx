@@ -105,7 +105,9 @@ export function MapScreen() {
     if (analyzingEvent) return;
     setAnalyzingEvent(title);
     try {
-      const res = await analyze(title);
+      // aligned:true —— 用户明确点击要分析这个已在结构地图里的事件，
+      // 跳过"太模糊"分诊拦截（仍会照常联网对齐事实），直接跑完整分析
+      const res = await analyze(title, { aligned: true });
       if (res.status === "diggable") {
         cacheAnalysis(res.result);
         saveLocalAnalysis(res.result);
