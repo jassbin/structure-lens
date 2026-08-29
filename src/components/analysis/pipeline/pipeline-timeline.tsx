@@ -108,12 +108,14 @@ export function PipelineTimeline({
                     }
                   >
                     <ChevronDown
+                    <ChevronDown
                       className={cn(
-                      "h-4 w-4 shrink-0 text-muted-foreground transition-transform",
-                      isOpen && "rotate-180",
-                    )}
-                  />
-                </button>
+                        "h-4 w-4 shrink-0 text-muted-foreground transition-transform",
+                        isOpen && "rotate-180",
+                      )}
+                    />
+                  </button>
+                </div>
 
                 {isOpen && (
                   <div className="mt-1.5 rounded-2xl border border-border bg-card p-3.5 shadow-sm">
