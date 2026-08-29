@@ -128,12 +128,12 @@ export function HomeScreen() {
 
         <div className="relative z-10 mx-auto flex w-full max-w-md flex-col gap-6 px-4 py-6">
           <div className="pt-6 text-center" data-el="home-hero">
-            <h1 className="font-heading font-black tracking-tight text-black">
-              <span className="block text-[26px] leading-[1.25]">
+            <h1 className="font-heading font-black tracking-tight text-[#0B0B0F]">
+              <span className="block text-[27px] leading-[1.22] tracking-[-0.01em] [text-shadow:0_1px_0_rgba(255,255,255,0.4)]">
                 {t("home.taglineLead")}
                 {t("home.taglineHighlight")}
               </span>
-              <span className="mt-2.5 block text-[15px] font-bold leading-snug text-[#10B981]">
+              <span className="mt-2 block text-[16px] font-extrabold leading-snug tracking-[0.02em] text-[#0B0B0F]/85 [text-shadow:0_1px_0_rgba(255,255,255,0.4)]">
                 {t("home.taglineSub")}
               </span>
             </h1>
