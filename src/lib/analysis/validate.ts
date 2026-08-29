@@ -372,11 +372,10 @@ export function applyRecompute(
       const obsoleteReason = str(so.obsoleteReason);
       if (addendum.length > 0 || obsoleteReason) {
         const rc = obj(so.rootChange);
-        const roots: RootStructure[] = ["extraction", "delegation", "power"];
-        const from = roots.includes(rc.from as RootStructure)
+        const from = ROOTS.includes(rc.from as RootStructure)
           ? (rc.from as RootStructure)
           : undefined;
-        const to = roots.includes(rc.to as RootStructure)
+        const to = ROOTS.includes(rc.to as RootStructure)
           ? (rc.to as RootStructure)
           : undefined;
         skeletonOverlay = {
