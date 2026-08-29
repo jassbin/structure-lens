@@ -10,9 +10,7 @@ export default async function AnalysisPage({
   const { id } = await params;
   return (
     <AppShell tab={<BottomTabs />}>
-      <AuthGate>
-        <ReportScreen id={id} />
-      </AuthGate>
+      <ReportScreen id={id} />
     </AppShell>
   );
 }
