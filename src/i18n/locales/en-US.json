@@ -43,7 +43,9 @@
   },
   "home": {
     "brand": "Structure Lens",
-    "tagline": "Drop an event in and see the structure behind it.",
+    "taglineLead": "Every event hides an ",
+    "taglineHighlight": "invisible skeleton",
+    "taglineSub": "Drop one in. I'll reveal it.",
     "inputPlaceholder": "Paste an event, policy, decision, or something worth digging into…",
     "analyze": "Pierce it",
     "analyzing": "Piercing…",

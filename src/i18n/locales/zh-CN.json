@@ -43,7 +43,9 @@
   },
   "home": {
     "brand": "结构透镜",
-    "tagline": "贴一个事件进来，看看它背后真正的结构。",
+    "taglineLead": "每个事件，都有一副",
+    "taglineHighlight": "看不见的骨架",
+    "taglineSub": "贴进来，照给你看。",
     "inputPlaceholder": "贴入一个事件、政策、决策，或一段值得深挖的话…",
     "analyze": "开始穿透",
     "analyzing": "正在穿透…",
