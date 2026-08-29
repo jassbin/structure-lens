@@ -154,3 +154,36 @@ export async function syncStructureMap(
   };
   return data;
 }
+
+export interface ShareRecord {
+  code: string;
+  input: string;
+  verdict: string;
+  skeleton: StructureSkeleton;
+  createdAt: string;
+}
+
+/** 生成一份只读分享快照，返回短码。免登录。 */
+export async function createShare(payload: {
+  input: string;
+  verdict: string;
+  skeleton: StructureSkeleton;
+}): Promise<string> {
+  const res = await request("/api/share", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) throw new Error(`createShare failed: ${res.status}`);
+  const data = (await res.json()) as { code: string };
+  return data.code;
+}
+
+/** 读取只读分享快照 */
+export async function getShare(code: string): Promise<ShareRecord | null> {
+  const res = await request(`/api/share/${code}`);
+  if (res.status === 404) return null;
+  if (!res.ok) throw new Error(`getShare failed: ${res.status}`);
+  const data = (await res.json()) as { share: ShareRecord };
+  return data.share;
+}
