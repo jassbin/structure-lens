@@ -82,3 +82,86 @@ export function NotApplicablePanel({
 }
 
 export type { TriageResult };
+
+/** 事实对齐卡：搜到资料后，先给中性概要+来源让用户确认/纠正，再进入分析 */
+export function AlignCard({
+  summary,
+  sources,
+  edited,
+  onEdit,
+  onConfirm,
+  onReject,
+  busy,
+}: {
+  summary: string;
+  sources: { title: string; url: string }[];
+  edited: string;
+  onEdit: (v: string) => void;
+  onConfirm: () => void;
+  onReject: () => void;
+  busy: boolean;
+}) {
+  const { t } = useTranslation();
+  return (
+    <div
+      className="rounded-2xl border border-secondary/30 bg-secondary/[0.05] p-4"
+      data-el="align-card"
+    >
+      <p className="font-heading text-sm font-extrabold text-foreground">
+        {t("home.align.title")}
+      </p>
+      <p className="mt-1 text-xs text-muted-foreground">{t("home.align.intro")}</p>
+
+      <Textarea
+        value={edited}
+        onChange={(e) => onEdit(e.target.value)}
+        rows={5}
+        className="mt-3 resize-none rounded-xl border-border bg-card text-sm leading-relaxed"
+        data-el="align-summary"
+      />
+
+      {sources.length > 0 && (
+        <div className="mt-3">
+          <p className="text-[11px] font-bold uppercase tracking-wide text-muted-foreground">
+            {t("home.align.sources")}
+          </p>
+          <ul className="mt-1.5 space-y-1">
+            {sources.map((s, i) => (
+              <li key={i} className="truncate text-xs">
+                <a
+                  href={s.url}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-primary underline decoration-dotted underline-offset-2"
+                >
+                  {s.title}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      <div className="mt-3 flex gap-2">
+        <Button
+          onClick={onConfirm}
+          disabled={!edited.trim() || busy}
+          className="h-10 flex-1 rounded-xl font-bold"
+          data-el="align-confirm"
+        >
+          {busy && <Loader2 className="mr-1 h-4 w-4 animate-spin" />}
+          {t("home.align.confirm")}
+        </Button>
+        <Button
+          variant="outline"
+          onClick={onReject}
+          disabled={busy}
+          className="h-10 rounded-xl font-semibold"
+          data-el="align-reject"
+        >
+          {t("home.align.reject")}
+        </Button>
+      </div>
+    </div>
+  );
+}
