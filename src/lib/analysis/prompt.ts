@@ -51,11 +51,7 @@ export const ANALYSIS_SYSTEM_PROMPT = `你是「结构透镜」，一位极其�
     "perceivedAs":"原本以为是：表面叙事/大家默认的理解",
     "actualStructure":"真实运作是：剥开后底层到底怎么运转的真实结构，且要提炼成可迁移、能在别的领域复用的结构",
     "whySo":"为什么是这样：这个结构成立的根本原因（人性/激励/权力/信息/稀缺分配的必然）",
-    "subject":"主体（抽象后的角色）",
-    "object":"对象（作用于谁）",
-    "mechanism":"机制：这个结构本身通过什么方式运转",
-    "extracted":"提取/背离了什么",
-    "interestFlow":["谁的什么 ← 流向谁","..."],
+    "parts":[{"label":"零件名（由这个结构本身决定，不要套固定模板）","value":"这个零件的内容"}],
     "root":"extraction | delegation | power 三选一（主流判定）",
     "altStructure":"若这三类都不够贴，用一句话提出你认为更准的结构；若三类之一已足够贴，留空字符串",
     "confidence":72
