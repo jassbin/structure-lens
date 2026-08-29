@@ -315,6 +315,8 @@ export function MapScreen() {
             );
           })}
         </div>
+          )}
+        </>
       )}
     </div>
   );
