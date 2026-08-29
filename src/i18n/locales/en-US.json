@@ -174,7 +174,8 @@
       "anchor": "Anchored anomaly",
       "bedrock": "Bedrock",
       "flow": "Interest flow",
-      "renaming": "Structural renaming"
+      "renaming": "Structural renaming",
+      "sideAnomalies": "Side anomalies (worth a separate drill)"
     },
     "game": {
       "variable": "Variable parameter (decider)"
