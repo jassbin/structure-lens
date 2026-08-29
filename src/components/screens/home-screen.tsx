@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
-import { ArrowRight, Sparkles, Loader2 } from "lucide-react";
+import { ArrowRight, Loader2 } from "lucide-react";
 import { AppShell } from "@/components/shared/app-shell";
 import { BottomTabs } from "@/components/shared/bottom-tabs";
 import { DeepTopics } from "@/components/home/deep-topics";
