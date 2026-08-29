@@ -277,3 +277,9 @@ export const STEP_LABELS: Record<StepKind, { zh: string; en: string }> = {
   judgment: { zh: "核心判断", en: "Core Judgment" },
   adversarial: { zh: "对抗质检", en: "Adversarial Audit" },
 };
+
+export const STANCE_LABELS: Record<DebateStance, { zh: string; en: string }> = {
+  absorb: { zh: "吸收调整", en: "Absorbed" },
+  compromise: { zh: "折中处理", en: "Compromised" },
+  hold: { zh: "保持不变", en: "Held" },
+};
