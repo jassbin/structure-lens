@@ -55,6 +55,7 @@ export function MapScreen() {
         saveLocalAnalyses(analyses);
         setNodes(rebuildLocalMapFrom(analyses));
         setLocalCount(getAllLocalAnalyses().length);
+        rebuildIndex();
       } catch {
         // 同步失败则退回云端只读展示，不影响本地已有数据
         getStructureMap()
@@ -79,6 +80,7 @@ export function MapScreen() {
       saveLocalAnalyses(analyses);
       setNodes(rebuildLocalMapFrom(analyses));
       setLocalCount(getAllLocalAnalyses().length);
+      rebuildIndex();
       toast.success(
         t("map.synced", { count: analyses.length, pushed }),
       );
