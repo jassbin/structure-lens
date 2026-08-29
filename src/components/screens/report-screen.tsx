@@ -15,8 +15,9 @@ import {
   saveLocalAnalysis,
   mergeLocalStructure,
 } from "@/lib/analysis/local-map";
-import { analyze, getAnalysis } from "@/lib/api/analysis";
-import { AppAIClientUnavailableError } from "@/lib/api/app-ai-request";
+import { getAnalysis } from "@/lib/api/analysis";
+import { useWalk } from "@/lib/hooks/use-walk";
+import { WalkOverlay } from "@/components/shared/walk-overlay";
 import { STEP_LABELS, STANCE_LABELS } from "@/lib/analysis/types";
 import type { AnalysisResult } from "@/lib/analysis/types";
 
