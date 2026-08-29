@@ -3,6 +3,8 @@ import type {
   AnalysisResult,
   AnomalyCandidate,
   CoreJudgment,
+  DebateStance,
+  DebateTurn,
   GameAndAnalogy,
   MaterialItem,
   MechanismPenetration,
@@ -14,12 +16,18 @@ import type {
   SearchSource,
   SourceGrade,
   StepKind,
+  StepOverlay,
   StructureSkeleton,
   WalkHook,
 } from "@/lib/analysis/types";
 import { STEP_ORDER } from "@/lib/analysis/types";
 
 const ROOTS: RootStructure[] = ["extraction", "delegation", "power"];
+const STANCES: DebateStance[] = ["absorb", "compromise", "hold"];
+
+function normalizeStance(v: unknown): DebateStance {
+  return STANCES.includes(v as DebateStance) ? (v as DebateStance) : "hold";
+}
 const GRADES: SourceGrade[] = ["strong", "medium", "weak", "unverifiable"];
 
 function clampConf(v: unknown, fallback = 60): number {
