@@ -447,6 +447,34 @@ export function applyRecompute(
       }
       return s;
     });
+
+    // 智能阈值：仅当 AI 判断这次下游反驳波及了骨架结论，才给骨架追一条联动留痕
+    if (willEdit && o.skeletonImpact) {
+      const si = obj(o.skeletonImpact);
+      const addendum = strArray(si.addendum);
+      const obsoleteReason = str(si.obsoleteReason);
+      if (addendum.length > 0 || obsoleteReason) {
+        const rc = obj(si.rootChange);
+        const from = ROOTS.includes(rc.from as RootStructure)
+          ? (rc.from as RootStructure)
+          : undefined;
+        const to = ROOTS.includes(rc.to as RootStructure)
+          ? (rc.to as RootStructure)
+          : undefined;
+        const impactOverlay: StepOverlay = {
+          version,
+          obsoleteReason,
+          addendum,
+          ...(from && to && from !== to ? { rootChange: { from, to } } : {}),
+          triggeredBy: fromStepKind,
+          at,
+        };
+        skeleton = {
+          ...skeleton,
+          overlays: [...(skeleton.overlays ?? []), impactOverlay],
+        };
+      }
+    }
   }
 
   // 把下游覆盖层叠加到对应步骤（不覆盖原内容）
