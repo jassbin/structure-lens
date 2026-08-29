@@ -58,7 +58,14 @@
     "probeAnswerPlaceholder": "Add the specific people, actions, or anomaly…",
     "probeContinue": "Good — dig it now",
     "notApplicableTitle": "This may not fit structural analysis",
-    "notApplicableBack": "Try another event"
+    "notApplicableBack": "Try another event",
+    "align": {
+      "title": "Let's align the facts first",
+      "intro": "Your keywords were short, so I searched the web — here's the event as I understand it. Confirm or correct it before we go deep (you can edit the text below).",
+      "sources": "Sources",
+      "confirm": "Correct — start digging",
+      "reject": "None of this — I'll add it myself"
+    }
   },
   "analysis": {
     "verdictLabel": "The verdict",
