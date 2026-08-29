@@ -111,3 +111,23 @@ export async function importLocalToCloud(
   const data = (await res.json()) as { imported: number };
   return data.imported;
 }
+
+/**
+ * 双向同步：把本地分析发上云端（补齐云端缺失），并取回云端全量（供回流本地缺失）。
+ * 返回 { pushed, analyses }，analyses 是合并后云端全量。
+ */
+export async function syncStructureMap(
+  localAnalyses: AnalysisResult[],
+): Promise<{ pushed: number; analyses: AnalysisResult[] }> {
+  const res = await request("/api/structure-map/sync", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ analyses: localAnalyses }),
+  });
+  if (!res.ok) throw new Error(`sync failed: ${res.status}`);
+  const data = (await res.json()) as {
+    pushed: number;
+    analyses: AnalysisResult[];
+  };
+  return data;
+}
