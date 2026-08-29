@@ -123,6 +123,7 @@ export function HomeScreen() {
 
   return (
     <AppShell tab={<BottomTabs />}>
+      <IntroReveal />
       <div className="relative">
         <HeroBackdrop />
 
