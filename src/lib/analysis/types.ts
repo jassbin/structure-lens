@@ -75,23 +75,61 @@ export interface AdversarialCheck {
   metacognition: { bias: string; check: string }[];
 }
 
-/** 7 步之一的判别式联合 */
-export type PipelineStep =
-  | { kind: "materials"; title: string; materials: MaterialItem[]; note: string }
-  | {
-      kind: "anomaly";
-      title: string;
-      baseline: string; // 预期基线
-      candidates: AnomalyCandidate[];
-      selectedId: string; // 当前选中的入口
-      reason: string; // 选它的理由
-    }
-  | { kind: "skeleton"; title: string; skeleton: NeutralSkeleton }
-  | { kind: "mechanism"; title: string; mechanism: MechanismPenetration }
-  | { kind: "game"; title: string; game: GameAndAnalogy }
-  | { kind: "scenario"; title: string; variables: string[]; branches: ScenarioBranch[] }
-  | { kind: "judgment"; title: string; judgments: CoreJudgment[] }
-  | { kind: "adversarial"; title: string; check: AdversarialCheck };
+/** AI 对用户反对的表态 */
+export type DebateStance = "absorb" | "compromise" | "hold";
+
+/** 一节内的一轮人机辩论（用户反对 → AI 表态+理由） */
+export interface DebateTurn {
+  /** 用户这一轮的反对/反驳 */
+  objection: string;
+  /** AI 的表态：吸收 / 折中 / 保持不变 */
+  stance: DebateStance;
+  /** AI 给出的理由（任何表态都必须有） */
+  reason: string;
+  at: string; // ISO
+}
+
+/**
+ * 下游增量覆盖层：受某次调整影响的步骤不覆盖原内容，
+ * 而是标注"原内容因何不再适用"，并把新内容追加展示。
+ */
+export interface StepOverlay {
+  /** 触发这次调整的版本号 */
+  version: string;
+  /** 原内容为什么不再（完全）适用 */
+  obsoleteReason: string;
+  /** 追加/修订后的新内容（纯文本增量，按行展示） */
+  addendum: string[];
+  at: string; // ISO
+}
+
+/** 每个步骤共有的可选元信息：辩论记录 + 增量覆盖层 */
+export interface StepMeta {
+  /** 这一节下面的人机辩论留痕（可多轮） */
+  debate?: DebateTurn[];
+  /** 下游受影响时的增量覆盖层（可叠加多次） */
+  overlays?: StepOverlay[];
+}
+
+/** 7 步之一的判别式联合（每个成员都带可选 StepMeta） */
+export type PipelineStep = StepMeta &
+  (
+    | { kind: "materials"; title: string; materials: MaterialItem[]; note: string }
+    | {
+        kind: "anomaly";
+        title: string;
+        baseline: string;
+        candidates: AnomalyCandidate[];
+        selectedId: string;
+        reason: string;
+      }
+    | { kind: "skeleton"; title: string; skeleton: NeutralSkeleton }
+    | { kind: "mechanism"; title: string; mechanism: MechanismPenetration }
+    | { kind: "game"; title: string; game: GameAndAnalogy }
+    | { kind: "scenario"; title: string; variables: string[]; branches: ScenarioBranch[] }
+    | { kind: "judgment"; title: string; judgments: CoreJudgment[] }
+    | { kind: "adversarial"; title: string; check: AdversarialCheck }
+  );
 
 export type StepKind = PipelineStep["kind"];
 
@@ -107,14 +145,27 @@ export const STEP_ORDER: StepKind[] = [
   "adversarial",
 ];
 
-/** 结构骨架卡（供结构地图沉淀，从步骤3底层结构提炼） */
+/**
+ * 结构骨架卡：既揭示"真实运作/可复用结构"，又保留"主体-机制-被提取"的零件分解。
+ */
 export interface StructureSkeleton {
-  name: string; // 可迁移的命名式结构名
-  root: RootStructure;
-  subject: string;
-  mechanism: string;
-  extracted: string;
+  name: string; // 可迁移、可复用的命名式结构名
+  /** 三段式揭示 —— 让用户看穿本质 */
+  perceivedAs: string; // 原本以为是（表面叙事）
+  actualStructure: string; // 真实运作是（底层真实、可迁移复用的结构）
+  whySo: string; // 为什么是这样（结构成立的根本原因）
+  /** 结构内部零件（说清这结构本身怎么运作） */
+  subject: string; // 主体
+  object: string; // 对象
+  mechanism: string; // 机制（结构本身如何运转）
+  extracted: string; // 提取/背离了什么
+  interestFlow: string[]; // 利益流向，每条一行
+  /** 主判定 + 开放位 */
+  root: RootStructure; // 主流根结构判定
+  altStructure?: string; // 或许更准的结构（三分类都不够贴时）
   confidence: number;
+  /** 骨架卡自身的辩论留痕（用户也可反驳骨架） */
+  debate?: DebateTurn[];
 }
 
 /** 游走钩子：结构同构候选事件 */
@@ -154,8 +205,10 @@ export interface AnalysisResult {
 /** 一次修订记录 */
 export interface RevisionEntry {
   version: string; // 修订后版本号
-  stepKind: StepKind; // 被干预的步骤
+  stepKind: StepKind | "skeleton-card"; // 被干预的步骤（skeleton-card 表示骨架卡本身）
   disagreement: string; // 用户的反对意见
+  stance: DebateStance; // AI 的表态
+  reason: string; // AI 的理由
   at: string; // ISO 时间
 }
 
