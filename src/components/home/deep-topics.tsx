@@ -56,17 +56,16 @@ export function DeepTopics({
                 <Icon className="h-5 w-5" aria-hidden />
               </span>
               <div className="min-w-0 flex-1">
+                <p className="text-[15px] font-bold leading-snug text-foreground">
+                  {topic.title}
+                </p>
                 <span
                   className={cn(
-                    "text-[11px] font-bold uppercase tracking-wide",
-                    CATEGORY_COLOR[topic.category],
+                    "mt-1 inline-block text-[10px] font-medium tracking-wide text-muted-foreground/70",
                   )}
                 >
                   {t(`home.category.${topic.category}`)}
                 </span>
-                <p className="mt-0.5 truncate text-sm font-semibold text-foreground">
-                  {topic.title}
-                </p>
               </div>
               <ArrowRight className="h-4 w-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5 group-hover:text-primary" />
             </button>
