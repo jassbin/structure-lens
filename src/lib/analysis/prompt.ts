@@ -93,6 +93,16 @@ export function recomputeSystemPrompt(fromStepKind: string, displayLabel?: strin
 ## 是否重算下游
 - 若 stance 是 "absorb" 或 "compromise"：这一节的结论变了，可能影响下游步骤。请给出 revisedSteps —— **只包含真正受影响的下游步骤**，每个受影响步骤要说明"原内容为什么不再适用"(obsoleteReason) 和"新的补充/修订内容"(addendum，按要点分行)。不要盖掉原内容，我们会把原内容标注为不再适用、把你的 addendum 追加在下面。
 - 若 stance 是 "hold"：不要动下游，revisedSteps 留空数组。
+${
+    isSkeletonCard
+      ? ""
+      : `
+## 这次调整是否波及最终结论（结构骨架卡）——智能判断，别硬塞
+「结构骨架卡」是整份分析的结论枢纽（它揭示"真实运作是什么"和 root 根结构判定）。你对「${label}」的这次采纳/折中，**有时会顺带动摇骨架结论，有时只是局部修订、够不着结论**。
+- 只有当这次调整**确实波及骨架的真实结构判断或 root** 时，才给出 skeletonImpact：说明原骨架结论为何不再完全适用 (obsoleteReason)、这次因你对「${label}」的反驳而更新了什么 (addendum 按要点分行)；若连 root 都改判了，给 rootChange {from,to}。
+- 如果这次调整**只是局部细节、并不动摇骨架结论**，就把 skeletonImpact 设为 null——不要为了显得完整而硬塞。这是智能阈值，宁缺毋滥。
+- hold 时 skeletonImpact 必须为 null。`
+  }
 
 ## 硬约束
 - 诚实：无法核实的标 unverifiable，不编造。
