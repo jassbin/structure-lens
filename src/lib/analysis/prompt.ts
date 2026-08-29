@@ -98,7 +98,11 @@ export function recomputeSystemPrompt(fromStepKind: string): string {
 {
   "stance": "absorb | compromise | hold",
   "reason": "你为什么这样表态（针对用户的具体反对，认真回应）",
-  "revisedStep": { 被反对这一节修订后的完整内容；absorb/compromise 时给出（结构与原节一致，含 kind 及各自字段；若被反对的是骨架卡则给 skeleton 对象）；hold 时留 null },
+  "revisedStep": ${isSkeletonCard ? "null（骨架卡走增量记录，不给整段替换）" : "{ 被反对这一节修订后的完整内容；absorb/compromise 时给出（结构与原节一致，含 kind 及各自字段）；hold 时留 null }"},${
+    isSkeletonCard
+      ? `\n  "skeletonOverlay": { "obsoleteReason":"原骨架为何不再完全适用", "addendum":["采纳了你的XX → 把某处改为……","其他修订要点"], "rootChange": { "from":"extraction|delegation|power", "to":"..." } 或省略 rootChange }，absorb/compromise 时给出；hold 时为 null,`
+      : ""
+  }
   "revisedSteps": [ { "kind":"...", "obsoleteReason":"原内容为何不再适用", "addendum":["新补充要点1","要点2"] }, ... 只列受影响的下游步骤；hold 时为空数组 ],
   "verdict": "若金句结论受影响则更新，否则原样返回",
   "changeNote": "一句话总结这次表态与改动"
