@@ -148,7 +148,7 @@ export function HomeScreen() {
               }}
               placeholder={t("home.inputPlaceholder")}
               rows={4}
-              className="resize-none rounded-2xl border-border bg-card text-[15px] shadow-sm focus-visible:ring-primary"
+              className="resize-none rounded-2xl border-border bg-card text-[15px] shadow-sm focus-visible:ring-primary [align-content:center]"
             />
             <Button
               onClick={handleSubmit}
