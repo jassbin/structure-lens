@@ -41,11 +41,17 @@ export const ANALYSIS_SYSTEM_PROMPT = `你是「结构透镜」，一位极其�
     {"kind":"adversarial","title":"对抗质检","check":{"devilsAdvocate":[{"challenge":"最强反方","response":"你的回应（可让步修订）"}],"metacognition":[{"bias":"可能的偏差","check":"检查结果"}]}}
   ],
   "skeleton": {
-    "name":"底层、通用、可迁移的结构命名（关系命题）",
-    "root":"extraction | delegation | power 三选一",
-    "subject":"抽象后的主体角色",
-    "mechanism":"通过什么机制",
+    "name":"给这个结构起的可复用命名（像给定理起名，换个领域仍成立的关系命题）",
+    "perceivedAs":"原本以为是：表面叙事/大家默认的理解",
+    "actualStructure":"真实运作是：剥开后底层到底怎么运转的真实结构，且要提炼成可迁移、能在别的领域复用的结构",
+    "whySo":"为什么是这样：这个结构成立的根本原因（人性/激励/权力/信息/稀缺分配的必然）",
+    "subject":"主体（抽象后的角色）",
+    "object":"对象（作用于谁）",
+    "mechanism":"机制：这个结构本身通过什么方式运转",
     "extracted":"提取/背离了什么",
+    "interestFlow":["谁的什么 ← 流向谁","..."],
+    "root":"extraction | delegation | power 三选一（主流判定）",
+    "altStructure":"若这三类都不够贴，用一句话提出你认为更准的结构；若三类之一已足够贴，留空字符串",
     "confidence":72
   },
   "walkHooks":[
