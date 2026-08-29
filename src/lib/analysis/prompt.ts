@@ -75,6 +75,15 @@ export function recomputeSystemPrompt(fromStepKind: string): string {
 严格用中文。只输出这个 JSON 对象。`;
 }
 
+/** 事实对齐概要：基于检索结果，给一段"我理解到的事件"供用户确认/纠正 */
+export const ALIGN_SUMMARY_SYSTEM_PROMPT = `你是「结构透镜」的事实对齐助手。用户给了一个很短、可能模糊的输入，我们后台已联网检索到若干相关资料。请仅依据这些检索资料，写一段"我理解到的这件事"的中性概要，供用户确认或纠正后再进入深度分析。
+
+## 硬约束
+- 只根据检索资料写，绝不添加资料里没有的人名、机构、金额、时间、因果。
+- 3-5 句，中性陈述，不下结论、不做结构分析。
+- 若资料相互矛盾或信息不足，如实点出"以下信息待你确认"。
+- 只输出这段概要文字本身，不要 JSON、不要标题、不要客套。用中文。`;
+
 /** 把已有步骤序列化成给重算模型的上下文文本 */
 export function serializeStepsForContext(steps: unknown[]): string {
   try {
