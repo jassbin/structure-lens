@@ -8,14 +8,20 @@ import { ArrowRight, Sparkles, Loader2 } from "lucide-react";
 import { AppShell } from "@/components/shared/app-shell";
 import { BottomTabs } from "@/components/shared/bottom-tabs";
 import { DeepTopics } from "@/components/home/deep-topics";
-import { ProbePanel, NotApplicablePanel } from "@/components/home/entry-panels";
+import { ProbePanel, NotApplicablePanel, AlignCard } from "@/components/home/entry-panels";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { cacheAnalysis } from "@/lib/analysis/store";
 import { saveLocalAnalysis, mergeLocalStructure } from "@/lib/analysis/local-map";
-import { analyze } from "@/lib/api/analysis";
+import { analyze, precheck } from "@/lib/api/analysis";
 import { AppAIClientUnavailableError } from "@/lib/api/app-ai-request";
-import type { TriageResult } from "@/lib/analysis/types";
+import type { SearchSource, TriageResult } from "@/lib/analysis/types";
+
+type AlignState = {
+  input: string;
+  summary: string;
+  sources: SearchSource[];
+} | null;
 
 export function HomeScreen() {
   const { t } = useTranslation();
@@ -24,6 +30,8 @@ export function HomeScreen() {
   const [busy, setBusy] = useState(false);
   const [triage, setTriage] = useState<TriageResult | null>(null);
   const [probeAnswer, setProbeAnswer] = useState("");
+  const [align, setAlign] = useState<AlignState>(null);
+  const [alignDraft, setAlignDraft] = useState("");
 
   /** 免登录：本地缓存 + 本地结构地图并入，登录用户服务端已落库 */
   function persistLocally(
@@ -36,13 +44,15 @@ export function HomeScreen() {
     }
   }
 
-  /** 输入 → 直接穿透。联网搜索由服务端后台静默进行，搜不到也照常分析。 */
-  async function runAnalysis(text: string) {
+  /** 真正调分析并跳转。opts 用于对齐流程带上已确认的来源。 */
+  async function runAnalysis(
+    text: string,
+    opts?: { alignedSources?: SearchSource[]; aligned?: boolean },
+  ) {
     if (busy) return;
     setBusy(true);
-    setTriage(null);
     try {
-      const res = await analyze(text);
+      const res = await analyze(text, opts);
       if (res.status === "diggable") {
         persistLocally(res);
         router.push(`/analysis/${res.result.id}`);
@@ -58,8 +68,13 @@ export function HomeScreen() {
     }
   }
 
-  function handleSubmit() {
+  /** 提交：先预检——够具体直接分析；太短先搜，搜到弹对齐卡、搜不到弹反问。 */
+  async function handleSubmit() {
     const text = input.trim();
+    if (busy) return;
+    setBusy(true);
+    setTriage(null);
+    setAlign(null);
     if (!text) {
       setTriage({
         verdict: "too_shallow",
@@ -68,9 +83,29 @@ export function HomeScreen() {
           "涉及哪些主体？他们各自想要什么？",
         ],
       });
+      setBusy(false);
       return;
     }
-    void runAnalysis(text);
+    try {
+      const pre = await precheck(text);
+      if (pre.status === "diggable") {
+        await runAnalysis(text);
+        return;
+      }
+      if (pre.status === "align") {
+        setAlign({ input: pre.input, summary: pre.summary, sources: pre.sources });
+        setAlignDraft(pre.summary);
+        setBusy(false);
+        return;
+      }
+      setTriage(pre.triage);
+      setBusy(false);
+    } catch (error) {
+      if (!(error instanceof AppAIClientUnavailableError)) {
+        toast.error(t("home.failed", "分析失败，请稍后重试"));
+      }
+      setBusy(false);
+    }
   }
 
   return (
