@@ -136,7 +136,8 @@
 
 - 本地存储键：`structure-lens:local-map`（结构节点）、`structure-lens:local-analyses`（整份分析 map）。
 - 点亮阈值：同名结构 hits ≥ 2 且 events ≥ 2 → verified。
-- 云端：`analyses` 表（按 userId 归属）、结构节点走 `mergeStructure`。
+- **云端同步的是「整份分析的完整体」，不是摘要**：`analyses` 表逐字段存 `input / version / sources / verdict / steps（完整 8 步，含机制钻探链、每步 debate、下游 overlays）/ skeleton（含 parts、三段式、联动留痕 overlays、debate）/ revisions（人机辩论全记录）/ createdAt`。跨设备拉回后能完整重放 8 步、看到所有辩论与增量修订。
+- 结构地图**节点**（结构名/root/hits/verified）不额外冗余存储，而是从完整分析折叠计算；同步全量分析后靠 `rebuildLocalMapFrom` 幂等重建，两端一致。
 - 同步 = 并集：`push 本地缺失 → 拉云端全量 → 回流本地缺失 → 幂等重建本地地图`。
 
 ---
@@ -146,7 +147,8 @@
 - 机制穿透重构为递归钻探链（锁定异常+逐层追问+爆破点+见底基岩）。
 - 骨架卡增量不覆盖 + 下游反驳智能阈值联动留痕（triggeredBy）。
 - 分诊先联网后对齐（事实对齐卡）。
+- 搜索优化：ddgSearch 防反爬，短输入稳定命中真实来源（原来不行现在行了）。
 - 动态零件（骨架 parts 由 AI 决定 2–5 个）。
 - 移除 AuthGate，报告页/地图页改为免登录。
-- 结构地图改为本地⇄云端双向同步（并集，缺的都补齐）。
+- 结构地图改为本地⇄云端双向同步（并集，缺的都补齐）；云端存整份完整推理。
 - 新增本文件 DECISIONS.md 沉淀思路。
