@@ -193,6 +193,34 @@ export function MapScreen() {
           </Link>
         </div>
       ) : (
+        <>
+          {/* 视图切换：列表 / 套路聚类 */}
+          <div className="flex items-center gap-1 rounded-full border border-border bg-card p-1" data-el="map-view-toggle">
+            {(["list", "cluster"] as const).map((v) => (
+              <button
+                key={v}
+                type="button"
+                onClick={() => setView(v)}
+                className={cn(
+                  "flex-1 rounded-full px-3 py-1.5 text-xs font-bold transition-colors",
+                  view === v
+                    ? "bg-primary text-primary-foreground"
+                    : "text-muted-foreground hover:text-foreground",
+                )}
+              >
+                {t(`map.view.${v}`, v === "list" ? "列表" : "套路聚类")}
+              </button>
+            ))}
+          </div>
+
+          {view === "cluster" ? (
+            <ClusterView
+              nodes={nodes}
+              titleToId={titleToId}
+              analyzingEvent={analyzingEvent}
+              onAnalyzeEvent={analyzeEvent}
+            />
+          ) : (
         <div className="flex flex-col gap-3" data-el="map-nodes">
           {nodes.map((node) => {
             const verified = node.state === "verified";
