@@ -33,7 +33,6 @@ export interface NeutralSkeleton {
   naming: string; // 中性命名
 }
 
-/** 机制穿透（步骤3） */
 /** 机制穿透（步骤3）—— 递归钻探链：锁定异常 → 逐层 why 追问 → 每层爆破 → 见底基岩 */
 export type BedrockKind = "human_nature" | "incentive" | "power" | "information" | "scarcity";
 
