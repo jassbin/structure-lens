@@ -133,6 +133,11 @@ export function MapScreen() {
 
   return (
     <div className="mx-auto flex w-full max-w-md flex-col gap-5 px-4 py-6">
+      <WalkOverlay
+        open={analyzingEvent !== null}
+        phase="analyze"
+        lockedTitle={analyzingEvent ?? undefined}
+      />
       <div data-el="map-header">
         <div className="flex items-center gap-2">
           <Network className="h-5 w-5 text-primary" aria-hidden />
