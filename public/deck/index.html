@@ -22,6 +22,10 @@
   .reveal .step .n { color:var(--tealDeep); font-weight:800; min-width:2.2rem; }
   .reveal .pill { display:inline-block; padding:.25rem .8rem; border:1px solid rgba(13,148,136,.4); background:rgba(45,212,191,.12); border-radius:999px; color:var(--tealDeep); font-size:.85rem; margin:.2rem .3rem .2rem 0; font-weight:600; }
   .reveal .grid3 { display:grid; grid-template-columns:repeat(3,1fr); gap:1rem; }
+  .reveal .grid2tech { display:grid; grid-template-columns:repeat(2,1fr); gap:1rem; margin-top:1rem; }
+  .reveal .grid2tech .pill { margin:.25rem .35rem .25rem 0; }
+  .reveal .mono { display:block; font-family:ui-monospace,Menlo,Consolas,monospace; font-size:.9rem; color:var(--tealDeep); font-weight:600; letter-spacing:.01em; }
+  .reveal .tiny { font-size:.82rem; color:var(--sub); margin-top:.5rem; line-height:1.5; }
   .reveal .card { border:1px solid rgba(13,148,136,.2); border-radius:14px; padding:1rem 1.1rem; background:rgba(45,212,191,.07); }
   .reveal .card h3 { color:var(--tealDeep); font-size:1.05rem; margin:0 0 .4rem; }
   .reveal .quote { font-size:1.6rem; font-weight:800; color:var(--ink); border-left:4px solid var(--teal); padding-left:1rem; }
@@ -90,16 +94,25 @@
   <!-- 技术栈 -->
   <section data-background-color="#f0fdfa">
     <h2>④ 技术栈</h2>
-    <p>
-      <span class="pill">Next.js App Router</span><span class="pill">TypeScript</span><span class="pill">Tailwind CSS</span><span class="pill">framer-motion</span>
-      <span class="pill">react-i18next 双语</span><span class="pill">Drizzle ORM</span><span class="pill">PostgreSQL</span>
-      <span class="pill">Eazo 内置 AI</span><span class="pill">联网检索</span><span class="pill">MCP Server</span><span class="pill">Vercel 部署</span>
-    </p>
-    <ul>
-      <li>后端 API：analyze / drill / recompute / walk-focus / share …</li>
-      <li>数据持久化到 Eazo 托管 PostgreSQL，DATABASE_URL 仅服务端可见</li>
-      <li>内置 MCP Server：可被外部 Agent 直接作为工具调用</li>
-    </ul>
+    <div class="grid2tech">
+      <div class="card">
+        <h3>前端 / 交互</h3>
+        <span class="pill">Next.js App Router</span><span class="pill">TypeScript</span><span class="pill">Tailwind CSS</span><span class="pill">framer-motion</span><span class="pill">react-i18next 双语</span>
+      </div>
+      <div class="card">
+        <h3>数据 / AI</h3>
+        <span class="pill">PostgreSQL</span><span class="pill">Drizzle ORM</span><span class="pill">Eazo 内置 AI</span><span class="pill">联网检索</span>
+      </div>
+      <div class="card">
+        <h3>平台 / 部署</h3>
+        <span class="pill">@eazo/sdk</span><span class="pill">MCP Server</span><span class="pill">Vercel 部署</span>
+      </div>
+      <div class="card">
+        <h3>后端接口</h3>
+        <span class="mono">analyze · drill · recompute · walk-focus · share</span>
+        <p class="tiny">数据持久化到 Eazo 托管 PostgreSQL，DATABASE_URL 仅服务端可见；MCP Server 可被外部 Agent 直接调用。</p>
+      </div>
+    </div>
   </section>
 
   <!-- 创新点 -->
