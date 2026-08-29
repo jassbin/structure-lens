@@ -62,13 +62,6 @@ export function SkeletonCard({
     { label: t("analysis.skeletonCard.whySo"), value: sk.whySo },
   ];
 
-  const parts: Array<{ label: string; value: string }> = [
-    { label: t("analysis.skeletonCard.subject"), value: sk.subject },
-    { label: t("analysis.skeletonCard.object"), value: sk.object },
-    { label: t("analysis.skeletonCard.mechanism"), value: sk.mechanism },
-    { label: t("analysis.skeletonCard.extracted"), value: sk.extracted },
-  ];
-
   return (
     <div
       className="rounded-2xl border border-secondary/30 bg-secondary/[0.04] p-4"
