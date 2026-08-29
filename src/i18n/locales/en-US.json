@@ -82,9 +82,16 @@
       "title": "Structure skeleton",
       "tip": "Distills the underlying structure from this analysis into a transferable card that lights up from 'hypothesis' to 'verified' as more isomorphic cases collide.",
       "hypothesisTag": "Hypothesis",
+      "perceivedAs": "Perceived as",
+      "actualStructure": "Actually operates as",
+      "whySo": "Why it's so",
+      "parts": "Structural components",
       "subject": "Subject",
+      "object": "Object",
       "mechanism": "Mechanism",
       "extracted": "Extracted",
+      "flow": "Interest flow",
+      "altStructure": "Maybe more precise",
       "root": "Root structure"
     },
     "rebuttal": {
