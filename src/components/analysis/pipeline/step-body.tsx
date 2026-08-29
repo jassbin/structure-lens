@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslation } from "react-i18next";
-import { Target, TrendingUp, Zap } from "lucide-react";
+import { Target, TrendingUp, Zap, GitBranch } from "lucide-react";
 import { ConfidenceBar } from "@/components/shared/confidence-bar";
 import { DrillPoint } from "@/components/analysis/drill-point";
 import { GradeBadge } from "@/components/analysis/pipeline/grade-badge";
