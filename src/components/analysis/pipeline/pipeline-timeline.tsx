@@ -59,8 +59,9 @@ export function PipelineTimeline({
   return (
     <div className="flex flex-col gap-2" data-el="pipeline-timeline">
       <div className="flex items-center justify-between px-0.5">
-        <span className="font-heading text-sm font-extrabold text-foreground">
+        <span className="flex items-center gap-1.5 font-heading text-sm font-extrabold text-foreground">
           {t("pipeline.title")}
+          <InfoTip content={t("pipeline.tips.title")} />
         </span>
         <span className="text-[11px] font-semibold text-muted-foreground">
           {total} {t("pipeline.steps")}
@@ -86,18 +87,28 @@ export function PipelineTimeline({
               </span>
 
               <div className="pb-3">
-                <button
-                  type="button"
-                  onClick={() =>
-                    setOpen((p) => ({ ...p, [step.kind]: !p[step.kind] }))
-                  }
-                  className="flex w-full items-center justify-between gap-2 py-1.5 text-left"
-                >
-                  <span className="font-heading text-[15px] font-extrabold text-foreground">
-                    {label}
+                <div className="flex w-full items-center justify-between gap-2 py-1.5">
+                  <span className="flex items-center gap-1.5">
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setOpen((p) => ({ ...p, [step.kind]: !p[step.kind] }))
+                      }
+                      className="text-left font-heading text-[15px] font-extrabold text-foreground"
+                    >
+                      {label}
+                    </button>
+                    <InfoTip content={t(`pipeline.tips.${step.kind}`)} />
                   </span>
-                  <ChevronDown
-                    className={cn(
+                  <button
+                    type="button"
+                    aria-label={label}
+                    onClick={() =>
+                      setOpen((p) => ({ ...p, [step.kind]: !p[step.kind] }))
+                    }
+                  >
+                    <ChevronDown
+                      className={cn(
                       "h-4 w-4 shrink-0 text-muted-foreground transition-transform",
                       isOpen && "rotate-180",
                     )}
