@@ -75,6 +75,8 @@
     "brand": "Structure Lens",
     "taglineLead": "Truth mirror, exposing ",
     "taglineHighlight": "“one story on top, another underneath”",
+    "taglineHighlightHead": "“one story on top,",
+    "taglineHighlightTail": "another underneath”",
     "taglineSub": "Drop one in. I'll reveal it",
     "inputPlaceholder": "An event, a policy, or a decision…",
     "analyze": "Pierce it",
