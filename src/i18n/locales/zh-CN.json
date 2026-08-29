@@ -126,9 +126,21 @@
     "steps": "步",
     "recomputed": "已重算至",
     "recomputeFailed": "重算失败，请重试",
-    "disagree": "我不同意这一步",
-    "disagreeHint": "写下你的反对：合理我就采纳并重算这一步及所有下游步骤。",
+    "disagree": "我不同意这一节",
+    "keepRebutting": "继续反驳",
+    "submitObjection": "提交并让 AI 回应",
+    "thinking": "AI 正在权衡你的反对…",
+    "disagreeHint": "写下你的反对：AI 会先表态（吸收/折中/保持）并给理由，只有吸收或折中才会调整下游。",
     "disagreePlaceholder": "例如：这个异常入口选错了，真正的关键是……",
+    "stance": {
+      "absorb": "吸收调整",
+      "compromise": "折中处理",
+      "hold": "保持不变"
+    },
+    "overlay": {
+      "obsolete": "原内容不再适用",
+      "addendum": "本次调整补充"
+    },
     "recomputeCta": "重算下游",
     "recomputingDownstream": "正在重排下游步骤…",
     "revisionLog": "修订记录",
