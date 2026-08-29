@@ -1,48 +1,90 @@
-A minimal Next.js starter for building apps inside the [Eazo](https://eazo.ai) platform. Includes a working example of the Eazo session token flow: the app requests the encrypted user token from the host via `postMessage`, sends it to a Next.js API route, decrypts it server-side with `@eazo/node-sdk`, and returns the user profile.
+# 照妖镜 · Structure Lens
 
-## Getting Started
+> **照妖镜，专治"表面一套、底下一套"——放进来，照给你看。**
 
-Install dependencies with Bun:
+一款 AI 原生的「事件结构透视」工具。把任意热点事件、政策或决策丢进去，它会联网锁定真实信息，再用一套固定的 **8 步深度穿透流程**，层层剥开表面叙事、还原背后的底层结构，并给出一句直击本质的金句。
 
-```bash
-bun install
-```
+- 🏷️ **赛道 / 命题**：AI 原生应用 —— 信息认知与舆论祛魅（帮普通人看穿"表面一套、底下一套"的叙事结构）
+- 🔗 **在线体验**：https://structure-lens-8c3bf836.eazo.dev
+- 💻 **代码仓库**：https://github.com/jassbin/structure-lens （Topic: `#shenicest-fission`）
 
-If dependency installation stalls on this machine during `sharp` setup, use:
+---
 
-```bash
-SHARP_IGNORE_GLOBAL_LIBVIPS=1 bun install
-```
+## 一、项目背景
 
-Then start the development server:
+我们每天被海量热点、政策、企业公告和"反转"新闻包围。多数人只能被表面叙事牵着走——愤怒、站队、遗忘，却很少有工具能帮普通人**冷静地把一个事件拆开，看清它的底层结构**：谁在提取价值、谁被委托去承担代价、权力和话语是如何运作的。
 
-```bash
-bun dev
-```
+照妖镜正是为这个真实痛点而生：不做又一个"资讯聚合"或"情绪广场"，而是提供一把**可复用的认知手术刀**——把"看热闹"升级为"看门道"。
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 二、目标用户
 
-## Environment Variables
+- 关注公共事件、想独立判断而非被带节奏的普通网民
+- 内容创作者 / 评论作者，需要快速拆解事件结构、提炼观点
+- 对社会结构、商业逻辑、公共政策感兴趣的学习者与研究者
 
-Copy `.env.example` to `.env` and fill in your private key:
+## 三、核心功能
 
-```bash
-cp .env.example .env
-```
+1. **8 步深度穿透**：输入事件 → 联网锁定真实信息 → 固定 8 步逐层剥开表面叙事 → 还原底层结构（价值提取 / 委托背锅 / 权力运作）→ 输出一句金句。
+2. **全屏雷达锁定动效**：从"游走"或空白事件进入时，系统自动联网筛选该方向下最火/最典型的真实事件，配合"正在锁定 → 正在穿透"两阶段全屏遮罩，避免误判卡死。
+3. **人机辩论留痕**：对结论可以"我不同意"并连续追问，AI **正面直答"为什么"**，反驳也给出合情合理的推理，而非复读原判。
+4. **结构地图 & 套路聚类**：把挖过的所有事件按三大根结构归类，呈现"你挖了 N 件事，其实就 M 种套路"的顿悟时刻。
+5. **私密只读分享卡**：一键生成不含身份与隐私地图的快照短链，方便传播金句。
 
-| Variable | Description |
+## 四、技术栈
+
+| 层 | 技术 |
 |---|---|
-| `EAZO_PRIVATE_KEY` | Your Eazo developer private key (hex, 64 chars). Used server-side to decrypt the user session token. |
+| 前端 | Next.js (App Router) · React · TypeScript · Tailwind CSS · framer-motion · lucide-react |
+| 国际化 | react-i18next（zh-CN / en-US 双语） |
+| 后端 | Next.js API Routes（analyze / drill / recompute / walk-focus / share …） |
+| 数据 | PostgreSQL + Drizzle ORM（Eazo 内置托管数据库） |
+| AI | Eazo 内置 AI 模型代理（文本推理）+ 联网检索 |
+| 平台能力 | @eazo/sdk（认证 / 存储）· MCP Server（对外暴露为 AI 可调用服务） |
+| 部署 | Vercel |
 
-You can generate a keypair in the Eazo developer settings. Never expose the private key to the browser.
+## 五、创新点
 
-## Learn More
+- **结构化而非情绪化**：用一套可复用的 8 步方法论把"看热闹"变成"看门道"，产出可验证的结构而不是观点站队。
+- **AI 原生的自动锁定**：宽泛方向 → 自动联网锁定真实、最火/最典型的具体事件 → 自动跑完整分析，全程有清晰过渡态。
+- **可辩论的 AI**：不是单向输出，用户能"我不同意"并追问，AI 必须正面回答"为什么"并给出更深一层的机制或事实。
+- **同构惊喜（套路聚类）**：跨事件识别同一底层结构，把碎片化认知沉淀成"套路库"。
+- **隐私优先的传播**：分享为手动、逐条、只读快照，不泄露用户身份与结构地图。
+- **AI 可调用**：内置 MCP Server，可被外部 Agent 直接作为工具调用。
 
-- [Eazo Documentation](https://docs.eazo.ai)
-- [Next.js Documentation](https://nextjs.org/docs)
+## 六、开发过程
 
-## Deploy on Vercel
+在 Eazo 平台上完成从理解、设计、构建到评审、发布的全流程：先确立"事件结构透视"的产品定位与视觉方向，再实现 8 步分析管线与数据持久化，随后针对真实使用打磨——自动锁定过渡态、追问直答、套路聚类视图、首屏雷达开场动效与只读分享卡，并修复水合、HTML 嵌套等运行时问题，最终中英双语对齐、部署上线。
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 七、后续计划
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- 结构方法论沉淀为公开"套路百科"，支持社区共建与投票
+- 引入多信源交叉核验与可信度标注，强化数据可靠性
+- 支持长文 / 多事件时间线的结构演化追踪
+- 开放 MCP / API，让照妖镜成为其他 AI 应用的"结构分析"能力底座
+
+## 八、本地运行
+
+```bash
+bun install        # 若 sharp 卡住：SHARP_IGNORE_GLOBAL_LIBVIPS=1 bun install
+bun run dev        # http://localhost:3000
+bun run db:push    # 同步数据库表结构
+```
+
+### 环境变量
+
+| 变量 | 说明 |
+|---|---|
+| `EAZO_PRIVATE_KEY` | Eazo 开发者私钥，服务端用于解密用户会话令牌，切勿暴露到浏览器 |
+| `DATABASE_URL` | PostgreSQL 连接串（Eazo 托管数据库），仅服务端使用 |
+
+---
+
+## 附：黑客松提交清单速查
+
+| 项 | 内容 |
+|---|---|
+| 赛道及命题 | AI 原生应用 · 信息认知与舆论祛魅 |
+| 作品名称 | 照妖镜（Structure Lens） |
+| Slogan | 照妖镜，专治"表面一套、底下一套"——放进来，照给你看 |
+| 代码仓库 | https://github.com/jassbin/structure-lens （Topic：`#shenicest-fission`） |
+| 体验链接 | https://structure-lens-8c3bf836.eazo.dev |
