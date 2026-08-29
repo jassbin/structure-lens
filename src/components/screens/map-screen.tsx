@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { auth } from "@eazo/sdk";
@@ -10,23 +11,30 @@ import { Network, CheckCircle2, CircleDashed, CloudUpload, Loader2, ChevronRight
 import { RootBadge } from "@/components/shared/root-badge";
 import { ConfidenceBar } from "@/components/shared/confidence-bar";
 import { cn } from "@/utils/utils";
-import { getStructureMap, syncStructureMap } from "@/lib/api/analysis";
+import { getStructureMap, syncStructureMap, analyze } from "@/lib/api/analysis";
+import { cacheAnalysis } from "@/lib/analysis/store";
 import {
   getLocalStructureMap,
   getAllLocalAnalyses,
   rebuildLocalMapFrom,
   saveLocalAnalyses,
+  saveLocalAnalysis,
+  mergeLocalStructure,
 } from "@/lib/analysis/local-map";
+import { AppAIClientUnavailableError } from "@/lib/api/app-ai-request";
 import type { StructureNode } from "@/lib/analysis/types";
 
 export function MapScreen() {
   const { t } = useTranslation();
+  const router = useRouter();
   const user = useEazo((s) => s.auth.user);
   const [nodes, setNodes] = useState<StructureNode[] | null>(() =>
     getLocalStructureMap(),
   );
   const [localCount, setLocalCount] = useState(() => getAllLocalAnalyses().length);
   const [syncing, setSyncing] = useState(false);
+  // 正在当场分析的游走事件标题（点击库里没有的事件时，跑完整 8 步再跳转）
+  const [analyzingEvent, setAnalyzingEvent] = useState<string | null>(null);
   // 事件标题 → 分析 id，用于把地图节点里的历史事件做成可点击入口（复用现有分析，不新增数据）
   const [titleToId, setTitleToId] = useState<Record<string, string>>({});
 
