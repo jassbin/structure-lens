@@ -43,9 +43,16 @@ export interface DrillLayer {
   breakthrough: string; // 这一层的爆破/反直觉落点（颠覆了上一层的什么认知）
 }
 
+/** 旁生异常：主钻途中冒出、值得单独深挖但不属于当前主链的强异常（覆盖广度，只标记不展开） */
+export interface SideAnomaly {
+  anomaly: string; // 异常内容
+  whyDig: string; // 为什么它值得单独深挖，能牵出什么别的结构
+}
+
 export interface MechanismPenetration {
   anchorAnomaly: string; // 锁定：这条钻探顺着哪个异常点往下（对应异常锁定选中的入口）
   layers: DrillLayer[]; // 递归钻探层（2-5 层，从表层往基岩逐层向下）
+  sideAnomalies?: SideAnomaly[]; // 钻探途中发现的旁生强异常（可空）
   bedrockKind: BedrockKind; // 见底基岩类别
   bedrock: string; // 触到基岩的一句话结构命题
   interestFlow: string[]; // 利益流向，每条一行
