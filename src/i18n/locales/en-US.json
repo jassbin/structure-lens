@@ -139,7 +139,8 @@
     },
     "overlay": {
       "obsolete": "No longer applicable",
-      "addendum": "Added in this revision"
+      "addendum": "Added in this revision",
+      "rootChange": "Root reclassified"
     },
     "recomputeCta": "Recompute downstream",
     "recomputingDownstream": "Re-sequencing downstream steps…",
