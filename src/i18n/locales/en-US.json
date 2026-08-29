@@ -168,6 +168,8 @@
       "surface": "Surface",
       "deep": "Deeper",
       "bottom": "Bottom",
+      "anchor": "Anchored anomaly",
+      "bedrock": "Bedrock",
       "flow": "Interest flow",
       "renaming": "Structural renaming"
     },
