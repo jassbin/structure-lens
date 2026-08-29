@@ -103,6 +103,8 @@ export interface DebateTurn {
   stance: DebateStance;
   /** AI 给出的理由（任何表态都必须有） */
   reason: string;
+  /** AI 对本轮"追问/反驳"的直接回答/解释：追问→正面答那个为什么；反驳→为何采纳/守住的完整推理 */
+  answer?: string;
   at: string; // ISO
 }
 
