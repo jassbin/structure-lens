@@ -6,6 +6,13 @@ import type { DeepTopic } from "@/lib/analysis/types";
  */
 export const DEEP_TOPICS: DeepTopic[] = [
   {
+    id: "sunyuchen-jingtian-2026",
+    category: "business",
+    title: "孙宇晨发万字长文追讨景甜：感情纠纷还是流量操盘",
+    prompt:
+      "2026年8月27日，波场TRON创始人、币圈知名人士孙宇晨在外网发布万字长文《我的女友景甜》，文末标注“纯属虚构，如有雷同实属巧合”，同日其代理律师确认因财产争议已向女演员景甜及其父母提起民事诉讼、索赔3000余万元并申请财产保全；景甜工作室回应称此为“以艺人声誉为要挟的碰瓷行为”。长文发布恰逢香港Bitcoin Asia 2026大会开幕，且有网友比对钱包交易发现相关meme币并非孙官方发行、而是外部团队借“孙宇晨+景甜”双重热度收割散户。",
+  },
+  {
     id: "yididian-charity-2026",
     category: "business",
     title: "一点点助学男童争议：一场公益为何被网暴又反转",
