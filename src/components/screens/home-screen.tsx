@@ -133,7 +133,7 @@ export function HomeScreen() {
                 {t("home.taglineLead")}
                 {t("home.taglineHighlight")}
               </span>
-              <span className="mt-2.5 block text-[15px] font-bold leading-snug text-black">
+              <span className="mt-2.5 block text-[15px] font-bold leading-snug text-[#10B981]">
                 {t("home.taglineSub")}
               </span>
             </h1>
