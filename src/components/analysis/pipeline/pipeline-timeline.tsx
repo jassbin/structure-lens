@@ -108,7 +108,6 @@ export function PipelineTimeline({
                     }
                   >
                     <ChevronDown
-                    <ChevronDown
                       className={cn(
                         "h-4 w-4 shrink-0 text-muted-foreground transition-transform",
                         isOpen && "rotate-180",
