@@ -45,7 +45,12 @@ export function DeepTopics({
   const [topics, setTopics] = useState(() => DEEP_TOPICS.slice(0, VISIBLE_COUNT));
 
   useEffect(() => {
-    setTopics(shuffle(DEEP_TOPICS).slice(0, VISIBLE_COUNT));
+    // 挂载后下一帧再洗牌轮换：首帧与 SSR 一致（无 hydration 不匹配），
+    // 用 rAF 推迟到 effect 之外，避免 set-state-in-effect 级联渲染告警。
+    const raf = requestAnimationFrame(() => {
+      setTopics(shuffle(DEEP_TOPICS).slice(0, VISIBLE_COUNT));
+    });
+    return () => cancelAnimationFrame(raf);
   }, []);
 
   return (
