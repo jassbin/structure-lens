@@ -59,6 +59,8 @@
     "probeContinue": "养好了，开始挖",
     "notApplicableTitle": "这件事可能不适合结构分析",
     "notApplicableBack": "换一个事件",
+    "failed": "分析失败，请稍后重试",
+    "tooShallow": "这个方向还需要更具体一些",
     "align": {
       "title": "先对齐一下事实",
       "intro": "你给的关键词有点短，我先联网查了下——这是我理解到的事件。确认或纠正后再开始穿透（你可以直接编辑下面这段）。",
