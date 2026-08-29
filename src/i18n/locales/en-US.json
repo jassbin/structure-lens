@@ -206,7 +206,10 @@
       "delegation": "Delegation",
       "power": "Power balance"
     },
-    "syncCloud": "Sync to cloud",
-    "loginToSync": "Sign in to save your structure map to the cloud"
+    "syncCloud": "Sync (cloud ⇄ local, fill in whatever's missing)",
+    "loginToSync": "Sign in to two-way sync with the cloud, safe across devices",
+    "synced": "Synced: cloud and local merged to {{count}} ({{pushed}} newly uploaded)",
+    "syncFailed": "Sync failed, please try again",
+    "localCount": "{{count}} analyses stored locally"
   }
 }
