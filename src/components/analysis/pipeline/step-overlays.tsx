@@ -48,6 +48,18 @@ export function StepOverlays({ overlays }: { overlays?: StepOverlay[] }) {
               </ul>
             </div>
           )}
+          {ov.rootChange && (
+            <p className="mt-2 flex items-center gap-1.5 text-[11px] font-bold text-secondary">
+              {t("pipeline.overlay.rootChange")}：
+              <span className="rounded bg-muted px-1.5 py-0.5 text-foreground">
+                {ROOT_LABELS[ov.rootChange.from].zh}
+              </span>
+              <ArrowRight className="h-3 w-3" />
+              <span className="rounded bg-secondary/20 px-1.5 py-0.5 text-foreground">
+                {ROOT_LABELS[ov.rootChange.to].zh}
+              </span>
+            </p>
+          )}
         </div>
       ))}
     </div>
