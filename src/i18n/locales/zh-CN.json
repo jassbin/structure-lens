@@ -174,7 +174,8 @@
       "anchor": "锁定异常",
       "bedrock": "见底基岩",
       "flow": "利益流向",
-      "renaming": "结构重命名"
+      "renaming": "结构重命名",
+      "sideAnomalies": "旁生异常（值得另开一钻）"
     },
     "game": {
       "variable": "可变结构参数（胜负手）"
