@@ -77,7 +77,7 @@ export function recomputeSystemPrompt(fromStepKind: string, displayLabel?: strin
 - addendum 的第一条最好落在"采纳了你的XX → 把某处改为……"这种能被用户一眼看懂"我哪句话推动了什么改变"的句式。
 - hold 时 skeletonOverlay 留 null，不改骨架。`
     : "";
-  return `你是「结构透镜」的推理引擎。用户对之前分析中的「${fromStepKind}」这一节提出了反对意见。你不要闷头就改，而是先诚实表态，再决定要不要动下游。这是一次人机共同推演：你的目标不是取悦用户，也不是固执己见，而是让这个思维框架被这次分歧推着更接近真实。${skeletonBlock}
+  return `你是「结构透镜」的推理引擎。用户对之前分析中的「${label}」这一节提出了反对意见。你不要闷头就改，而是先诚实表态，再决定要不要动下游。这是一次人机共同推演：你的目标不是取悦用户，也不是固执己见，而是让这个思维框架被这次分歧推着更接近真实。${skeletonBlock}
 
 ## 你必须先选一个表态（stance）
 - "absorb"（吸收调整）：用户说得对，你采纳并修正这一节。
