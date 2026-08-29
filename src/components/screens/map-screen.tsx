@@ -27,6 +27,21 @@ export function MapScreen() {
   );
   const [localCount, setLocalCount] = useState(() => getAllLocalAnalyses().length);
   const [syncing, setSyncing] = useState(false);
+  // 事件标题 → 分析 id，用于把地图节点里的历史事件做成可点击入口（复用现有分析，不新增数据）
+  const [titleToId, setTitleToId] = useState<Record<string, string>>({});
+
+  function rebuildIndex() {
+    const map: Record<string, string> = {};
+    for (const a of getAllLocalAnalyses()) {
+      const title = a.verdict || a.input;
+      if (title) map[title] = a.id;
+    }
+    setTitleToId(map);
+  }
+
+  useEffect(() => {
+    rebuildIndex();
+  }, []);
 
   useEffect(() => {
     if (!user) return;
