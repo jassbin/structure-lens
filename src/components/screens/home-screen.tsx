@@ -9,7 +9,7 @@ import { AppShell } from "@/components/shared/app-shell";
 import { BottomTabs } from "@/components/shared/bottom-tabs";
 import { DeepTopics } from "@/components/home/deep-topics";
 import { HeroBackdrop } from "@/components/home/hero-backdrop";
-import { IntroReveal } from "@/components/home/intro-reveal";
+import { IntroReveal as _RemovedIntroReveal } from "@/components/home/intro-reveal";
 import { ProbePanel, NotApplicablePanel, AlignCard } from "@/components/home/entry-panels";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
