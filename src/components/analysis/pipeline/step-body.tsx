@@ -355,12 +355,16 @@ export function StepBody({
                 </span>
                 {d.challenge}
               </p>
-              {d.response && (
+              {d.response ? (
                 <p className="mt-1 text-[13px] leading-relaxed text-muted-foreground">
                   <span className="font-bold text-secondary">
                     {t("pipeline.adversarial.response")}：
                   </span>
                   {d.response}
+                </p>
+              ) : (
+                <p className="mt-1 text-[13px] leading-relaxed text-destructive/80">
+                  ⚠️ {t("pipeline.adversarial.responseMissing")}
                 </p>
               )}
             </div>
