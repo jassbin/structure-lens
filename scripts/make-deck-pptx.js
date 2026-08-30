@@ -63,7 +63,7 @@ steps.forEach((t, i) => {
 
 // ---- 5 核心② 结构骨架 ----
 s = p.addSlide(); base(s); title(s, "③ 核心之二 · 结构骨架");
-s.addText("8 步的终点，是把事件还原成一副可复用的"骨架"：", { x: 0.9, y: 1.7, w: 11, h: 0.6, fontSize: 18, color: SUB });
+s.addText('8 步的终点，是把事件还原成一副可复用的“骨架”：', { x: 0.9, y: 1.7, w: 11, h: 0.6, fontSize: 18, color: SUB });
 card(s, 0.9, 2.5, 3.7, 2.3, "价值提取", "谁在效率红利里套现、获益。");
 card(s, 4.85, 2.5, 3.7, 2.3, "委托背锅", "谁被推去承担代价、成为叙事替罪。");
 card(s, 8.8, 2.5, 3.6, 2.3, "权力运作", "话语与规则如何被定义、被谁掌握。");
@@ -82,7 +82,7 @@ s = p.addSlide(); base(s); title(s, "⑤ 创新点");
 s.addText([
   { text: "结构化而非情绪化", options: { color: TEALSOFT, bold: true } }, { text: "：可复用方法论，产出可验证的结构\n", options: { color: SUB } },
   { text: "AI 原生自动锁定", options: { color: TEALSOFT, bold: true } }, { text: "：宽泛方向 → 锁定真实最火事件 → 自动分析\n", options: { color: SUB } },
-  { text: "可辩论的 AI", options: { color: TEALSOFT, bold: true } }, { text: "："我不同意"追问，AI 正面直答"为什么"\n", options: { color: SUB } },
+  { text: "可辩论的 AI", options: { color: TEALSOFT, bold: true } }, { text: '：“我不同意”追问，AI 正面直答“为什么”\n', options: { color: SUB } },
   { text: "同构套路库", options: { color: TEALSOFT, bold: true } }, { text: "：跨事件识别同一副骨架，沉淀套路\n", options: { color: SUB } },
   { text: "隐私优先传播", options: { color: TEALSOFT, bold: true } }, { text: "：只读快照短链，不泄露身份与地图", options: { color: SUB } },
 ], { x: 0.9, y: 1.9, w: 11.5, h: 5, fontSize: 19, valign: "top", lineSpacingMultiple: 1.55, bullet: { characterCode: "2022", indent: 20 } });
