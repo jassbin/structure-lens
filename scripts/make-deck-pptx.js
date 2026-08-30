@@ -90,10 +90,10 @@ s.addText([
 // ---- 8 后续 + 二维码 ----
 s = p.addSlide(); base(s); title(s, "⑥ 后续计划 · 立即体验");
 s.addText([
-  { text: "• 结构方法论沉淀为公开"套路百科"，社区共建投票\n", options: {} },
+  { text: '• 结构方法论沉淀为公开“套路百科”，社区共建投票\n', options: {} },
   { text: "• 多信源交叉核验 + 可信度标注\n", options: {} },
   { text: "• 长文 / 多事件时间线的结构演化追踪\n", options: {} },
-  { text: "• 开放 MCP / API，成为其他 AI 应用的"结构分析"底座", options: {} },
+  { text: '• 开放 MCP / API，成为其他 AI 应用的“结构分析”底座', options: {} },
 ], { x: 0.9, y: 1.9, w: 7.6, h: 3.5, fontSize: 17, color: SUB, valign: "top", lineSpacingMultiple: 1.4 });
 if (fs.existsSync("public/qr-booth.png")) s.addImage({ path: "public/qr-booth.png", x: 9.6, y: 2.3, w: 2.5, h: 2.5, rounding: true });
 s.addText("📱 扫码，立即照一照", { x: 9.1, y: 4.95, w: 3.5, h: 0.5, fontSize: 17, bold: true, color: INK, align: "center" });
