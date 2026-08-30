@@ -224,6 +224,7 @@
     "adversarial": {
       "challenge": "魔鬼代言人",
       "response": "回应",
+      "responseMissing": "本条反方暂未生成回应（可点「再深一层」补充追问）",
       "meta": "元认知审计"
     }
   },
