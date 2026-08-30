@@ -224,6 +224,7 @@
     "adversarial": {
       "challenge": "Devil's advocate",
       "response": "Response",
+      "responseMissing": "No response generated for this challenge yet (tap “Dig deeper” to follow up).",
       "meta": "Metacognitive audit"
     }
   },
