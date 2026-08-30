@@ -30,11 +30,11 @@ s.addText("AI 原生的「事件结构透视」工具　·　#shenicest-fission"
 // ---- 2 问题 ----
 s = p.addSlide(); base(s); title(s, "① 问题");
 s.addText([
-  { text: "每天的热点、政策、"反转"新闻扑面而来。\n\n", options: { fontSize: 20, color: INK, bold: true } },
+  { text: '每天的热点、政策、“反转”新闻扑面而来。\n\n', options: { fontSize: 20, color: INK, bold: true } },
   { text: "• 多数人被表面叙事牵着走：愤怒、站队、遗忘\n", options: { fontSize: 18, color: SUB } },
   { text: "• 没有工具帮普通人冷静拆开事件、看清底层结构\n", options: { fontSize: 18, color: SUB } },
   { text: "• 谁在提取价值？谁被委托背锅？权力如何运作？\n\n", options: { fontSize: 18, color: SUB } },
-  { text: "→ 缺一把"认知手术刀"，把看热闹变成看门道。", options: { fontSize: 18, color: TEALSOFT, bold: true } },
+  { text: '→ 缺一把“认知手术刀”，把看热闹变成看门道。', options: { fontSize: 18, color: TEALSOFT, bold: true } },
 ], { x: 0.9, y: 1.8, w: 11, h: 5, valign: "top", lineSpacingMultiple: 1.3 });
 
 // ---- 3 方案 ----
