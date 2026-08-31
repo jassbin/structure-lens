@@ -16,6 +16,7 @@ import {
 import { getCachedAnalysis } from "@/lib/analysis/store";
 import { getLocalAnalysis } from "@/lib/analysis/local-map";
 import { getAnalysis, getActionPlan } from "@/lib/api/analysis";
+import { InfoTip } from "@/components/shared/info-tip";
 import type { AnalysisResult } from "@/lib/analysis/types";
 import type { ActionPlan, Controllability } from "@/lib/analysis/action";
 
