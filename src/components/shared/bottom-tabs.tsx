@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Search, Network } from "lucide-react";
+import { Search, Network, Sprout } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { cn } from "@/utils/utils";
 
