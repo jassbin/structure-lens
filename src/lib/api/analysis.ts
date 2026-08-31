@@ -216,3 +216,19 @@ export async function getSavedActionPlan(
   const data = (await res.json()) as { plan: ActionPlan | null };
   return data.plan;
 }
+
+export interface ActionPlanSummary {
+  id: string;
+  input: string;
+  verdict: string;
+  headline: string;
+  createdAt?: string;
+}
+
+/** 云端已保存行动方案的摘要列表（登录用户）。免登录返回空。 */
+export async function listSavedActionPlans(): Promise<ActionPlanSummary[]> {
+  const res = await request("/api/action/list");
+  if (!res.ok) return [];
+  const data = (await res.json()) as { items: ActionPlanSummary[] };
+  return data.items ?? [];
+}
