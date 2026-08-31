@@ -137,7 +137,8 @@ export const ACTION_SYSTEM_PROMPT = `你是「清醒行动主义（Clear-Actioni
 
 ## 输出格式（只输出一个 JSON 对象，不要 markdown、不要多余文字）
 {
-  "perspective": { "role": "self|child|parent|partner|employee|manager|friend|bystander|other", "label": "作为XX的你" },
+  "perspectiveOptions": [ { "id": "英文标识", "label": "作为XX", "isUser": true }, { "id": "...", "label": "...", "isUser": false } ],
+  "perspective": { "id": "被选中角色的id（与某个候选一致，通常是 isUser 的那个）", "label": "作为XX" },
   "headline": "一句冷静而可行动的定调",
   "steps": {
     "pain": { "signal": "还原成的信号（生物/结构）", "whatHurts": "真正在痛的是什么" },
