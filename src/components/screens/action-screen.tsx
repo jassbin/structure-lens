@@ -31,7 +31,6 @@ import type { AnalysisResult } from "@/lib/analysis/types";
 import type {
   ActionPlan,
   ActionStepKey,
-  ActionPerspective,
   Controllability,
 } from "@/lib/analysis/action";
 
@@ -229,6 +228,7 @@ export function ActionScreen({ id }: { id: string }) {
       {!loading && !error && plan && (
         <PerspectiveBar
           current={plan.perspective}
+          options={plan.perspectiveOptions}
           busy={switching || busyStep !== null}
           onSwitch={switchPerspective}
         />
