@@ -11,7 +11,6 @@ import type {
 } from "@/lib/analysis/types";
 import type {
   ActionPlan,
-  ActionPerspective,
   ActionStepKey,
 } from "@/lib/analysis/action";
 
@@ -202,7 +201,7 @@ export async function getActionPlan(payload: {
   verdict: string;
   skeleton: StructureSkeleton;
   regenerate?: boolean;
-  perspectiveRole?: ActionPerspective["role"];
+  perspectiveLabel?: string;
 }): Promise<ActionPlan> {
   const res = await request("/api/action", {
     method: "POST",
