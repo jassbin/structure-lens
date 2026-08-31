@@ -172,6 +172,71 @@ function arr(v: unknown): unknown[] {
   return Array.isArray(v) ? v : [];
 }
 
+function slug(s: string, fallback: string): string {
+  const out = s
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+  return out || fallback;
+}
+
+/**
+ * 解析视角候选 + 选定当前视角（兜底：至少给一个"当事人"候选，保证 UI 不崩）。
+ * - 归一化每个候选的 id/label/isUser；
+ * - 保证有且仅一个 isUser=true；
+ * - 当前 perspective 优先取模型给的、否则取 isUser 的候选。
+ */
+function parsePerspective(r: Record<string, unknown>): {
+  perspective: ActionPerspective;
+  perspectiveOptions: ActionPerspective[];
+} {
+  let options: ActionPerspective[] = arr(r.perspectiveOptions)
+    .map((o, i) => {
+      const obj = (o ?? {}) as Record<string, unknown>;
+      const label = str(obj.label);
+      if (!label) return null;
+      return {
+        id: slug(str(obj.id) || label, `role-${i + 1}`),
+        label,
+        isUser: obj.isUser === true,
+      } as ActionPerspective;
+    })
+    .filter((x): x is ActionPerspective => x !== null);
+
+  // 去重（按 id）
+  const seen = new Set<string>();
+  options = options.filter((o) => (seen.has(o.id) ? false : (seen.add(o.id), true)));
+
+  if (options.length === 0) {
+    options = [{ id: "self", label: "作为当事人的你", isUser: true }];
+  }
+  // 保证有且仅一个 isUser
+  if (!options.some((o) => o.isUser)) options[0].isUser = true;
+  let firstUser = false;
+  options = options.map((o) => {
+    if (o.isUser && !firstUser) {
+      firstUser = true;
+      return o;
+    }
+    return { ...o, isUser: false };
+  });
+
+  // 当前视角：模型给的 perspective 若能对上候选就用，否则用 isUser 的
+  const cur = (r.perspective ?? {}) as Record<string, unknown>;
+  const curLabel = str(cur.label);
+  const curId = str(cur.id) ? slug(str(cur.id), "") : "";
+  const matched =
+    options.find((o) => curId && o.id === curId) ||
+    options.find((o) => curLabel && o.label === curLabel) ||
+    options.find((o) => o.isUser) ||
+    options[0];
+
+  return {
+    perspective: { id: matched.id, label: matched.label, isUser: true },
+    perspectiveOptions: options,
+  };
+}
+
 /** 把模型返回的松散对象规整成安全的 ActionPlan（缺字段兜底，绝不抛错到 UI） */
 export function normalizeActionPlan(raw: unknown, id: string): ActionPlan {
   const r = (raw ?? {}) as Record<string, unknown>;
