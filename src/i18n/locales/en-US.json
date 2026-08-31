@@ -36,7 +36,7 @@
     "body": "Your earlier dig into \"{{title}}\" runs on the same underlying structure — open it and see if it's the same playbook."
   },
   "intro": {
-    "tagline": "Relief Fruit · See the structure, hold your ground",
+    "tagline": "Relief Fruit · See the structure, hold your ground, change in small steps",
     "skip": "Skip"
   },
   "common": {
@@ -92,9 +92,9 @@
   "home": {
     "brand": "Structure Lens",
     "taglineLead": "Relief Fruit: ",
-    "taglineHighlight": "See the structure, hold your ground",
-    "taglineHighlightHead": "See the structure",
-    "taglineHighlightTail": "hold your ground",
+    "taglineHighlight": "See the structure, hold your ground, change in small steps",
+    "taglineHighlightHead": "See the structure, hold your ground",
+    "taglineHighlightTail": "change in small steps",
     "taglineSub": "Drop one in. I'll reveal it",
     "inputPlaceholder": "An event, a policy, or a decision…",
     "analyze": "Pierce it",
