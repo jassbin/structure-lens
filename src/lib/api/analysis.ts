@@ -9,7 +9,13 @@ import type {
   StructureNode,
   TriageResult,
 } from "@/lib/analysis/types";
-import type { ActionPlan } from "@/lib/analysis/action";
+import type {
+  ActionPlan,
+  ActionPerspective,
+  ActionStepKey,
+} from "@/lib/analysis/action";
+
+type ActionDebateStance = "absorb" | "compromise" | "hold";
 
 export type AnalyzeResponse =
   | { status: "diggable"; result: AnalysisResult; persisted?: boolean }
