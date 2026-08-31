@@ -1,4 +1,5 @@
 import { AppShell } from "@/components/shared/app-shell";
+import { BottomTabs } from "@/components/shared/bottom-tabs";
 import { ActionScreen } from "@/components/screens/action-screen";
 
 export default async function ActionPage({
@@ -8,7 +9,7 @@ export default async function ActionPage({
 }) {
   const { id } = await params;
   return (
-    <AppShell>
+    <AppShell tab={<BottomTabs />}>
       <ActionScreen id={id} />
     </AppShell>
   );
