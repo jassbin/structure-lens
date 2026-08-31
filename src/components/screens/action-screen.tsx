@@ -50,7 +50,7 @@ export function ActionScreen({ id }: { id: string }) {
     };
   }, [id, source]);
 
-  // 2) 有来源后生成行动方案
+  // 2) 有来源后：先查已存方案（本地→云端），命中直接用；否则生成并保存
   useEffect(() => {
     if (!source) {
       if (source === null) setLoading(false);
@@ -59,15 +59,43 @@ export function ActionScreen({ id }: { id: string }) {
     let alive = true;
     setLoading(true);
     setError(false);
-    getActionPlan({
-      id: source.id,
-      input: source.input,
-      verdict: source.verdict,
-      skeleton: source.skeleton,
-    })
-      .then((p) => alive && setPlan(p))
-      .catch(() => alive && setError(true))
-      .finally(() => alive && setLoading(false));
+
+    const sourceId = source.id;
+    const local = getLocalActionPlan(sourceId);
+    if (local) {
+      setPlan(local);
+      setLoading(false);
+      return;
+    }
+
+    (async () => {
+      // 登录用户：先看云端是否已存
+      const saved = await getSavedActionPlan(sourceId).catch(() => null);
+      if (!alive) return;
+      if (saved) {
+        setPlan(saved);
+        saveLocalActionPlan(saved); // 回灌本地，下次秒开
+        setLoading(false);
+        return;
+      }
+      // 都没有 → 生成，并本地持久化（登录用户服务端已落库）
+      try {
+        const p = await getActionPlan({
+          id: source.id,
+          input: source.input,
+          verdict: source.verdict,
+          skeleton: source.skeleton,
+        });
+        if (!alive) return;
+        setPlan(p);
+        saveLocalActionPlan(p);
+      } catch {
+        if (alive) setError(true);
+      } finally {
+        if (alive) setLoading(false);
+      }
+    })();
+
     return () => {
       alive = false;
     };
@@ -96,6 +124,7 @@ export function ActionScreen({ id }: { id: string }) {
 
   return (
     <div className="mx-auto flex w-full max-w-md flex-col gap-5 px-4 py-4">
+      <ActionLoadingOverlay open={loading} />
       <button
         type="button"
         onClick={() => router.push(`/analysis/${id}`)}
