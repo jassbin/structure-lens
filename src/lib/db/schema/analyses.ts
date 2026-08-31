@@ -8,6 +8,7 @@ import type {
   StructureSkeleton,
   WalkHook,
 } from "@/lib/analysis/types";
+import type { ActionPlan } from "@/lib/analysis/action";
 
 /** 一次完整的深度分析（7 步流水线，按 userId 归属） */
 export const analyses = pgTable(
@@ -25,6 +26,7 @@ export const analyses = pgTable(
     skeleton: jsonb("skeleton").$type<StructureSkeleton>().notNull(),
     walkHooks: jsonb("walk_hooks").$type<WalkHook[]>().notNull(),
     revisions: jsonb("revisions").$type<RevisionEntry[]>(),
+    actionPlan: jsonb("action_plan").$type<ActionPlan>(),
     createdAt: timestamp("created_at").notNull().defaultNow(),
   },
   (table) => ({
