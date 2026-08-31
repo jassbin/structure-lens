@@ -148,7 +148,6 @@ export function ActionScreen({ id }: { id: string }) {
         </p>
       </div>
 
-      {loading && (
       {loading && <div className="py-16" aria-hidden />}
 
       {!loading && error && (
