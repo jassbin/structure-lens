@@ -1,4 +1,14 @@
 {
+  "analyzing": {
+    "expect": "A deep read usually takes 10–20 seconds. Please keep this page open — good things are worth the wait.",
+    "elapsed": "{{s}}s elapsed",
+    "stage": {
+      "search": "Cross-checking the facts online",
+      "structure": "Rebuilding the underlying skeleton",
+      "deep": "Running the 8-step deep read",
+      "compose": "Gathering twists and action cues"
+    }
+  },
   "walk": {
     "focusing": "Locking onto the hottest isomorphic event",
     "analyzing": "Piercing into this event",
