@@ -145,13 +145,13 @@ export function ActionScreen({ id }: { id: string }) {
           </p>
 
           {/* 1 痛点定位 */}
-          <StepCard icon={Activity} n={1} title={t("action.step.pain")}>
+          <StepCard icon={Activity} n={1} title={t("action.step.pain")} tip={t("action.tip.pain")}>
             <Field label={t("action.pain.whatHurts")} value={plan.steps.pain.whatHurts} strong />
             <Field label={t("action.pain.signal")} value={plan.steps.pain.signal} />
           </StepCard>
 
           {/* 2 可控性分诊 */}
-          <StepCard icon={Split} n={2} title={t("action.step.triage")}>
+          <StepCard icon={Split} n={2} title={t("action.step.triage")} tip={t("action.tip.triage")}>
             <ul className="space-y-2">
               {plan.steps.triage.items.map((it, i) => (
                 <li key={i} className="flex items-start gap-2">
@@ -167,7 +167,7 @@ export function ActionScreen({ id }: { id: string }) {
           </StepCard>
 
           {/* 3 自欺检测 */}
-          <StepCard icon={ScanEye} n={3} title={t("action.step.selfDeception")}>
+          <StepCard icon={ScanEye} n={3} title={t("action.step.selfDeception")} tip={t("action.tip.selfDeception")}>
             <span className="inline-flex rounded-full border border-border bg-muted px-2 py-0.5 text-[11px] font-bold text-foreground">
               {t(`action.sd.${plan.steps.selfDeception.verdict}`)}
             </span>
@@ -187,7 +187,7 @@ export function ActionScreen({ id }: { id: string }) {
 
           {/* 4 最小行动 */}
           {plan.steps.minimalAction.actions.length > 0 && (
-            <StepCard icon={Rocket} n={4} title={t("action.step.minimalAction")} accent>
+            <StepCard icon={Rocket} n={4} title={t("action.step.minimalAction")} tip={t("action.tip.minimalAction")} accent>
               <div className="space-y-2.5">
                 {plan.steps.minimalAction.actions.map((a, i) => (
                   <div key={i} className="rounded-xl border border-secondary/25 bg-secondary/[0.05] px-3 py-2">
@@ -201,7 +201,7 @@ export function ActionScreen({ id }: { id: string }) {
 
           {/* 5 缝隙扫描 */}
           {plan.steps.crack.cracks.length > 0 && (
-            <StepCard icon={DoorOpen} n={5} title={t("action.step.crack")}>
+            <StepCard icon={DoorOpen} n={5} title={t("action.step.crack")} tip={t("action.tip.crack")}>
               <ul className="space-y-2">
                 {plan.steps.crack.cracks.map((c, i) => (
                   <li key={i}>
@@ -214,7 +214,7 @@ export function ActionScreen({ id }: { id: string }) {
           )}
 
           {/* 6 清醒安慰剂 */}
-          <StepCard icon={HeartPulse} n={6} title={t("action.step.placebo")}>
+          <StepCard icon={HeartPulse} n={6} title={t("action.step.placebo")} tip={t("action.tip.placebo")}>
             {plan.steps.placebo.regulations.length > 0 && (
               <ul className="space-y-1">
                 {plan.steps.placebo.regulations.map((r, i) => (
