@@ -412,8 +412,9 @@ export function applyActionRecompute(
   )
     ? (p.stance as ActionDebateTurn["stance"])
     : "hold";
-  const reason = str(p.reason, "已考虑你的意见。");
-  const answer = str(p.answer) || undefined;
+  // answer 是给用户看的"直接回复"（实质内容），必须存在；模型漏了就用 reason 兜底
+  const answer = str(p.answer) || str(p.reason) || "我已针对你这一点重新想过（见下方更新）。";
+  const reason = str(p.reason, answer);
   const changeNote = str(p.changeNote);
 
   const turn: ActionDebateTurn = {
