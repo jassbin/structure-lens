@@ -151,20 +151,9 @@ export const ACTION_SYSTEM_PROMPT = `你是「清醒行动主义（Clear-Actioni
 }
 严格用中文。只输出这个 JSON 对象。`;
 
-/** 强制视角时追加到 system prompt 后的说明（用户手动切换视角时用） */
-export function forcedPerspectiveNote(role: ActionPerspective["role"]): string {
-  const zh: Record<ActionPerspective["role"], string> = {
-    self: "当事人本人",
-    child: "子女",
-    parent: "父母",
-    partner: "伴侣",
-    employee: "员工/下属",
-    manager: "管理者/老板",
-    friend: "朋友",
-    bystander: "旁观者/第三方",
-    other: "用户指定的角色",
-  };
-  return `\n\n## FORCED PERSPECTIVE（用户已手动指定视角，必须严格遵守）\n用户要求**只从「${zh[role]}」的视角**给建议：所有痛点、分诊、行动都只对"作为${zh[role]}的用户"说，绝不给其他角色出主意。输出 perspective.role 必须是 "${role}"。`;
+/** 强制视角时追加到 system prompt 后的说明（用户手动切换到某个候选角色时用） */
+export function forcedPerspectiveNote(label: string): string {
+  return `\n\n## FORCED PERSPECTIVE（用户已手动指定视角，必须严格遵守）\n用户要求**只从「${label}」这个角色的视角**给建议：所有痛点、分诊、行动都只对"作为${label}的用户"说，绝不给本事件里的其他角色出主意。当前 perspective 必须是这个角色（label 用「${label}」），且 isUser 标记在 perspectiveOptions 里对应到它。`;
 }
 
 /* ------------------------------- 解析与兜底 ------------------------------- */
