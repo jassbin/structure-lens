@@ -207,9 +207,17 @@ export function normalizeActionPlan(raw: unknown, id: string): ActionPlan {
   const ma = (s.minimalAction ?? {}) as Record<string, unknown>;
   const crack = (s.crack ?? {}) as Record<string, unknown>;
   const placebo = (s.placebo ?? {}) as Record<string, unknown>;
+  const persp = (r.perspective ?? {}) as Record<string, unknown>;
+  const role = ROLES.includes(persp.role as ActionPerspective["role"])
+    ? (persp.role as ActionPerspective["role"])
+    : "self";
 
   return {
     id,
+    perspective: {
+      role,
+      label: str(persp.label, "作为当事人的你"),
+    },
     headline: str(r.headline, "看清之后，先从一个能动的小处开始。"),
     steps: {
       pain: {
