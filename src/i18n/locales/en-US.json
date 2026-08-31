@@ -257,7 +257,8 @@
       "stage": {
         "read": "Reading where you're stuck right now",
         "triage": "Sorting what you can move from what you can't",
-        "act": "Giving you one step you can take today"
+        "act": "Giving you one step you can take today",
+        "settle": "Leaving one honest closing line"
       }
     },
     "backToReport": "Back to report",
