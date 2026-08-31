@@ -127,9 +127,9 @@ export function ActionScreen({ id }: { id: string }) {
   const [busyStep, setBusyStep] = useState<ActionStepKey | null>(null);
   const [switching, setSwitching] = useState(false);
 
-  /** 切换视角 → 强制按新视角重生成整份方案 */
-  async function switchPerspective(role: ActionPerspective["role"]) {
-    if (!source || switching || role === plan?.perspective.role) return;
+  /** 切换视角 → 强制按新视角（本事件候选之一）重生成整份方案 */
+  async function switchPerspective(label: string) {
+    if (!source || switching || label === plan?.perspective.label) return;
     setSwitching(true);
     setLoading(true);
     try {
@@ -138,7 +138,7 @@ export function ActionScreen({ id }: { id: string }) {
         input: source.input,
         verdict: source.verdict,
         skeleton: source.skeleton,
-        perspectiveRole: role,
+        perspectiveLabel: label,
       });
       setPlan(p);
       saveLocalActionPlan(p);
