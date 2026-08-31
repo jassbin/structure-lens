@@ -159,17 +159,6 @@ export function forcedPerspectiveNote(label: string): string {
 /* ------------------------------- 解析与兜底 ------------------------------- */
 
 const BUCKETS: Controllability[] = ["environment", "behavior", "uncontrollable"];
-const ROLES: ActionPerspective["role"][] = [
-  "self",
-  "child",
-  "parent",
-  "partner",
-  "employee",
-  "manager",
-  "friend",
-  "bystander",
-  "other",
-];
 const SD: ActionPlan["steps"]["selfDeception"]["verdict"][] = [
   "able_but_idle",
   "truly_unable",
