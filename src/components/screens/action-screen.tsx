@@ -105,8 +105,9 @@ export function ActionScreen({ id }: { id: string }) {
 
       {/* Hero */}
       <div className="rounded-3xl bg-secondary p-5 text-secondary-foreground shadow-[0_18px_44px_rgba(16,185,129,0.28)]">
-        <span className="text-[11px] font-bold uppercase tracking-widest text-secondary-foreground/70">
+        <span className="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-widest text-secondary-foreground/80">
           {t("action.badge")}
+          <InfoTip content={t("action.tip.overview")} className="[&_button]:text-secondary-foreground/70 [&_button:hover]:text-white" />
         </span>
         <h1 className="mt-2 font-heading text-2xl font-black leading-tight">
           {t("action.title")}
