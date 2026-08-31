@@ -228,6 +228,42 @@
       "meta": "Metacognitive audit"
     }
   },
+  "action": {
+    "entry": {
+      "title": "You see it clearly — now what?",
+      "subtitle": "Turn the structure you just saw through into one thing you can do today, with Clear-Actionism"
+    },
+    "backToReport": "Back to report",
+    "badge": "Clear-Actionism",
+    "title": "You see it clearly — now what?",
+    "subtitle": "Seeing the structure can leave you powerless. No pep talk here — just help finding the parts you can act on and starting, and regulating the parts you can't without fooling yourself.",
+    "generating": "Building your action plan…",
+    "failed": "Failed to build the action plan",
+    "retry": "Retry",
+    "disclaimer": "This page is a self-help reference for thinking and action, not medical, legal, or psychological advice. If self-harm, severe distress, or legal risk is involved, please seek professional and in-person help promptly.",
+    "step": {
+      "pain": "Locate the pain",
+      "triage": "Controllability triage",
+      "selfDeception": "Self-deception check",
+      "minimalAction": "Minimal action",
+      "crack": "Scan for cracks",
+      "placebo": "Clear-eyed placebo"
+    },
+    "pain": {
+      "whatHurts": "What actually hurts",
+      "signal": "Reframed as a signal"
+    },
+    "bucket": {
+      "environment": "Change environment",
+      "behavior": "Change behavior",
+      "uncontrollable": "Can't change now"
+    },
+    "sd": {
+      "able_but_idle": "Able but idle",
+      "truly_unable": "Truly unable",
+      "unclear": "Unclear"
+    }
+  },
   "map": {
     "title": "Structure Map",
     "intro": "The events you dig settle into structures here. After enough isomorphic collisions, a hypothesis lights up as a verified structure.",
