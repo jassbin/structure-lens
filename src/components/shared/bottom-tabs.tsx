@@ -18,12 +18,15 @@ export function BottomTabs() {
 
   useEffect(() => {
     if (typeof window === "undefined") return;
-    if (pathname.startsWith("/analysis/")) {
-      window.sessionStorage.setItem(LAST_ANALYSIS_KEY, pathname);
-      setLastAnalysis(pathname);
-    } else {
-      setLastAnalysis(window.sessionStorage.getItem(LAST_ANALYSIS_KEY));
-    }
+    const tid = setTimeout(() => {
+      if (pathname.startsWith("/analysis/")) {
+        window.sessionStorage.setItem(LAST_ANALYSIS_KEY, pathname);
+        setLastAnalysis(pathname);
+      } else {
+        setLastAnalysis(window.sessionStorage.getItem(LAST_ANALYSIS_KEY));
+      }
+    }, 0);
+    return () => clearTimeout(tid);
   }, [pathname]);
 
   const analyzeHref =
