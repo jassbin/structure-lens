@@ -21,7 +21,6 @@ export function ActionLoadingOverlay({ open }: { open: boolean }) {
   useEffect(() => {
     if (!open) return;
     startRef.current = Date.now();
-    setElapsed(0);
     const timer = setInterval(() => {
       setElapsed((Date.now() - startRef.current) / 1000);
     }, 200);
