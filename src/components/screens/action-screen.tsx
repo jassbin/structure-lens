@@ -240,27 +240,32 @@ function StepCard({
   icon: Icon,
   n,
   title,
+  tip,
   accent,
   children,
 }: {
   icon: typeof Activity;
   n: number;
   title: string;
+  tip?: string;
   accent?: boolean;
   children: React.ReactNode;
 }) {
   return (
     <div
-      className={`rounded-2xl border p-4 ${accent ? "border-secondary/40 bg-secondary/[0.04]" : "border-border bg-card"}`}
+      className={`rounded-2xl border-2 p-4 shadow-[0_2px_10px_rgba(15,23,42,0.05)] ${accent ? "border-secondary/45 bg-secondary/[0.07]" : "border-border/80 bg-card"}`}
     >
       <div className="flex items-center gap-2">
-        <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-secondary/15 text-[11px] font-black text-secondary">
+        <span className="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-secondary/15 text-[12px] font-black text-secondary ring-1 ring-inset ring-secondary/25">
           {n}
         </span>
         <Icon className="h-4 w-4 text-secondary" aria-hidden />
-        <span className="font-heading text-sm font-extrabold text-foreground">{title}</span>
+        <span className="flex items-center gap-1 font-heading text-sm font-extrabold text-foreground">
+          {title}
+          {tip && <InfoTip content={tip} />}
+        </span>
       </div>
-      <div className="mt-2.5">{children}</div>
+      <div className="mt-3 border-t border-border/60 pt-3">{children}</div>
     </div>
   );
 }
