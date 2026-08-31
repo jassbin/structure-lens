@@ -4,7 +4,10 @@ import { appAi, AppAIUnavailableError } from "@/lib/eazo-ai-billing";
 import { extractJson } from "@/lib/analysis/prompt";
 import {
   ACTION_SYSTEM_PROMPT,
+  forcedPerspectiveNote,
   normalizeActionPlan,
+  PERSPECTIVE_ROLES,
+  type ActionPerspective,
 } from "@/lib/analysis/action";
 import { saveActionPlan, getActionPlanById } from "@/lib/db/queries/analyses";
 import type { StructureSkeleton } from "@/lib/analysis/types";
