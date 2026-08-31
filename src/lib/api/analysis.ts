@@ -189,12 +189,13 @@ export async function getShare(code: string): Promise<ShareRecord | null> {
   return data.share;
 }
 
-/** 基于一次分析生成「清醒行动主义」行动方案。免登录。 */
+/** 基于一次分析生成「清醒行动主义」行动方案。免登录。regenerate 强制重生成。 */
 export async function getActionPlan(payload: {
   id: string;
   input: string;
   verdict: string;
   skeleton: StructureSkeleton;
+  regenerate?: boolean;
 }): Promise<ActionPlan> {
   const res = await request("/api/action", {
     method: "POST",
@@ -203,5 +204,15 @@ export async function getActionPlan(payload: {
   });
   if (!res.ok) throw new Error(`action failed: ${res.status}`);
   const data = (await res.json()) as { plan: ActionPlan };
+  return data.plan;
+}
+
+/** 读取云端已存的行动方案（登录用户）。免登录/未存返回 null。 */
+export async function getSavedActionPlan(
+  id: string,
+): Promise<ActionPlan | null> {
+  const res = await request(`/api/action?id=${encodeURIComponent(id)}`);
+  if (!res.ok) return null;
+  const data = (await res.json()) as { plan: ActionPlan | null };
   return data.plan;
 }
