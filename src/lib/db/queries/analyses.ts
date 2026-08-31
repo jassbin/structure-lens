@@ -130,6 +130,8 @@ export async function listActionPlans(userId: string, limit = 200) {
       createdAt: r.createdAt.toISOString(),
     }));
 }
+
+/** 本人云端全部分析（完整体，用于云端→本地回流合并） */
 export async function listAllAnalysesFull(
   userId: string,
   limit = 500,
