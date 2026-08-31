@@ -37,6 +37,8 @@ export async function POST(request: NextRequest) {
     verdict?: string;
     skeleton?: StructureSkeleton;
     regenerate?: boolean;
+    /** 用户手动指定的视角（不传则由 AI 自动识别） */
+    perspectiveRole?: ActionPerspective["role"];
   };
 
   const id = (body.id ?? "").trim() || crypto.randomUUID().slice(0, 16);
@@ -47,11 +49,22 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "empty" }, { status: 400 });
   }
 
-  // 登录用户：优先复用云端已存方案（除非强制重生成），避免重复调用 AI
-  if (user && !body.regenerate) {
+  // 手动指定视角（且是有效的非默认角色）→ 视为强制重生成，追加 forced 说明
+  const forcedRole =
+    body.perspectiveRole && PERSPECTIVE_ROLES.includes(body.perspectiveRole)
+      ? body.perspectiveRole
+      : null;
+  const mustRegenerate = Boolean(body.regenerate || forcedRole);
+
+  // 登录用户：优先复用云端已存方案（除非强制重生成/切换视角），避免重复调用 AI
+  if (user && !mustRegenerate) {
     const existing = await getActionPlanById(user.id, id).catch(() => null);
     if (existing) return NextResponse.json({ plan: existing, cached: true });
   }
+
+  const systemPrompt = forcedRole
+    ? ACTION_SYSTEM_PROMPT + forcedPerspectiveNote(forcedRole)
+    : ACTION_SYSTEM_PROMPT;
 
   const userMsg = [
     `【用户的原始困惑/事件】\n${input || "(未提供)"}`,
@@ -67,7 +80,7 @@ export async function POST(request: NextRequest) {
   try {
     const completion = await appAi.chat({
       messages: [
-        { role: "system", content: ACTION_SYSTEM_PROMPT },
+        { role: "system", content: systemPrompt },
         { role: "user", content: userMsg },
       ],
       ...(user ? { viewer_user_id: user.id } : {}),
