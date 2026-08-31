@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { ArrowRight, Loader2 } from "lucide-react";
 import { AppShell } from "@/components/shared/app-shell";
 import { BottomTabs } from "@/components/shared/bottom-tabs";
+import { AnalyzingOverlay } from "@/components/shared/analyzing-overlay";
 import { DeepTopics } from "@/components/home/deep-topics";
 import { HeroBackdrop } from "@/components/home/hero-backdrop";
 import { ProbePanel, NotApplicablePanel, AlignCard } from "@/components/home/entry-panels";
@@ -29,6 +30,8 @@ export function HomeScreen() {
   const router = useRouter();
   const [input, setInput] = useState("");
   const [busy, setBusy] = useState(false);
+  /** 仅在真正跑 8 步深度分析时为 true，用于显示全屏进度遮罩（预检/对齐阶段不显示） */
+  const [analyzing, setAnalyzing] = useState(false);
   const [triage, setTriage] = useState<TriageResult | null>(null);
   const [probeAnswer, setProbeAnswer] = useState("");
   const [align, setAlign] = useState<AlignState>(null);
@@ -52,6 +55,7 @@ export function HomeScreen() {
   ) {
     if (busy) return;
     setBusy(true);
+    setAnalyzing(true);
     try {
       const res = await analyze(text, opts);
       if (res.status === "diggable") {
@@ -59,12 +63,14 @@ export function HomeScreen() {
         router.push(`/analysis/${res.result.id}`);
       } else {
         setTriage(res.triage);
+        setAnalyzing(false);
         setBusy(false);
       }
     } catch (error) {
       if (!(error instanceof AppAIClientUnavailableError)) {
         toast.error(t("home.failed", "分析失败，请稍后重试"));
       }
+      setAnalyzing(false);
       setBusy(false);
     }
   }
@@ -123,6 +129,7 @@ export function HomeScreen() {
 
   return (
     <AppShell tab={<BottomTabs />}>
+      <AnalyzingOverlay open={analyzing} />
       <div className="relative">
         <HeroBackdrop />
 
