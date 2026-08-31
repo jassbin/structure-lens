@@ -37,34 +37,17 @@ export const ACTION_STEP_ORDER: ActionStepKey[] = [
 
 /**
  * 行动方案的「视角」：一切建议都从这个立场出发。
- * role 是机读键，label 是给这个具体事件量身的人称（如"作为子女的你"）。
+ * 视角不再是写死的通用角色，而是**由 AI 针对这个具体事件动态抽取**的主要角色之一。
+ * id 是本事件内角色的稳定标识（英文短横线，如 "investor" / "the-son"），label 是展示名。
  */
 export interface ActionPerspective {
-  role:
-    | "self"
-    | "child"
-    | "parent"
-    | "partner"
-    | "employee"
-    | "manager"
-    | "friend"
-    | "bystander"
-    | "other";
-  /** 面向用户的视角名（如"作为子女""作为团队负责人"） */
+  /** 本事件内该角色的标识（英文，稳定用于切换匹配） */
+  id: string;
+  /** 面向用户的视角名（贴合本事件，如"作为投资者""作为被催婚的子女"） */
   label: string;
+  /** 是否是"用户最可能所处"的角色（默认选中项） */
+  isUser?: boolean;
 }
-
-/** 内置可切换的视角选项（label 用 i18n 键渲染，见 action.perspective.*） */
-export const PERSPECTIVE_ROLES: ActionPerspective["role"][] = [
-  "self",
-  "child",
-  "parent",
-  "partner",
-  "employee",
-  "manager",
-  "friend",
-  "bystander",
-];
 
 /** 一步之内的人机辩论留痕（复用分析页 DebateTurn 语义） */
 export interface ActionDebateTurn {
