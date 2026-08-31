@@ -253,6 +253,15 @@
       "whatHurts": "What actually hurts",
       "signal": "Reframed as a signal"
     },
+    "tip": {
+      "overview": "Clear-Actionism is a survival manual for living clearly inside rigid structures: it admits most pain has no built-in meaning and most structures can't be moved, yet refuses passivity and self-deception — change what you can, and regulate what you can't without lying to yourself. It follows the structural analysis, turning 'seeing clearly' into 'being able to act'.",
+      "pain": "Reframe the emotional pain in your situation into a cooler signal: is it a biological alarm (fear, exhaustion, threat) or a structural signal of being squeezed by some rigid structure? See 'what actually hurts' first, instead of rushing to give it meaning.",
+      "triage": "Break the situation apart and sort each piece into three buckets: change environment (switch/leave/move/find), change behavior (adjust your own actions or cognition), can't change now (nearly immovable, only regulable). Honest sorting is the precondition for action — don't call the uncontrollable controllable, nor hand the controllable to fate.",
+      "selfDeception": "Distinguish 'able but idle' from 'truly unable': the former has capacity and room yet uses 'I've seen through it / I don't need it' to mask fear (gently name it); the latter is objectively constrained and deserves empathy, not pushing. A few self-check questions help you look honestly.",
+      "minimalAction": "Only for the 'change environment / change behavior' parts, give minimal actions you can start today or this week (begin in 5 minutes, iterable). Action produces feedback, and feedback breaks self-deception — start moving, then iterate.",
+      "crack": "For structures you can't move yet, look for real 'cracks': rule inconsistencies, regulatory gaps, fractures between interests, new technical spaces, usable policies and benefits. This isn't opportunism — it's strategically buying yourself room inside a rigid structure.",
+      "placebo": "For the parts you truly can't change, use non-self-deceiving regulation (observer practice, physiology first, time-boxed rumination) — these are painkillers, not cures; use them but never mistake them for truth. Close with one principle to settle your mindset."
+    },
     "bucket": {
       "environment": "Change environment",
       "behavior": "Change behavior",
