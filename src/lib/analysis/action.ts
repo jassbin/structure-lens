@@ -17,10 +17,72 @@ export type ActionStepKind =
 /** 可控性三筐 */
 export type Controllability = "environment" | "behavior" | "uncontrollable";
 
+/** 行动 6 步的键（线性下游顺序） */
+export type ActionStepKey =
+  | "pain"
+  | "triage"
+  | "selfDeception"
+  | "minimalAction"
+  | "crack"
+  | "placebo";
+
+export const ACTION_STEP_ORDER: ActionStepKey[] = [
+  "pain",
+  "triage",
+  "selfDeception",
+  "minimalAction",
+  "crack",
+  "placebo",
+];
+
+/**
+ * 行动方案的「视角」：一切建议都从这个立场出发。
+ * role 是机读键，label 是给这个具体事件量身的人称（如"作为子女的你"）。
+ */
+export interface ActionPerspective {
+  role:
+    | "self"
+    | "child"
+    | "parent"
+    | "partner"
+    | "employee"
+    | "manager"
+    | "friend"
+    | "bystander"
+    | "other";
+  /** 面向用户的视角名（如"作为子女""作为团队负责人"） */
+  label: string;
+}
+
+/** 内置可切换的视角选项（label 用 i18n 键渲染，见 action.perspective.*） */
+export const PERSPECTIVE_ROLES: ActionPerspective["role"][] = [
+  "self",
+  "child",
+  "parent",
+  "partner",
+  "employee",
+  "manager",
+  "friend",
+  "bystander",
+];
+
+/** 一步之内的人机辩论留痕（复用分析页 DebateTurn 语义） */
+export interface ActionDebateTurn {
+  objection: string;
+  stance: "absorb" | "compromise" | "hold";
+  reason: string;
+  answer?: string;
+  at: string;
+}
+
 export interface ActionPlan {
   id: string; // 与来源分析同 id
+  /** 本方案所站的视角（自动识别，用户可切换后重生成） */
+  perspective: ActionPerspective;
   /** 一句克制、可行动的定调（不鸡汤、不美化，但给出可动的方向） */
   headline: string;
+  /** 每步的人机辩论留痕（按步键归档） */
+  debates?: Partial<Record<ActionStepKey, ActionDebateTurn[]>>;
   steps: {
     pain: {
       /** 把情绪痛还原成的信号（生物信号 / 结构信号） */
