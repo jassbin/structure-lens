@@ -121,7 +121,7 @@ export function ReportScreen({ id }: { id: string }) {
         className="group relative flex items-center gap-3.5 overflow-hidden rounded-2xl bg-secondary p-4 text-secondary-foreground shadow-[0_14px_36px_rgba(16,185,129,0.32)] ring-1 ring-inset ring-white/15 transition-all hover:shadow-[0_18px_44px_rgba(16,185,129,0.42)] hover:brightness-[1.03] active:scale-[0.99]"
       >
         <span className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-white/20">
-          <Sparkles className="h-5.5 w-5.5 text-white" aria-hidden />
+          <Sparkles className="h-5 w-5 text-white" aria-hidden />
         </span>
         <div className="min-w-0 flex-1">
           <p className="font-heading text-base font-black leading-tight">
