@@ -16,11 +16,24 @@ import {
 import { getCachedAnalysis } from "@/lib/analysis/store";
 import { getLocalAnalysis } from "@/lib/analysis/local-map";
 import { getLocalActionPlan, saveLocalActionPlan } from "@/lib/analysis/action-store";
-import { getAnalysis, getActionPlan, getSavedActionPlan } from "@/lib/api/analysis";
+import {
+  getAnalysis,
+  getActionPlan,
+  getSavedActionPlan,
+  recomputeAction,
+} from "@/lib/api/analysis";
 import { ActionLoadingOverlay } from "@/components/shared/action-loading-overlay";
+import { PerspectiveBar } from "@/components/action/perspective-bar";
+import { ActionDisagreeThread } from "@/components/action/action-disagree-thread";
 import { InfoTip } from "@/components/shared/info-tip";
+import { toast } from "sonner";
 import type { AnalysisResult } from "@/lib/analysis/types";
-import type { ActionPlan, Controllability } from "@/lib/analysis/action";
+import type {
+  ActionPlan,
+  ActionStepKey,
+  ActionPerspective,
+  Controllability,
+} from "@/lib/analysis/action";
 
 const BUCKET_STYLE: Record<Controllability, string> = {
   environment: "border-secondary/40 bg-secondary/10 text-secondary",
