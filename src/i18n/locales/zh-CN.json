@@ -36,7 +36,7 @@
     "body": "你之前挖的「{{title}}」是同一副底层结构——点开看看是不是一个套路。"
   },
   "intro": {
-    "tagline": "照妖镜 · 专治“表面一套、底下一套”",
+    "tagline": "解忧果 · 看清结构，保持定力",
     "skip": "跳过"
   },
   "common": {
@@ -91,10 +91,10 @@
   },
   "home": {
     "brand": "结构透镜",
-    "taglineLead": "照妖镜，专治",
-    "taglineHighlight": "“表面一套、底下一套”",
-    "taglineHighlightHead": "“表面一套、",
-    "taglineHighlightTail": "底下一套”",
+    "taglineLead": "解忧果：",
+    "taglineHighlight": "看清结构，保持定力",
+    "taglineHighlightHead": "看清结构，",
+    "taglineHighlightTail": "保持定力",
     "taglineSub": "放进来，照给你看",
     "inputPlaceholder": "一个事件、一个政策、一次决策…",
     "analyze": "开始穿透",
