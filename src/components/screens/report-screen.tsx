@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
-import { ArrowLeft, Compass, ArrowRight, Check, History } from "lucide-react";
+import { ArrowLeft, Compass, ArrowRight, Check, History, Sparkles } from "lucide-react";
 import { PipelineTimeline } from "@/components/analysis/pipeline/pipeline-timeline";
 import { SkeletonCard } from "@/components/analysis/skeleton-card";
 import { InfoTip } from "@/components/shared/info-tip";
@@ -113,6 +113,26 @@ export function ReportScreen({ id }: { id: string }) {
       <PipelineTimeline result={result} onResult={handleResult} />
 
       <SkeletonCard result={result} onResult={handleResult} />
+
+      {/* 看清了，然后呢？—— 跳转清醒行动主义行动页 */}
+      <Link
+        href={`/action/${id}`}
+        data-el="action-entry"
+        className="group flex items-center gap-3 rounded-2xl border border-secondary/30 bg-gradient-to-br from-secondary/[0.10] to-secondary/[0.02] p-4 shadow-sm transition-all hover:border-secondary/60 hover:shadow-md"
+      >
+        <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-secondary/15">
+          <Sparkles className="h-5 w-5 text-secondary" aria-hidden />
+        </span>
+        <div className="min-w-0 flex-1">
+          <p className="font-heading text-sm font-extrabold text-foreground">
+            {t("action.entry.title")}
+          </p>
+          <p className="mt-0.5 text-xs leading-relaxed text-muted-foreground">
+            {t("action.entry.subtitle")}
+          </p>
+        </div>
+        <ArrowRight className="h-4 w-4 shrink-0 text-secondary transition-transform group-hover:translate-x-0.5" />
+      </Link>
 
       <ShareButton result={result} />
 
