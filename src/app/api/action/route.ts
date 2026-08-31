@@ -6,8 +6,6 @@ import {
   ACTION_SYSTEM_PROMPT,
   forcedPerspectiveNote,
   normalizeActionPlan,
-  PERSPECTIVE_ROLES,
-  type ActionPerspective,
 } from "@/lib/analysis/action";
 import { saveActionPlan, getActionPlanById } from "@/lib/db/queries/analyses";
 import type { StructureSkeleton } from "@/lib/analysis/types";
@@ -37,8 +35,8 @@ export async function POST(request: NextRequest) {
     verdict?: string;
     skeleton?: StructureSkeleton;
     regenerate?: boolean;
-    /** 用户手动指定的视角（不传则由 AI 自动识别） */
-    perspectiveRole?: ActionPerspective["role"];
+    /** 用户手动切换到的视角展示名（本事件候选之一；不传则由 AI 自动识别默认视角） */
+    perspectiveLabel?: string;
   };
 
   const id = (body.id ?? "").trim() || crypto.randomUUID().slice(0, 16);
@@ -49,12 +47,9 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "empty" }, { status: 400 });
   }
 
-  // 手动指定视角（且是有效的非默认角色）→ 视为强制重生成，追加 forced 说明
-  const forcedRole =
-    body.perspectiveRole && PERSPECTIVE_ROLES.includes(body.perspectiveRole)
-      ? body.perspectiveRole
-      : null;
-  const mustRegenerate = Boolean(body.regenerate || forcedRole);
+  // 手动切换视角 → 视为强制重生成，追加 forced 说明
+  const forcedLabel = (body.perspectiveLabel ?? "").trim() || null;
+  const mustRegenerate = Boolean(body.regenerate || forcedLabel);
 
   // 登录用户：优先复用云端已存方案（除非强制重生成/切换视角），避免重复调用 AI
   if (user && !mustRegenerate) {
@@ -62,8 +57,8 @@ export async function POST(request: NextRequest) {
     if (existing) return NextResponse.json({ plan: existing, cached: true });
   }
 
-  const systemPrompt = forcedRole
-    ? ACTION_SYSTEM_PROMPT + forcedPerspectiveNote(forcedRole)
+  const systemPrompt = forcedLabel
+    ? ACTION_SYSTEM_PROMPT + forcedPerspectiveNote(forcedLabel)
     : ACTION_SYSTEM_PROMPT;
 
   const userMsg = [
