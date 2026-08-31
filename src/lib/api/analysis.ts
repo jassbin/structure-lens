@@ -195,13 +195,14 @@ export async function getShare(code: string): Promise<ShareRecord | null> {
   return data.share;
 }
 
-/** 基于一次分析生成「清醒行动主义」行动方案。免登录。regenerate 强制重生成。 */
+/** 基于一次分析生成「清醒行动主义」行动方案。免登录。regenerate 强制重生成；perspectiveRole 手动指定视角。 */
 export async function getActionPlan(payload: {
   id: string;
   input: string;
   verdict: string;
   skeleton: StructureSkeleton;
   regenerate?: boolean;
+  perspectiveRole?: ActionPerspective["role"];
 }): Promise<ActionPlan> {
   const res = await request("/api/action", {
     method: "POST",
@@ -211,6 +212,25 @@ export async function getActionPlan(payload: {
   if (!res.ok) throw new Error(`action failed: ${res.status}`);
   const data = (await res.json()) as { plan: ActionPlan };
   return data.plan;
+}
+
+/** 行动页某一节「我不同意/追问」：AI 表态 + 可能重算下游。返回新方案 + 表态。 */
+export async function recomputeAction(payload: {
+  plan: ActionPlan;
+  fromStepKey: ActionStepKey;
+  objection: string;
+}): Promise<{ plan: ActionPlan; stance: ActionDebateStance; changeNote: string }> {
+  const res = await request("/api/action/recompute", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) throw new Error(`action recompute failed: ${res.status}`);
+  return (await res.json()) as {
+    plan: ActionPlan;
+    stance: ActionDebateStance;
+    changeNote: string;
+  };
 }
 
 /** 读取云端已存的行动方案（登录用户）。免登录/未存返回 null。 */
