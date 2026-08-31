@@ -209,6 +209,15 @@ export function ActionScreen({ id }: { id: string }) {
         </p>
       </div>
 
+      {/* 视角条：显示当前视角 + 可切换（自动识别，错了能纠正） */}
+      {!loading && !error && plan && (
+        <PerspectiveBar
+          current={plan.perspective}
+          busy={switching || busyStep !== null}
+          onSwitch={switchPerspective}
+        />
+      )}
+
       {loading && <div className="py-16" aria-hidden />}
 
       {!loading && error && (
