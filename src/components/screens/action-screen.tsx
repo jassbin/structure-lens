@@ -149,11 +149,7 @@ export function ActionScreen({ id }: { id: string }) {
       </div>
 
       {loading && (
-        <div className="flex flex-col items-center gap-2 py-16 text-center">
-          <RefreshCw className="h-5 w-5 animate-spin text-secondary" />
-          <p className="text-sm text-muted-foreground">{t("action.generating")}</p>
-        </div>
-      )}
+      {loading && <div className="py-16" aria-hidden />}
 
       {!loading && error && (
         <div className="flex flex-col items-center gap-3 py-16 text-center">
