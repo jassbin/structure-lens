@@ -359,12 +359,16 @@ export function actionRecomputeSystemPrompt(
 ): string {
   const label = STEP_LABEL_ZH[fromStepKey];
   const downstream = ACTION_STEP_ORDER.slice(
+    ACTION_STEP_ORDER.indexOf(fromStepKey) + 1,
+  );
+  const downstreamLabels = downstream.map((k) => STEP_LABEL_ZH[k]);
+  const thisAndDown = ACTION_STEP_ORDER.slice(
     ACTION_STEP_ORDER.indexOf(fromStepKey),
   );
   return `你是「清醒行动主义」行动引擎的"共同推演"模块。用户对已生成行动方案的某一节提出了「反驳」或「追问」。
 
 ## 锁定视角（不可更改）
-本方案的视角是「${perspective.label}」(role=${perspective.role})。你的一切回应与重算都必须继续站在这个视角，**绝不改判用户的角色**。
+本方案的视角是「${perspective.label}」(id=${perspective.id})。你的一切回应与重算都必须继续站在这个视角，**绝不改判用户的角色**。
 
 ## 你的任务
 1. 先对用户针对「${label}」这一节的反驳/追问**表态**：
@@ -372,15 +376,20 @@ export function actionRecomputeSystemPrompt(
    - compromise（部分采纳）：部分有理，做有限调整。
    - hold（保持）：用户的点不足以改变结论，说明为什么，但要真诚正面回答其追问，不敷衍。
 2. 给 reason（任何表态都必须有）；若用户是「追问为什么」，在 answer 里正面回答那个为什么。
-3. 若表态是 absorb 或 compromise：重算「${label}」及其线性下游步（${downstream.join(" → ")}），只输出这些步的新内容；上游步保持不变、不要输出。若 hold：steps 留空对象 {}。
+3. 若表态是 absorb 或 compromise（这是重点，别偷懒）：
+   - 先重写「${label}」这一节；
+   - 然后**逐一重新审视每个下游步（${downstreamLabels.join("、") || "无下游步"}）**：只要用户这个新观点会影响到它（比如痛点变了→分诊要变→最小行动要变），就**必须把那个下游步一并重写**并回传其完整新内容；确实不受影响的下游步可以不回传（将保持原样）。
+   - **绝不允许**只改「${label}」却对明明受影响的下游步不管——那样方案会自相矛盾。
+   - steps 里回传的每一步都用与初次生成完全一致的字段结构。
+   - 若 hold：steps 留空对象 {}。
 
 ## 输出格式（只输出一个 JSON，不要 markdown）
 {
   "stance": "absorb|compromise|hold",
   "reason": "表态理由",
   "answer": "对追问的正面回答（没有追问可留空）",
-  "changeNote": "一句话说明改了什么（hold 时说明为何不改）",
-  "steps": { ${downstream.map((k) => `"${k}": { ... }`).join(", ")} }
+  "changeNote": "一句话说明改了哪些步（列出被改动的步名；hold 时说明为何不改）",
+  "steps": { ${thisAndDown.map((k) => `"${k}": { ... }`).join(", ")} }
 }
 steps 里各步的字段结构与初次生成完全一致。严格中文。只输出这个 JSON。`;
 }
