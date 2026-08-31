@@ -42,6 +42,12 @@ export function BottomTabs() {
       icon: Network,
       active: pathname.startsWith("/map"),
     },
+    {
+      key: "actions",
+      href: "/actions",
+      icon: Sprout,
+      active: pathname.startsWith("/actions") || pathname.startsWith("/action/"),
+    },
   ] as const;
 
   return (
