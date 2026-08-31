@@ -118,6 +118,54 @@ export function ActionScreen({ id }: { id: string }) {
     setSource((s) => (s ? { ...s } : s)); // 触发重取
   }
 
+  const [busyStep, setBusyStep] = useState<ActionStepKey | null>(null);
+  const [switching, setSwitching] = useState(false);
+
+  /** 切换视角 → 强制按新视角重生成整份方案 */
+  async function switchPerspective(role: ActionPerspective["role"]) {
+    if (!source || switching || role === plan?.perspective.role) return;
+    setSwitching(true);
+    setLoading(true);
+    try {
+      const p = await getActionPlan({
+        id: source.id,
+        input: source.input,
+        verdict: source.verdict,
+        skeleton: source.skeleton,
+        perspectiveRole: role,
+      });
+      setPlan(p);
+      saveLocalActionPlan(p);
+    } catch {
+      toast.error(t("action.failed", "生成失败，请重试"));
+    } finally {
+      setSwitching(false);
+      setLoading(false);
+    }
+  }
+
+  /** 某一节「我不同意/追问」→ 表态 + 可能重算下游 */
+  async function submitDisagree(stepKey: ActionStepKey, objection: string) {
+    if (!plan || busyStep) return;
+    setBusyStep(stepKey);
+    try {
+      const res = await recomputeAction({ plan, fromStepKey: stepKey, objection });
+      setPlan(res.plan);
+      saveLocalActionPlan(res.plan);
+      if (res.changeNote) {
+        toast.success(
+          res.stance === "hold"
+            ? t("action.debate.held", "已回应，结论维持")
+            : t("action.debate.updated", "已据此更新后续步骤"),
+        );
+      }
+    } catch {
+      toast.error(t("action.debate.failed", "回应失败，请重试"));
+    } finally {
+      setBusyStep(null);
+    }
+  }
+
   const bucketLabel = (b: Controllability) => t(`action.bucket.${b}`);
 
   if (source === null) {
