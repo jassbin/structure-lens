@@ -118,20 +118,23 @@ export function ReportScreen({ id }: { id: string }) {
       <Link
         href={`/action/${id}`}
         data-el="action-entry"
-        className="group flex items-center gap-3 rounded-2xl border border-secondary/30 bg-gradient-to-br from-secondary/[0.10] to-secondary/[0.02] p-4 shadow-sm transition-all hover:border-secondary/60 hover:shadow-md"
+        className="group relative flex items-center gap-3.5 overflow-hidden rounded-2xl bg-secondary p-4 text-secondary-foreground shadow-[0_14px_36px_rgba(16,185,129,0.32)] ring-1 ring-inset ring-white/15 transition-all hover:shadow-[0_18px_44px_rgba(16,185,129,0.42)] hover:brightness-[1.03] active:scale-[0.99]"
       >
-        <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-secondary/15">
-          <Sparkles className="h-5 w-5 text-secondary" aria-hidden />
+        <span className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-white/20">
+          <Sparkles className="h-5.5 w-5.5 text-white" aria-hidden />
         </span>
         <div className="min-w-0 flex-1">
-          <p className="font-heading text-sm font-extrabold text-foreground">
+          <p className="font-heading text-base font-black leading-tight">
             {t("action.entry.title")}
           </p>
-          <p className="mt-0.5 text-xs leading-relaxed text-muted-foreground">
+          <p className="mt-0.5 text-xs leading-relaxed text-secondary-foreground/85">
             {t("action.entry.subtitle")}
           </p>
         </div>
-        <ArrowRight className="h-4 w-4 shrink-0 text-secondary transition-transform group-hover:translate-x-0.5" />
+        <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-white/20 px-2.5 py-1 text-[11px] font-black">
+          {t("action.entry.cta")}
+          <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
+        </span>
       </Link>
 
       <ShareButton result={result} />
