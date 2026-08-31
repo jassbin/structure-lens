@@ -264,18 +264,8 @@
     "perspective": {
       "label": "Current perspective",
       "switch": "Switch",
-      "pickHint": "Which role are you in this situation? Switch, and the advice re-aligns to you.",
-      "role": {
-        "self": "The person involved (me)",
-        "child": "As a child / son / daughter",
-        "parent": "As a parent",
-        "partner": "As a partner",
-        "employee": "As an employee / subordinate",
-        "manager": "As a manager / boss",
-        "friend": "As a friend",
-        "bystander": "As a bystander / third party",
-        "other": "Another role"
-      }
+      "you": "most likely you",
+      "pickHint": "Which role are you in this situation? Switch, and the advice re-aligns to you."
     },
     "stance": {
       "absorb": "Accepted",
