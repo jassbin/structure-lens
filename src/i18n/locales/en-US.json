@@ -252,6 +252,14 @@
       "subtitle": "Turn the structure you just saw through into one thing you can do today, with Clear-Actionism",
       "cta": "Act"
     },
+    "loading": {
+      "expect": "Generating your clear-headed action plan — usually 8–15 seconds, hang tight",
+      "stage": {
+        "read": "Reading where you're stuck right now",
+        "triage": "Sorting what you can move from what you can't",
+        "act": "Giving you one step you can take today"
+      }
+    },
     "backToReport": "Back to report",
     "badge": "Clear-Actionism",
     "title": "You see it clearly — now what?",
