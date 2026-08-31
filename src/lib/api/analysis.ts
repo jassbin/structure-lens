@@ -9,6 +9,7 @@ import type {
   StructureNode,
   TriageResult,
 } from "@/lib/analysis/types";
+import type { ActionPlan } from "@/lib/analysis/action";
 
 export type AnalyzeResponse =
   | { status: "diggable"; result: AnalysisResult; persisted?: boolean }
@@ -67,6 +68,8 @@ export async function walkFocus(payload: {
 }
 
 export type DrillMode = "challenge" | "deeper" | "counter";
+
+/** 对某一条判断继续深挖 / 质疑 / 反驳。免登录。 */
 export async function drill(payload: {
   verdict: string;
   layerTitle: string;
