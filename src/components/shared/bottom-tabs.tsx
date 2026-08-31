@@ -37,16 +37,16 @@ export function BottomTabs() {
       active: pathname === "/" || pathname.startsWith("/analysis"),
     },
     {
-      key: "map",
-      href: "/map",
-      icon: Network,
-      active: pathname.startsWith("/map"),
-    },
-    {
       key: "actions",
       href: "/actions",
       icon: Sprout,
       active: pathname.startsWith("/actions") || pathname.startsWith("/action/"),
+    },
+    {
+      key: "map",
+      href: "/map",
+      icon: Network,
+      active: pathname.startsWith("/map"),
     },
   ] as const;
 
