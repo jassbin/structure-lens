@@ -277,5 +277,148 @@ export function normalizeActionPlan(raw: unknown, id: string): ActionPlan {
         ),
       },
     },
+    debates: parseDebates(r.debates),
+  };
+}
+
+/** 解析已存 debates 留痕（兜底） */
+function parseDebates(
+  raw: unknown,
+): Partial<Record<ActionStepKey, ActionDebateTurn[]>> | undefined {
+  if (!raw || typeof raw !== "object") return undefined;
+  const out: Partial<Record<ActionStepKey, ActionDebateTurn[]>> = {};
+  for (const key of ACTION_STEP_ORDER) {
+    const turns = (raw as Record<string, unknown>)[key];
+    if (!Array.isArray(turns)) continue;
+    const list = turns
+      .map((t) => {
+        const o = (t ?? {}) as Record<string, unknown>;
+        const stance = (["absorb", "compromise", "hold"] as const).includes(
+          o.stance as "absorb",
+        )
+          ? (o.stance as ActionDebateTurn["stance"])
+          : "hold";
+        return {
+          objection: str(o.objection),
+          stance,
+          reason: str(o.reason),
+          answer: str(o.answer) || undefined,
+          at: str(o.at, new Date().toISOString()),
+        };
+      })
+      .filter((t) => t.objection);
+    if (list.length) out[key] = list;
+  }
+  return Object.keys(out).length ? out : undefined;
+}
+
+/* ------------------------------- 单步「我不同意/追问」重算 ------------------------------- */
+
+const STEP_LABEL_ZH: Record<ActionStepKey, string> = {
+  pain: "痛点定位",
+  triage: "可控性分诊",
+  selfDeception: "自欺检测",
+  minimalAction: "最小行动",
+  crack: "缝隙扫描",
+  placebo: "清醒安慰剂",
+};
+
+/**
+ * 行动页单步「我不同意/追问」的 system prompt。
+ * 语义与分析页 recompute 一致：AI 先表态 absorb/compromise/hold + 理由/回答，
+ * 仅 absorb/compromise 才重算该步及其线性下游步；hold 则不动内容、只给理由。
+ * 全程锁定既有视角，不得改判角色。
+ */
+export function actionRecomputeSystemPrompt(
+  fromStepKey: ActionStepKey,
+  perspective: ActionPerspective,
+): string {
+  const label = STEP_LABEL_ZH[fromStepKey];
+  const downstream = ACTION_STEP_ORDER.slice(
+    ACTION_STEP_ORDER.indexOf(fromStepKey),
+  );
+  return `你是「清醒行动主义」行动引擎的"共同推演"模块。用户对已生成行动方案的某一节提出了「反驳」或「追问」。
+
+## 锁定视角（不可更改）
+本方案的视角是「${perspective.label}」(role=${perspective.role})。你的一切回应与重算都必须继续站在这个视角，**绝不改判用户的角色**。
+
+## 你的任务
+1. 先对用户针对「${label}」这一节的反驳/追问**表态**：
+   - absorb（采纳）：用户有理，应据此调整这一节及其下游。
+   - compromise（部分采纳）：部分有理，做有限调整。
+   - hold（保持）：用户的点不足以改变结论，说明为什么，但要真诚正面回答其追问，不敷衍。
+2. 给 reason（任何表态都必须有）；若用户是「追问为什么」，在 answer 里正面回答那个为什么。
+3. 若表态是 absorb 或 compromise：重算「${label}」及其线性下游步（${downstream.join(" → ")}），只输出这些步的新内容；上游步保持不变、不要输出。若 hold：steps 留空对象 {}。
+
+## 输出格式（只输出一个 JSON，不要 markdown）
+{
+  "stance": "absorb|compromise|hold",
+  "reason": "表态理由",
+  "answer": "对追问的正面回答（没有追问可留空）",
+  "changeNote": "一句话说明改了什么（hold 时说明为何不改）",
+  "steps": { ${downstream.map((k) => `"${k}": { ... }`).join(", ")} }
+}
+steps 里各步的字段结构与初次生成完全一致。严格中文。只输出这个 JSON。`;
+}
+
+/**
+ * 把单步重算结果应用到方案上：
+ * - 保留 perspective、headline、被反驳步之前的所有步；
+ * - absorb/compromise：用 parsed.steps 覆盖 fromStepKey 及其下游步（缺的步保持原样）；
+ * - 追加本轮 debate 留痕到 fromStepKey。
+ */
+export function applyActionRecompute(
+  base: ActionPlan,
+  parsed: unknown,
+  fromStepKey: ActionStepKey,
+  objection: string,
+): { plan: ActionPlan; stance: ActionDebateTurn["stance"]; changeNote: string } {
+  const p = (parsed ?? {}) as Record<string, unknown>;
+  const stance = (["absorb", "compromise", "hold"] as const).includes(
+    p.stance as "absorb",
+  )
+    ? (p.stance as ActionDebateTurn["stance"])
+    : "hold";
+  const reason = str(p.reason, "已考虑你的意见。");
+  const answer = str(p.answer) || undefined;
+  const changeNote = str(p.changeNote);
+
+  const turn: ActionDebateTurn = {
+    objection,
+    stance,
+    reason,
+    answer,
+    at: new Date().toISOString(),
+  };
+
+  // 从重算结果里取新步（复用 normalize 的兜底：整份规整后按需摘取）
+  let nextSteps = base.steps;
+  if (stance !== "hold") {
+    const fromIdx = ACTION_STEP_ORDER.indexOf(fromStepKey);
+    const affected = ACTION_STEP_ORDER.slice(fromIdx);
+    // 用一个假 plan 走 normalize 拿到规整后的步（perspective 用 base 的）
+    const regen = normalizeActionPlan(
+      { perspective: base.perspective, headline: base.headline, steps: p.steps },
+      base.id,
+    );
+    const merged = { ...base.steps } as ActionPlan["steps"];
+    for (const key of affected) {
+      // 仅当模型确实给了该步的新内容才覆盖，避免把有内容的步清空
+      const provided = (p.steps as Record<string, unknown>)?.[key];
+      if (provided && typeof provided === "object") {
+        // @ts-expect-error 逐键覆盖，类型在 normalize 已保证
+        merged[key] = regen.steps[key];
+      }
+    }
+    nextSteps = merged;
+  }
+
+  const debates = { ...(base.debates ?? {}) };
+  debates[fromStepKey] = [...(debates[fromStepKey] ?? []), turn];
+
+  return {
+    plan: { ...base, steps: nextSteps, debates },
+    stance,
+    changeNote,
   };
 }
