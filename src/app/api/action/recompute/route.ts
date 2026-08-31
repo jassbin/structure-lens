@@ -36,7 +36,7 @@ export async function POST(request: NextRequest) {
   }
 
   const userMsg = [
-    `【行动方案的视角】${base.perspective.label}（role=${base.perspective.role}）`,
+    `【行动方案的视角】${base.perspective.label}（id=${base.perspective.id}）`,
     `【被质疑这一节及下游的当前内容（供参考）】\n${JSON.stringify(base.steps, null, 2)}`,
     `【用户对这一节的反驳/追问】\n${objection}`,
   ].join("\n\n");
