@@ -79,7 +79,15 @@
   },
   "nav": {
     "analyze": "Analyze",
-    "map": "Structure Map"
+    "map": "Structure Map",
+    "actions": "Relief"
+  },
+  "actions": {
+    "title": "Relief Garden",
+    "subtitle": "Every clear-headed action plan you've saved after seeing through things",
+    "emptyTitle": "No plans saved yet",
+    "emptyHint": "Analyze something, tap ‘You see it clearly — now what?’ at the bottom of the report, and the plan lands here",
+    "goAnalyze": "Analyze something"
   },
   "home": {
     "brand": "Structure Lens",
