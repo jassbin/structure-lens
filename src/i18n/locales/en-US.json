@@ -261,6 +261,39 @@
         "settle": "Leaving one honest closing line"
       }
     },
+    "perspective": {
+      "label": "Current perspective",
+      "switch": "Switch",
+      "pickHint": "Which role are you in this situation? Switch, and the advice re-aligns to you.",
+      "role": {
+        "self": "The person involved (me)",
+        "child": "As a child / son / daughter",
+        "parent": "As a parent",
+        "partner": "As a partner",
+        "employee": "As an employee / subordinate",
+        "manager": "As a manager / boss",
+        "friend": "As a friend",
+        "bystander": "As a bystander / third party",
+        "other": "Another role"
+      }
+    },
+    "stance": {
+      "absorb": "Accepted",
+      "compromise": "Partly accepted",
+      "hold": "Held"
+    },
+    "debate": {
+      "start": "I disagree / question this step",
+      "keep": "Keep questioning",
+      "hint": "Rebut this step's judgment or ask why — if valid, the following steps adjust accordingly",
+      "placeholder": "Write your rebuttal or question…",
+      "submit": "Submit",
+      "thinking": "Responding…",
+      "verdictNote": "Ruling",
+      "held": "Answered, conclusion held",
+      "updated": "Following steps updated accordingly",
+      "failed": "Response failed, please retry"
+    },
     "backToReport": "Back to report",
     "badge": "Clear-Actionism",
     "title": "You see it clearly — now what?",
