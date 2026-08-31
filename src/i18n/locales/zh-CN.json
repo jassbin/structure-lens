@@ -228,6 +228,42 @@
       "meta": "元认知审计"
     }
   },
+  "action": {
+    "entry": {
+      "title": "看清了，然后呢？",
+      "subtitle": "用「清醒行动主义」把看穿的结构，变成今天就能动的一步"
+    },
+    "backToReport": "返回分析",
+    "badge": "清醒行动主义",
+    "title": "看清了，然后呢？",
+    "subtitle": "看清结构容易让人无力。这里不给鸡汤，只帮你把能动的部分找出来、动起来，不能动的部分学会不自欺地调节。",
+    "generating": "正在为你生成行动方案…",
+    "failed": "行动方案生成失败了",
+    "retry": "重试",
+    "disclaimer": "本页为认知与行动的自助参考，不构成医疗、法律或心理诊断。若涉及自伤、重度情绪困扰或法律风险，请及时寻求专业与线下帮助。",
+    "step": {
+      "pain": "痛点定位",
+      "triage": "可控性分诊",
+      "selfDeception": "自欺检测",
+      "minimalAction": "最小行动",
+      "crack": "缝隙扫描",
+      "placebo": "清醒安慰剂"
+    },
+    "pain": {
+      "whatHurts": "真正在痛的",
+      "signal": "还原成信号"
+    },
+    "bucket": {
+      "environment": "可改环境",
+      "behavior": "可改行为",
+      "uncontrollable": "暂不可改"
+    },
+    "sd": {
+      "able_but_idle": "能动而不动",
+      "truly_unable": "确实难行动",
+      "unclear": "尚难判定"
+    }
+  },
   "map": {
     "title": "结构地图",
     "intro": "你挖过的事件在这里沉淀成结构。多次同构碰撞后，假设会被点亮为验证过的结构。",
