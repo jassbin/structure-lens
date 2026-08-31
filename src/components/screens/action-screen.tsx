@@ -339,6 +339,7 @@ function StepCard({
   tip,
   accent,
   children,
+  footer,
 }: {
   icon: typeof Activity;
   n: number;
@@ -346,6 +347,7 @@ function StepCard({
   tip?: string;
   accent?: boolean;
   children: React.ReactNode;
+  footer?: React.ReactNode;
 }) {
   return (
     <div
@@ -362,6 +364,7 @@ function StepCard({
         </span>
       </div>
       <div className="mt-3 border-t border-border/60 pt-3">{children}</div>
+      {footer}
     </div>
   );
 }
