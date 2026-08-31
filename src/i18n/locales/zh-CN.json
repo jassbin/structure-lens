@@ -264,18 +264,8 @@
     "perspective": {
       "label": "当前视角",
       "switch": "切换视角",
-      "pickHint": "你在这件事里是哪个角色？换一个，建议就会重新对准你。",
-      "role": {
-        "self": "当事人（我自己）",
-        "child": "作为子女",
-        "parent": "作为父母",
-        "partner": "作为伴侣",
-        "employee": "作为员工 / 下属",
-        "manager": "作为管理者 / 老板",
-        "friend": "作为朋友",
-        "bystander": "作为旁观者 / 第三方",
-        "other": "其他角色"
-      }
+      "you": "最可能是你",
+      "pickHint": "这件事里你是哪个角色？换一个，建议就会重新对准你。"
     },
     "stance": {
       "absorb": "采纳",
