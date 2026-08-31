@@ -66,7 +66,10 @@ export function ActionScreen({ id }: { id: string }) {
   // 2) 有来源后：先查已存方案（本地→云端），命中直接用；否则生成并保存
   useEffect(() => {
     if (!source) {
-      if (source === null) setLoading(false);
+      if (source === null) {
+        const tid = setTimeout(() => setLoading(false), 0);
+        return () => clearTimeout(tid);
+      }
       return;
     }
     let alive = true;
