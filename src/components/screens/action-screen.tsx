@@ -168,6 +168,16 @@ export function ActionScreen({ id }: { id: string }) {
 
   const bucketLabel = (b: Controllability) => t(`action.bucket.${b}`);
 
+  /** 渲染某一节的「我不同意/追问」线程 */
+  const dt = (stepKey: ActionStepKey) =>
+    plan ? (
+      <ActionDisagreeThread
+        debate={plan.debates?.[stepKey]}
+        busy={busyStep === stepKey}
+        onSubmit={(objection) => submitDisagree(stepKey, objection)}
+      />
+    ) : null;
+
   if (source === null) {
     return (
       <div className="mx-auto flex w-full max-w-md flex-col items-center gap-3 px-4 py-16 text-center">
