@@ -231,7 +231,8 @@
   "action": {
     "entry": {
       "title": "You see it clearly — now what?",
-      "subtitle": "Turn the structure you just saw through into one thing you can do today, with Clear-Actionism"
+      "subtitle": "Turn the structure you just saw through into one thing you can do today, with Clear-Actionism",
+      "cta": "Act"
     },
     "backToReport": "Back to report",
     "badge": "Clear-Actionism",
