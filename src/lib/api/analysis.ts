@@ -188,3 +188,20 @@ export async function getShare(code: string): Promise<ShareRecord | null> {
   const data = (await res.json()) as { share: ShareRecord };
   return data.share;
 }
+
+/** 基于一次分析生成「清醒行动主义」行动方案。免登录。 */
+export async function getActionPlan(payload: {
+  id: string;
+  input: string;
+  verdict: string;
+  skeleton: StructureSkeleton;
+}): Promise<ActionPlan> {
+  const res = await request("/api/action", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) throw new Error(`action failed: ${res.status}`);
+  const data = (await res.json()) as { plan: ActionPlan };
+  return data.plan;
+}
