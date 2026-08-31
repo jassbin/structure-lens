@@ -93,3 +93,83 @@ export const ACTION_SYSTEM_PROMPT = `你是「清醒行动主义（Clear-Actioni
   }
 }
 严格用中文。只输出这个 JSON 对象。`;
+
+/* ------------------------------- 解析与兜底 ------------------------------- */
+
+const BUCKETS: Controllability[] = ["environment", "behavior", "uncontrollable"];
+const SD: ActionPlan["steps"]["selfDeception"]["verdict"][] = [
+  "able_but_idle",
+  "truly_unable",
+  "unclear",
+];
+
+function str(v: unknown, fallback = ""): string {
+  return typeof v === "string" && v.trim() ? v.trim() : fallback;
+}
+function arr(v: unknown): unknown[] {
+  return Array.isArray(v) ? v : [];
+}
+
+/** 把模型返回的松散对象规整成安全的 ActionPlan（缺字段兜底，绝不抛错到 UI） */
+export function normalizeActionPlan(raw: unknown, id: string): ActionPlan {
+  const r = (raw ?? {}) as Record<string, unknown>;
+  const s = (r.steps ?? {}) as Record<string, unknown>;
+  const pain = (s.pain ?? {}) as Record<string, unknown>;
+  const triage = (s.triage ?? {}) as Record<string, unknown>;
+  const sd = (s.selfDeception ?? {}) as Record<string, unknown>;
+  const ma = (s.minimalAction ?? {}) as Record<string, unknown>;
+  const crack = (s.crack ?? {}) as Record<string, unknown>;
+  const placebo = (s.placebo ?? {}) as Record<string, unknown>;
+
+  return {
+    id,
+    headline: str(r.headline, "看清之后，先从一个能动的小处开始。"),
+    steps: {
+      pain: {
+        signal: str(pain.signal),
+        whatHurts: str(pain.whatHurts),
+      },
+      triage: {
+        items: arr(triage.items)
+          .map((it) => {
+            const o = (it ?? {}) as Record<string, unknown>;
+            const bucket = BUCKETS.includes(o.bucket as Controllability)
+              ? (o.bucket as Controllability)
+              : "uncontrollable";
+            return { text: str(o.text), bucket };
+          })
+          .filter((it) => it.text),
+      },
+      selfDeception: {
+        verdict: SD.includes(sd.verdict as (typeof SD)[number])
+          ? (sd.verdict as (typeof SD)[number])
+          : "unclear",
+        note: str(sd.note),
+        checks: arr(sd.checks).map((c) => str(c)).filter(Boolean),
+      },
+      minimalAction: {
+        actions: arr(ma.actions)
+          .map((a) => {
+            const o = (a ?? {}) as Record<string, unknown>;
+            return { title: str(o.title), how: str(o.how) };
+          })
+          .filter((a) => a.title || a.how),
+      },
+      crack: {
+        cracks: arr(crack.cracks)
+          .map((c) => {
+            const o = (c ?? {}) as Record<string, unknown>;
+            return { kind: str(o.kind), detail: str(o.detail) };
+          })
+          .filter((c) => c.detail),
+      },
+      placebo: {
+        regulations: arr(placebo.regulations).map((x) => str(x)).filter(Boolean),
+        closingPrinciple: str(
+          placebo.closingPrinciple,
+          "你不是你的结构，但结构是你不快乐的根源。",
+        ),
+      },
+    },
+  };
+}
