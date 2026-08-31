@@ -261,6 +261,39 @@
         "settle": "留一句不自欺的收尾"
       }
     },
+    "perspective": {
+      "label": "当前视角",
+      "switch": "切换视角",
+      "pickHint": "你在这件事里是哪个角色？换一个，建议就会重新对准你。",
+      "role": {
+        "self": "当事人（我自己）",
+        "child": "作为子女",
+        "parent": "作为父母",
+        "partner": "作为伴侣",
+        "employee": "作为员工 / 下属",
+        "manager": "作为管理者 / 老板",
+        "friend": "作为朋友",
+        "bystander": "作为旁观者 / 第三方",
+        "other": "其他角色"
+      }
+    },
+    "stance": {
+      "absorb": "采纳",
+      "compromise": "部分采纳",
+      "hold": "维持"
+    },
+    "debate": {
+      "start": "我不同意 / 追问这一节",
+      "keep": "继续追问",
+      "hint": "反驳这一步的判断，或追问它为什么——有理，后续步骤会随之调整",
+      "placeholder": "写下你的反驳或追问…",
+      "submit": "提交",
+      "thinking": "正在回应…",
+      "verdictNote": "裁定说明",
+      "held": "已回应，结论维持",
+      "updated": "已据此更新后续步骤",
+      "failed": "回应失败，请重试"
+    },
     "backToReport": "返回分析",
     "badge": "清醒行动主义",
     "title": "看清了，然后呢？",
