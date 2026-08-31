@@ -60,8 +60,10 @@ export interface ActionDebateTurn {
 
 export interface ActionPlan {
   id: string; // 与来源分析同 id
-  /** 本方案所站的视角（自动识别，用户可切换后重生成） */
+  /** 本方案当前所站的视角（默认取 isUser 的候选，可切换） */
   perspective: ActionPerspective;
+  /** 本事件的主要角色候选（AI 动态抽取，供切换） */
+  perspectiveOptions: ActionPerspective[];
   /** 一句克制、可行动的定调（不鸡汤、不美化，但给出可动的方向） */
   headline: string;
   /** 每步的人机辩论留痕（按步键归档） */
