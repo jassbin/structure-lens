@@ -73,18 +73,21 @@ export function ActionScreen({ id }: { id: string }) {
       return;
     }
     let alive = true;
-    setLoading(true);
-    setError(false);
 
     const sourceId = source.id;
-    const local = getLocalActionPlan(sourceId);
-    if (local) {
-      setPlan(local);
-      setLoading(false);
-      return;
-    }
 
     (async () => {
+      setLoading(true);
+      setError(false);
+
+      // 本地已存 → 秒开
+      const local = getLocalActionPlan(sourceId);
+      if (local) {
+        setPlan(local);
+        setLoading(false);
+        return;
+      }
+
       // 登录用户：先看云端是否已存
       const saved = await getSavedActionPlan(sourceId).catch(() => null);
       if (!alive) return;
