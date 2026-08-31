@@ -36,7 +36,7 @@
     "body": "Your earlier dig into \"{{title}}\" runs on the same underlying structure — open it and see if it's the same playbook."
   },
   "intro": {
-    "tagline": "Truth mirror · exposing “one story on top, another underneath”",
+    "tagline": "Relief Fruit · See the structure, hold your ground",
     "skip": "Skip"
   },
   "common": {
@@ -91,10 +91,10 @@
   },
   "home": {
     "brand": "Structure Lens",
-    "taglineLead": "Truth mirror, exposing ",
-    "taglineHighlight": "“one story on top, another underneath”",
-    "taglineHighlightHead": "“one story on top,",
-    "taglineHighlightTail": "another underneath”",
+    "taglineLead": "Relief Fruit: ",
+    "taglineHighlight": "See the structure, hold your ground",
+    "taglineHighlightHead": "See the structure",
+    "taglineHighlightTail": "hold your ground",
     "taglineSub": "Drop one in. I'll reveal it",
     "inputPlaceholder": "An event, a policy, or a decision…",
     "analyze": "Pierce it",
