@@ -88,3 +88,17 @@ bun run db:push    # 同步数据库表结构
 | Slogan | 照妖镜，专治"表面一套、底下一套"——放进来，照给你看 |
 | 代码仓库 | https://github.com/jassbin/structure-lens （Topic：`#shenicest-fission`） |
 | 体验链接 | https://structure-lens-8c3bf836.eazo.dev |
+
+---
+
+## 附录：姊妹版「解忧果」微信小程序（新版）
+
+仓库主体（`src/`、`docs/` 等）仍为原「照妖镜」Web 版，保持原样。产品随后演进为微信小程序 **解忧果**（曾用名照妖镜），即当前线上交付的新版：
+
+- `wechat-miniprogram/` — 小程序前端源码（微信开发者工具直接打开目录即可，AppID 见 `project.config.json`）
+- `server/` — 小程序配套云托管后端（Node.js + Express，异步任务 + 轮询架构；模型 Deepseek-v4-flash 主通道 + hy3 兜底，密钥只走环境变量，见 `server/.env.example`）
+- `docs/DESIGN-PRINCIPLES.md` — 新版本沉淀的设计原则（认知层 / 行动层 / 交互 / 工程 / 隐私）
+
+版本对齐：前端 `v1.0.36` ↔ 后端 `v21.5`（后端 `/healthz` 返回 `version`）。
+
+设计理念与原版一脉相承（8 步穿透 → 结构骨架 → 人机辩论），并新增了完整闭环的**清醒行动主义行动方案**：把「看清」变成「可动」。

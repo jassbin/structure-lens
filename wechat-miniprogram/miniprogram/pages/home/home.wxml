@@ -1,0 +1,103 @@
+<view class="page">
+  <view class="glow glow-a"></view>
+  <view class="glow glow-b"></view>
+
+  <view class="hero">
+    <view class="hero-kicker">结构透镜 · 深度分析</view>
+    <view class="hero-title">解忧果</view>
+    <view class="hero-sub">写下一件让你觉得「不对劲」的事，<br/>把它放到手术台上，看穿结构。</view>
+  </view>
+
+  <view class="input-area">
+    <textarea
+      class="input-textarea"
+      placeholder="例如：为什么公司明明缺人，却要求所有人加班而不是多招人？"
+      placeholder-class="ph"
+      value="{{input}}"
+      bindinput="onInput"
+      maxlength="300"
+      auto-height
+    />
+    <view class="input-foot">
+      <text class="input-hint">🔎 越具体，照得越深</text>
+      <text class="input-count">{{input.length}}/300</text>
+    </view>
+  </view>
+
+  <view class="topics">
+    <view class="topics-label">不愿意想？点一个试试</view>
+    <view class="topic-row">
+      <view
+        class="topic-chip"
+        wx:for="{{topics}}"
+        wx:key="id"
+        data-prompt="{{item.prompt}}"
+        bindtap="onTapTopic"
+      >
+        <text class="topic-icon">{{item.icon}}</text>
+        <text class="topic-title">{{item.title}}</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="submit-row">
+    <button class="btn {{input ? '' : 'disabled'}}" bindtap="onSubmit" disabled="{{submitting}}">
+      {{submitting ? '正在照…' : '照一照'}}
+    </button>
+  </view>
+
+  <!-- 反问题卡 -->
+  <view class="card feedback" wx:if="{{showTriage}}">
+    <view class="card-title">还差一点点</view>
+    <block wx:if="{{triage.probes && triage.probes.length}}">
+      <view class="feedback-tip">试试从这些角度补一句：</view>
+      <view class="probe" wx:for="{{triage.probes}}" wx:key="index">{{item}}</view>
+    </block>
+    <view class="text-2" wx:else>{{triage.suggestion || '请补充更具体的信息。'}}</view>
+  </view>
+
+  <!-- 事实对齐卡 -->
+  <view class="card feedback" wx:if="{{showAlign}}">
+    <view class="card-title">先对齐一下事实</view>
+    <view class="text-2">{{align.summary}}</view>
+    <view class="sources" wx:if="{{align.sources.length}}">
+      <view class="source" wx:for="{{align.sources}}" wx:key="url">
+        <text class="text-2">📄 {{item.title}}</text>
+      </view>
+    </view>
+    <view class="btn-2row">
+      <button class="btn ghost" bindtap="onAlignSkip">跳过</button>
+      <button class="btn" bindtap="onAlignConfirm">按此分析</button>
+    </view>
+  </view>
+
+  <view class="footer-tip">清除之前的一道坎，戳 <text class="reset" bindtap="onReset">重新输入</text></view>
+  <view class="footer-ver" bindlongpress="onShowDiag">v1.0.36</view>
+</view>
+
+<!-- 全屏分析遮罩：乐观进度 + 阶段清单 + 预估时间 -->
+<view class="overlay" wx:if="{{analyzing}}">
+  <view class="ring"></view>
+  <view class="overlay-text">{{warmStage || stages[stageIndex]}}</view>
+  <view class="overlay-sub">深度分析通常需要 30~60 秒，请别关页面</view>
+  <view class="progress-wrap">
+    <view class="progress-track">
+      <view class="progress-fill" style="width:{{progress}}%"></view>
+    </view>
+    <view class="progress-meta">
+      <text>已用 {{elapsed}} 秒</text>
+      <text>{{progress}}%</text>
+    </view>
+    <view class="progress-eta">预计剩余约 {{etaSec}} 秒</view>
+  </view>
+  <view class="stage-list">
+    <view
+      class="stage-item {{index < stageIndex ? 'done' : index === stageIndex ? 'active' : ''}}"
+      wx:for="{{stages}}"
+      wx:key="*this"
+    >
+      <text class="stage-dot">{{index < stageIndex ? '✓' : index === stageIndex ? '◦' : '○'}}</text>
+      <text class="stage-label">{{item}}</text>
+    </view>
+  </view>
+</view>

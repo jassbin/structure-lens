@@ -1,0 +1,35 @@
+<view class="page">
+    <view class="card head-card">
+    <view class="head-kicker">STRUCTURE MAP</view>
+    <view class="head-title">结构地图</view>
+    <view class="head-sub">数据自动同步已开启，无需操作</view>
+  </view>
+
+  <view wx:if="{{summary}}" class="aha">{{summary}}</view>
+  <view class="aha-sub" wx:if="{{!summary}}">把你看清的结构，攒成一张可复用的地图。</view>
+
+  <view wx:if="{{loading}}" class="empty">
+    <view class="empty-icon">🧊</view>
+    <view>加载中…</view>
+  </view>
+
+  <view wx:elif="{{nodes.length === 0}}" class="empty">
+    <view class="empty-icon">🗺️</view>
+    <view>画布还是空的</view>
+    <view class="text-2">去首页照一照，结构会沉淀到这里</view>
+  </view>
+
+  <view class="card node" wx:for="{{nodes}}" wx:key="id" data-name="{{item.name}}" data-events="{{item.events}}" bindtap="onTapNode">
+    <view class="node-top">
+      <text class="badge {{item.state === 'verified' ? 'badge-strong' : 'badge-warn'}}">{{item.state === 'verified' ? '已验证' : '待验证'}}</text>
+      <text class="badge {{ROOT_CLASS[item.root] || 'badge-info'}}">{{ROOT_LABELS[item.root] || item.root}}</text>
+      <text class="badge">置信 {{item.confidence}}%</text>
+      <text class="badge">hits {{item.hits || item.events.length}}</text>
+    </view>
+    <view class="node-name" user-select="true">{{item.name}}</view>
+    <view class="node-q" wx:if="{{item.question}}" user-select="true">❝ {{item.question}} ❞</view>
+    <view class="node-events">
+      <view class="evt" user-select="true" wx:for="{{item.events}}" wx:key="*this" wx:for-item="ev">{{ev}}</view>
+    </view>
+  </view>
+</view>

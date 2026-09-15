@@ -1,0 +1,16 @@
+{
+  "name": "structure-lens-server",
+  "version": "1.0.1",
+  "private": true,
+  "description": "照妖镜 Structure Lens 小程序后端（云托管容器，Node + Express，DeepSeek-V4-flash BYOK）",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "node --watch index.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "wx-server-sdk": "^3.0.1",
+    "mysql2": "^3.9.7"
+  }
+}

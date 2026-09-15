@@ -1,0 +1,9 @@
+{
+  "desc": "解忧果 Structure Lens 小程序索引配置",
+  "rules": [
+    {
+      "action": "allow",
+      "page": "*"
+    }
+  ]
+}

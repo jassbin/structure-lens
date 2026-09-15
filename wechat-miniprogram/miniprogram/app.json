@@ -1,0 +1,32 @@
+{
+  "pages": [
+    "pages/home/home",
+    "pages/map/map",
+    "pages/actions/actions",
+    "pages/report/report",
+    "pages/action/action",
+    "pages/share/share"
+  ],
+  "window": {
+    "backgroundColor": "#0d0f14",
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#0d0f14",
+    "navigationBarTitleText": "解忧果",
+    "navigationBarTextStyle": "white"
+  },
+  "tabBar": {
+    "custom": true,
+    "color": "#6b7280",
+    "selectedColor": "#e5e7eb",
+    "backgroundColor": "#12151c",
+    "borderStyle": "black",
+    "list": [
+      { "pagePath": "pages/home/home", "text": "" },
+      { "pagePath": "pages/map/map", "text": "" }
+    ]
+  },
+  "usingComponents": {},
+  "style": "v2",
+  "sitemapLocation": "sitemap.json",
+  "lazyCodeLoading": "requiredComponents"
+}

@@ -1,0 +1,21 @@
+<view class="page">
+  <view class="card head-card">
+    <view class="head-kicker">清醒行动主义</view>
+    <view class="head-title">解忧</view>
+    <view class="head-sub">看清之后，别瘫痪。从这里找到能迈出去的那一步。</view>
+  </view>
+
+  <view wx:if="{{loading}}" class="empty">🧊 加载中…</view>
+
+  <view wx:elif="{{items.length === 0}}" class="empty">
+    <view class="empty-icon">🌱</view>
+    <view>还没有行动方案</view>
+    <view class="text-2">去首页照一照，生成你的第一份方案</view>
+  </view>
+
+  <view class="card item" wx:for="{{items}}" wx:key="id" data-id="{{item.id}}" bindtap="onTapItem">
+    <view class="item-verdict" user-select="true">{{item.verdict || item.headline}}</view>
+    <view class="item-headline" user-select="true">⚡ {{item.headline}}</view>
+    <view class="item-input text-2" user-select="true">{{item.input}}</view>
+  </view>
+</view>

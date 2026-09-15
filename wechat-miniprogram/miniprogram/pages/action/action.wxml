@@ -1,0 +1,390 @@
+<view class="page">
+  <!-- 加载/生成中：乐观进度 + 阶段清单 + 预估时间 -->
+  <view wx:if="{{loading}}" class="center-state loading-state">
+    <view class="ring"></view>
+    <view class="load-text">{{stages[stageIndex]}}</view>
+    <view class="load-sub">生成行动方案通常需要 10~20 秒，请别关页面</view>
+    <view class="progress-wrap">
+      <view class="progress-track">
+        <view class="progress-fill" style="width:{{progress}}%"></view>
+      </view>
+      <view class="progress-meta">
+        <text>已用 {{elapsed}} 秒</text>
+        <text>{{progress}}%</text>
+      </view>
+      <view class="progress-eta">预计剩余约 {{etaSec}} 秒</view>
+    </view>
+    <view class="stage-list">
+      <view
+        class="stage-item {{index < stageIndex ? 'done' : index === stageIndex ? 'active' : ''}}"
+        wx:for="{{stages}}"
+        wx:key="*this"
+      >
+        <text class="stage-dot">{{index < stageIndex ? '✓' : index === stageIndex ? '◦' : '○'}}</text>
+        <text class="stage-label">{{item}}</text>
+      </view>
+    </view>
+  </view>
+
+  <block wx:elif="{{plan}}">
+    <!-- 头部：标签 + 视角切换 + 视图切换 + headline -->
+    <view class="card head-card">
+      <view class="head-row">
+        <view class="head-label">解忧果 · 清醒行动主义</view>
+        <text class="tip-btn" id="tip-overview" catchtap="toggleTip" data-tip="overview">?</text>
+      </view>
+      <text class="headline" user-select="true">{{plan.headline}}</text>
+      <view class="persp-row" wx:if="{{!shared}}">
+        <view
+          wx:for="{{plan.perspectiveOptions}}"
+          wx:key="id"
+          wx:for-item="opt"
+          wx:for-index="oi"
+          class="persp-chip {{opt.id === plan.perspective.id || opt.label === plan.perspective.label ? 'active' : ''}}"
+          data-idx="{{oi}}"
+          data-label="{{opt.label}}"
+          bindtap="onSwitchPerspective"
+        >{{opt.label}}</view>
+      </view>
+      <view class="mode-switch" wx:if="{{modulesView}}">
+        <text class="mode-chip {{viewMode === 'legacy' ? 'active' : ''}}" data-mode="legacy" bindtap="switchView">六步行动</text>
+        <text class="mode-chip {{viewMode === 'full' ? 'active' : ''}}" data-mode="full" bindtap="switchView">五模块推演</text>
+      </view>
+    </view>
+
+    <!-- ============ 五模块完整版 ============ -->
+    <block wx:if="{{viewMode === 'full' && modulesView}}">
+      <!-- M1 心理锚定 -->
+      <view class="card mod-card">
+        <view class="mod-head">
+          <text class="mod-no">M1</text>
+          <view class="mod-title-wrap">
+            <text class="mod-title">心理锚定</text>
+            <text class="mod-slogan">· 先稳心</text>
+          </view>
+          <text class="tip-btn" id="tip-m-anchor" catchtap="toggleTip" data-tip="m-anchor">?</text>
+        </view>
+        <view class="mod-body">
+          <view class="sub-head">
+            <text class="sub-title">祛魅识别</text>
+            <text class="badge badge-warn" wx:if="{{modulesView.anchor.comfortType}}">{{modulesView.anchor.comfortType}}</text>
+          </view>
+          <view class="row" wx:if="{{modulesView.anchor.protective}}"><view class="row-k">它挡住了什么</view><view class="row-v" user-select="true">{{modulesView.anchor.protective}}</view></view>
+          <view class="row" wx:if="{{modulesView.anchor.price}}"><view class="row-k">这个信念的代价</view><view class="row-v" user-select="true">{{modulesView.anchor.price}}</view></view>
+          <view class="row" wx:if="{{modulesView.anchor.signal}}"><view class="row-k">还原成信号</view><view class="row-v" user-select="true">{{modulesView.anchor.signal}}</view></view>
+
+          <view class="sub-head">
+            <text class="sub-title">能动自检</text>
+            <text class="badge {{SELF_VERDICT_LABELS[modulesView.anchor.verdict] ? (modulesView.anchor.verdict === 'able_but_idle' ? 'badge-danger' : modulesView.anchor.verdict === 'truly_unable' ? 'badge-warn' : 'badge-info') : 'badge-info'}}">{{SELF_VERDICT_LABELS[modulesView.anchor.verdict] || modulesView.anchor.verdict}}</text>
+          </view>
+          <view class="row" wx:if="{{modulesView.anchor.note}}"><view class="row-v" user-select="true">{{modulesView.anchor.note}}</view></view>
+
+          <view class="sub-head">
+            <text class="sub-title">痛在几级</text>
+            <text class="badge badge-warn">{{LEVEL_LABELS[modulesView.anchor.level] || modulesView.anchor.level}}</text>
+          </view>
+          <view class="row" wx:if="{{modulesView.anchor.whatHurts}}"><view class="row-v" user-select="true">{{modulesView.anchor.whatHurts}}</view></view>
+
+          <view class="sub-title" wx:if="{{modulesView.anchor.calmRows.length}}">诚实调节（只对现在改不了的）</view>
+          <view class="item" wx:for="{{modulesView.anchor.calmRows}}" wx:key="index" wx:for-item="cw">
+            <text class="item-text" user-select="true">{{cw.doing}}</text>
+            <text class="item-until" wx:if="{{cw.until}}">可放下：{{cw.until}}</text>
+          </view>
+        </view>
+        <view class="debate-btn-row" wx:if="{{!shared}}">
+          <button class="mini-btn" data-key="anchor" bindtap="openModuleDebate" hover-class="mini-btn-press">我不同意 / 追问</button>
+        </view>
+        <view class="debate" wx:if="{{modulesView.debates.anchor.length}}">
+          <view class="card-title">辩论留痕</view>
+          <view class="debate-turn" wx:for="{{modulesView.debates.anchor}}" wx:key="at" wx:for-item="d">
+            <text class="debate-you" user-select="true">{{d.objection}}</text>
+            <view class="debate-ai">
+              <text class="badge {{STANCE_CLASS[d.stance]}}">{{STANCE_LABELS[d.stance]}}</text>
+              <text user-select="true">{{d.reason}}</text>
+              <text class="text-2" user-select="true" wx:if="{{d.answer}}">{{d.answer}}</text>
+            </view>
+          </view>
+        </view>
+      </view>
+
+      <!-- M2 缝隙侦察 -->
+      <view class="card mod-card">
+        <view class="mod-head">
+          <text class="mod-no">M2</text>
+          <view class="mod-title-wrap">
+            <text class="mod-title">缝隙侦察</text>
+            <text class="mod-slogan">先找缝</text>
+          </view>
+          <text class="tip-btn" id="tip-m-recon" catchtap="toggleTip" data-tip="m-recon">?</text>
+        </view>
+        <view class="mod-body">
+          <view class="sub-title">被动缝隙（从「落差坐标」推导）</view>
+          <view class="item" wx:for="{{modulesView.cracks}}" wx:key="index" wx:for-item="cr">
+            <view class="item-head">
+              <text class="badge badge-info">{{cr.kind}}</text>
+              <text class="badge {{cr.status === 'verified' ? 'badge-ok' : cr.status === 'closed' ? 'badge-danger' : 'badge-warn'}}">{{CRACK_STATUS_LABELS[cr.status]}}</text>
+              <text class="text-2">成本{{COST_LABELS[cr.cost]}}</text>
+              <text class="text-2" wx:if="{{cr.reversible}}">可逆</text>
+            </view>
+            <text class="item-text" wx:if="{{cr.gap}}" user-select="true">落在哪：{{cr.gap}}</text>
+            <text class="item-text" user-select="true">怎么走：{{cr.enter}}</text>
+            <text class="item-until" wx:if="{{cr.shut}}">防被封：{{cr.shut}}</text>
+          </view>
+
+          <view class="sub-title" wx:if="{{modulesView.activeHow}}">主动找缝</view>
+          <view class="row" wx:if="{{modulesView.activeHow}}"><view class="row-v" user-select="true">{{modulesView.activeHow}}</view></view>
+
+          <view class="sub-title">每周扫缝清单（点掉已做的）</view>
+          <view class="scan-line" wx:for="{{modulesView.scanView}}" wx:key="index" data-index="{{index}}" bindtap="toggleScanCheck">
+            <text class="scan-box {{item.done ? 'done' : ''}}">{{item.done ? '✓' : ''}}</text>
+            <text class="scan-text {{item.done ? 'dim' : ''}}">{{item.text}}</text>
+          </view>
+          <view class="sub-title">四通道（按节奏走一遍）</view>
+          <view class="item" wx:for="{{WEEK_CHANNELS}}" wx:key="index" wx:for-item="ch">
+            <text class="item-title" user-select="true">{{ch.t}}</text>
+            <text class="item-text" user-select="true">{{ch.d}}</text>
+          </view>        </view>
+        <view class="debate-btn-row" wx:if="{{!shared}}">
+          <button class="mini-btn" data-key="recon" bindtap="openModuleDebate" hover-class="mini-btn-press">我不同意 / 追问</button>
+        </view>
+        <view class="debate" wx:if="{{modulesView.debates.recon.length}}">
+          <view class="card-title">辩论留痕</view>
+          <view class="debate-turn" wx:for="{{modulesView.debates.recon}}" wx:key="at" wx:for-item="d">
+            <text class="debate-you" user-select="true">{{d.objection}}</text>
+            <view class="debate-ai">
+              <text class="badge {{STANCE_CLASS[d.stance]}}">{{STANCE_LABELS[d.stance]}}</text>
+              <text user-select="true">{{d.reason}}</text>
+              <text class="text-2" user-select="true" wx:if="{{d.answer}}">{{d.answer}}</text>
+            </view>
+          </view>
+        </view>
+      </view>
+
+      <!-- M3 最小试探 -->
+      <view class="card mod-card">
+        <view class="mod-head">
+          <text class="mod-no">M3</text>
+          <view class="mod-title-wrap">
+            <text class="mod-title">最小试探</text>
+            <text class="mod-slogan">再行动</text>
+          </view>
+          <text class="tip-btn" id="tip-m-probe" catchtap="toggleTip" data-tip="m-probe">?</text>
+        </view>
+        <view class="mod-body">
+          <view class="item" wx:for="{{modulesView.probeView}}" wx:key="idx" wx:for-item="pr">
+            <view class="item-head">
+              <text class="item-title" user-select="true">{{pr.title}}</text>
+              <text class="badge {{pr.status === 'todo' ? 'badge-warn' : pr.status === 'running' ? 'badge-strong' : pr.status === 'verified' ? 'badge-ok' : 'badge-info'}}" data-index="{{pr.idx}}" bindtap="cycleProbeStatus">{{PROBE_STATUS_LABELS[pr.status]}}</text>
+            </view>
+            <text class="item-text" wx:if="{{pr.how}}" user-select="true">怎么做：{{pr.how}}</text>
+            <text class="item-text" wx:if="{{pr.success}}" user-select="true">做到什么样算成：{{pr.success}}</text>
+            <text class="item-until" wx:if="{{pr.danger}}">停手线：{{pr.danger}}</text>
+            <input class="probe-note" placeholder="试完记录一句（本地）…" value="{{pr.note}}" data-index="{{pr.idx}}" bindblur="onProbeNoteBlur" />
+          </view>
+        </view>
+        <view class="debate-btn-row" wx:if="{{!shared}}">
+          <button class="mini-btn" data-key="probe" bindtap="openModuleDebate" hover-class="mini-btn-press">我不同意 / 追问</button>
+        </view>
+        <view class="debate" wx:if="{{modulesView.debates.probe.length}}">
+          <view class="card-title">辩论留痕</view>
+          <view class="debate-turn" wx:for="{{modulesView.debates.probe}}" wx:key="at" wx:for-item="d">
+            <text class="debate-you" user-select="true">{{d.objection}}</text>
+            <view class="debate-ai">
+              <text class="badge {{STANCE_CLASS[d.stance]}}">{{STANCE_LABELS[d.stance]}}</text>
+              <text user-select="true">{{d.reason}}</text>
+              <text class="text-2" user-select="true" wx:if="{{d.answer}}">{{d.answer}}</text>
+            </view>
+          </view>
+        </view>
+      </view>
+
+      <!-- M4 动态归口 -->
+      <view class="card mod-card">
+        <view class="mod-head">
+          <text class="mod-no">M4</text>
+          <view class="mod-title-wrap">
+            <text class="mod-title">动态归口</text>
+            <text class="mod-slogan">可重判</text>
+          </view>
+          <text class="tip-btn" id="tip-m-pivot" catchtap="toggleTip" data-tip="m-pivot">?</text>
+        </view>
+        <view class="mod-body">
+          <view class="sub-title" wx:if="{{modulesView.pending.length}}">待试桶（先不判，试了再说）</view>
+          <view class="pending-chips" wx:if="{{modulesView.pending.length}}">
+            <text class="pending-chip" wx:for="{{modulesView.pending}}" wx:key="*this">{{item}}</text>
+          </view>
+
+          <view class="bucket" wx:for="{{modulesView.bucketsView}}" wx:key="key" wx:for-item="bk">
+            <view class="bucket-head">
+              <text class="badge {{bk.cls}}">{{bk.label}}</text>
+              <text class="bucket-desc">{{bk.desc}}</text>
+            </view>
+            <view class="item" wx:for="{{bk.items}}" wx:key="id" wx:for-item="it">
+              <text class="item-text" user-select="true">{{it.text}}</text>
+              <text class="item-until" wx:if="{{it.why}}">为什么：{{it.why}}</text>
+              <view class="move-row" wx:if="{{!shared}}" catchtap="noop">
+                <text class="move-prefix">改判为：</text>
+                <text class="move-chip {{bk.key === 'canLeave' ? 'active' : ''}}" data-id="{{it.id}}" data-target="canLeave" catchtap="moveBucketItem">换处境</text>
+                <text class="move-chip {{bk.key === 'canChange' ? 'active' : ''}}" data-id="{{it.id}}" data-target="canChange" catchtap="moveBucketItem">改自身</text>
+                <text class="move-chip {{bk.key === 'cannotNow' ? 'active' : ''}}" data-id="{{it.id}}" data-target="cannotNow" catchtap="moveBucketItem">现在动不了</text>
+              </view>
+            </view>
+          </view>
+        </view>
+        <view class="debate-btn-row" wx:if="{{!shared}}">
+          <button class="mini-btn" data-key="pivot" bindtap="openModuleDebate" hover-class="mini-btn-press">我不同意 / 追问</button>
+        </view>
+        <view class="debate" wx:if="{{modulesView.debates.pivot.length}}">
+          <view class="card-title">辩论留痕</view>
+          <view class="debate-turn" wx:for="{{modulesView.debates.pivot}}" wx:key="at" wx:for-item="d">
+            <text class="debate-you" user-select="true">{{d.objection}}</text>
+            <view class="debate-ai">
+              <text class="badge {{STANCE_CLASS[d.stance]}}">{{STANCE_LABELS[d.stance]}}</text>
+              <text user-select="true">{{d.reason}}</text>
+              <text class="text-2" user-select="true" wx:if="{{d.answer}}">{{d.answer}}</text>
+            </view>
+          </view>
+        </view>
+      </view>
+
+      <!-- M5 收束复盘 -->
+      <view class="card mod-card">
+        <view class="mod-head">
+          <text class="mod-no">M5</text>
+          <view class="mod-title-wrap">
+            <text class="mod-title">收束复盘</text>
+            <text class="mod-slogan">有边界</text>
+          </view>
+          <text class="tip-btn" id="tip-m-closure" catchtap="toggleTip" data-tip="m-closure">?</text>
+        </view>
+        <view class="mod-body">
+          <view class="sub-title">停手线（到什么就该停）</view>
+          <view class="item" wx:for="{{modulesView.stopSigns}}" wx:key="*this">
+            <text class="item-text" user-select="true">{{item}}</text>
+          </view>
+          <view class="row" wx:if="{{modulesView.review}}"><view class="row-k">每周复盘</view><view class="row-v" user-select="true">{{modulesView.review}}</view></view>
+
+          <view class="sub-title">毕业四问（做了就打勾）</view>
+          <view class="scan-line" wx:for="{{modulesView.fourView}}" wx:key="key" data-key="{{item.key}}" bindtap="toggleFourCheck">
+            <text class="scan-box {{item.done ? 'done' : ''}}">{{item.done ? '✓' : ''}}</text>
+            <text class="scan-text {{item.done ? 'dim' : ''}}">{{item.q}}</text>
+          </view>
+        </view>
+        <view class="debate-btn-row" wx:if="{{!shared}}">
+          <button class="mini-btn" data-key="closure" bindtap="openModuleDebate" hover-class="mini-btn-press">我不同意 / 追问</button>
+        </view>
+        <view class="debate" wx:if="{{modulesView.debates.closure.length}}">
+          <view class="card-title">辩论留痕</view>
+          <view class="debate-turn" wx:for="{{modulesView.debates.closure}}" wx:key="at" wx:for-item="d">
+            <text class="debate-you" user-select="true">{{d.objection}}</text>
+            <view class="debate-ai">
+              <text class="badge {{STANCE_CLASS[d.stance]}}">{{STANCE_LABELS[d.stance]}}</text>
+              <text user-select="true">{{d.reason}}</text>
+              <text class="text-2" user-select="true" wx:if="{{d.answer}}">{{d.answer}}</text>
+            </view>
+          </view>
+        </view>
+      </view>
+    </block>
+
+    <!-- ============ 六步行动（默认展示，完整深度版） ============ -->
+    <block wx:elif="{{viewMode === 'legacy'}}">
+      <view class="card step-card {{key === 'selfDeception' || key === 'minimalAction' ? 'key-card' : ''}}" wx:for="{{STEP_ORDER}}" wx:key="*this" wx:for-item="key">
+        <view class="step-head" bindtap="toggleStep" data-key="{{key}}">
+          <text class="step-no">{{STEP_NUMBERS[key]}}</text>
+          <text class="step-label">{{STEP_LABELS[key]}}</text>
+          <text class="tip-btn" id="tip-{{key}}" data-tip="{{key}}" catchtap="toggleTip">?</text>
+          <text class="step-arrow {{stepsOpen[key] ? 'down' : ''}}">▾</text>
+        </view>
+        <view class="step-body" wx:if="{{stepsOpen[key]}}">
+          <block wx:if="{{key === 'pain'}}">
+            <view class="row"><view class="row-k">信号</view><view class="row-v">{{plan.steps.pain.signal}}</view></view>
+            <view class="row"><view class="row-k">真正在痛</view><view class="row-v">{{plan.steps.pain.whatHurts}}</view></view>
+          </block>
+          <block wx:elif="{{key === 'triage'}}">
+            <view class="item" wx:for="{{plan.steps.triage.items}}" wx:key="index" wx:for-item="it">
+              <text class="badge {{it.bucket === 'uncontrollable' ? 'badge-danger' : it.bucket === 'behavior' ? 'badge-info' : 'badge-ok'}}">{{BUCKET_LABELS[it.bucket]}}</text>
+              <text class="item-text" user-select="true">{{it.text}}</text>
+            </view>
+          </block>
+          <block wx:elif="{{key === 'selfDeception'}}">
+            <view class="row"><view class="row-k">判定</view><view class="row-v">{{SELF_VERDICT_LABELS[plan.steps.selfDeception.verdict] || plan.steps.selfDeception.verdict}}</view></view>
+            <view class="row"><view class="row-v">{{plan.steps.selfDeception.note}}</view></view>
+            <view class="row" wx:if="{{plan.steps.selfDeception.checks && plan.steps.selfDeception.checks.length}}">
+              <view class="row-k">自检问句</view>
+              <view class="row-v">
+                <view class="check-item" wx:for="{{plan.steps.selfDeception.checks}}" wx:key="*this" wx:for-item="ck" wx:for-index="ci">
+                  <view class="check-no">{{ci + 1}}</view>
+                  <text user-select="true">{{ck}}</text>
+                </view>
+              </view>
+            </view>
+          </block>
+          <block wx:elif="{{key === 'minimalAction'}}">
+            <view class="item" wx:for="{{plan.steps.minimalAction.actions}}" wx:key="title" wx:for-item="ac">
+              <text class="item-title">{{ac.title}}</text>
+              <text class="item-text">{{ac.how}}</text>
+            </view>
+          </block>
+          <block wx:elif="{{key === 'crack'}}">
+            <view class="item" wx:for="{{plan.steps.crack.cracks}}" wx:key="index" wx:for-item="cr">
+              <text class="item-title">{{cr.kind}}</text>
+              <text class="item-text">{{cr.detail}}</text>
+            </view>
+          </block>
+          <block wx:elif="{{key === 'placebo'}}">
+            <view class="item" wx:for="{{plan.steps.placebo.regulations}}" wx:key="*this">
+              <text class="item-text">• {{item}}</text>
+            </view>
+            <text class="principle">{{plan.steps.placebo.closingPrinciple}}</text>
+          </block>
+          <view class="debate-btn-row" wx:if="{{!shared}}">
+            <button class="mini-btn" data-key="{{key}}" bindtap="openStepDebate">我不同意 / 追问</button>
+          </view>
+          <view class="debate" wx:if="{{plan.debates && plan.debates[key] && plan.debates[key].length}}">
+            <view class="card-title">辩论留痕</view>
+            <view class="debate-turn" wx:for="{{plan.debates[key]}}" wx:key="at" wx:for-item="d">
+              <text class="debate-you" user-select="true">{{d.objection}}</text>
+              <view class="debate-ai">
+                <text class="badge {{STANCE_CLASS[d.stance]}}">{{STANCE_LABELS[d.stance]}}</text>
+                <text user-select="true">{{d.reason}}</text>
+                <text class="text-2" user-select="true" wx:if="{{d.answer}}">{{d.answer}}</text>
+              </view>
+            </view>
+          </view>
+        </view>
+      </view>
+    </block>
+
+    <view class="debate-btn-row mp-footer">
+      <button class="mini-btn" bindtap="onGoReport">{{shared ? '回首页' : '返回报告'}}</button>
+      <button class="mini-btn" open-type="share">分享行动方案</button>
+    </view>
+  </block>
+
+  <view wx:else class="center-state">
+    <view>没有可用的行动方案</view>
+    <button class="btn ghost" bindtap="onGoReport">回报告</button>
+  </view>
+</view>
+
+<!-- 分享卡离屏画布（不显示） -->
+<canvas type="2d" id="action-share-canvas" class="share-canvas"></canvas>
+
+<!-- 辩论弹层 -->
+<view class="modal-mask" wx:if="{{debateKey}}" bindtap="onCloseDebate">
+  <view class="modal" catchtap="noop">
+    <view class="modal-title">{{debateTitle}} · 我不同意 / 追问</view>
+    <textarea class="modal-input" placeholder="写下你的反对或想追问的地方…" value="{{debateText}}" bindinput="onDebateInput" max-height="400" auto-height></textarea>
+    <button class="btn" bindtap="onSubmitDebate" disabled="{{debatting}}">{{debatting ? '正在重演… 约 20~90 秒' : '提交'}}</button>
+  </view>
+</view>
+
+<!-- 「?」注释浮层 -->
+<view class="tip-mask" wx:if="{{openTip}}" bindtap="closeTip">
+  <view class="tip-bubble" style="{{tipBubbleStyle}}" catchtap="noop">
+    <view class="tip-arrow {{tipBubbleAbove ? 'above' : 'below'}}" style="left:{{tipArrowX}}px"></view>
+    <view class="tip-title">{{tipTitle}}</view>
+    <view class="tip-text">{{tipText}}</view>
+  </view>
+</view>

@@ -1,0 +1,641 @@
+.page {
+  padding: 24rpx 24rpx 200rpx;
+}
+
+/* 金句卡 */
+.verdict-card {
+  background:
+    radial-gradient(140% 140% at 80% -30%, rgba(212,175,55,0.25), rgba(255,255,255,0) 55%),
+    linear-gradient(165deg, #241d0d, var(--bg-card) 70%);
+  border-color: rgba(226, 194, 106, 0.4);
+  position: relative;
+  overflow: hidden;
+}
+.verdict-card::before {
+  content: '\201C';
+  position: absolute;
+  top: -40rpx;
+  right: 16rpx;
+  font-size: 220rpx;
+  color: rgba(226, 194, 106, 0.12);
+  font-family: Georgia, serif;
+  line-height: 1;
+}
+.verdict-label {
+  font-size: 22rpx;
+  letter-spacing: 4rpx;
+  color: var(--accent);
+}
+.verdict-head {
+  display: flex;
+  align-items: center;
+  margin-bottom: 16rpx;
+}
+.verdict-head .tip-btn {
+  margin-left: 12rpx;
+  width: 36rpx;
+  height: 36rpx;
+  font-size: 24rpx;
+}
+.verdict-text {
+  font-family: var(--font-display);
+  font-size: 36rpx;
+  font-weight: 800;
+  line-height: 1.7;
+  color: var(--text-1);
+  text-shadow: 0 4rpx 24rpx rgba(226,194,106,0.15);
+}
+.verdict-meta {
+  margin-top: 20rpx;
+  font-size: 22rpx;
+  color: var(--text-3);
+}
+.orig-q {
+  margin-top: 22rpx;
+  padding-top: 20rpx;
+  border-top: 1rpx dashed rgba(255,255,255,0.10);
+}
+.orig-label {
+  font-size: 20rpx;
+  letter-spacing: 3rpx;
+  color: var(--text-3);
+  margin-bottom: 8rpx;
+}
+.orig-text {
+  font-size: 25rpx;
+  line-height: 1.7;
+  color: var(--text-2);
+}
+
+/* 版式小节头 */
+.section-head {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10rpx;
+  margin-bottom: 16rpx;
+}
+.section-title {
+  font-size: 32rpx;
+  font-weight: 800;
+  margin-right: auto;
+  letter-spacing: 1rpx;
+}
+.root-badge-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 14rpx;
+  margin: -2rpx 0 18rpx;
+}
+/* 骨架卡两个框：等高、上下居中、与置信度同色（金） */
+.root-badge-row .badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 52rpx;
+  padding: 0 22rpx;
+  box-sizing: border-box;
+  line-height: 1;
+  margin-right: 0;
+}
+.skeleton-name {
+  font-size: 31rpx;
+  font-weight: 700;
+  color: var(--accent);
+  margin: 6rpx 0 18rpx;
+}
+.skeleton-block {
+  background: linear-gradient(180deg, rgba(255,255,255,0.035), rgba(255,255,255,0.01)), var(--bg-card-2);
+  border: 1rpx solid rgba(255,255,255,0.06);
+  border-radius: 14rpx;
+  padding: 16rpx 20rpx;
+  margin-bottom: 12rpx;
+}
+.skeleton-k {
+  font-size: 21rpx;
+  color: var(--accent);
+  margin-bottom: 6rpx;
+  letter-spacing: 2rpx;
+}
+.skeleton-v {
+  font-size: 27rpx;
+  color: var(--text-1);
+  line-height: 1.7;
+}
+.skeleton-v.dim { color: var(--text-2); }
+/* 真实运作是 = 全卡最强结论，加重表达 */
+.skeleton-block.reveal {
+  border-color: rgba(226,194,106,0.45);
+  background: linear-gradient(180deg, rgba(226,194,106,0.12), rgba(226,194,106,0.03)), var(--bg-card-2);
+}
+.skeleton-block.reveal .skeleton-k { color: var(--accent); }
+.skeleton-block.reveal .skeleton-v {
+  font-size: 29rpx;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.debate-btn {
+  margin-top: 22rpx;
+  font-size: 25rpx;
+  color: var(--accent);
+  padding: 18rpx;
+  text-align: center;
+  border: 1rpx dashed rgba(226,194,106,0.4);
+  border-radius: 14rpx;
+  background: rgba(226,194,106,0.06);
+}
+
+/* 步骤卡 */
+.step-card { padding: 0; overflow: hidden; }
+.step-head {
+  display: flex;
+  align-items: center;
+  padding: 30rpx;
+  border-bottom: 1rpx solid var(--border);
+  background: linear-gradient(90deg, rgba(226,194,106,0.07), rgba(255,255,255,0) 50%);
+}
+.step-no {
+  width: 56rpx;
+  height: 56rpx;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(226,194,106,0.25), rgba(226,194,106,0.07));
+  border: 1rpx solid rgba(226,194,106,0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26rpx;
+  color: var(--accent);
+  margin-right: 18rpx;
+  font-weight: 800;
+}
+.step-label { flex: 1; font-size: 31rpx; font-weight: 700; }
+.step-tag {
+  font-size: 20rpx;
+  font-weight: 700;
+  padding: 6rpx 14rpx;
+  border-radius: 999rpx;
+  margin-right: 12rpx;
+  flex-shrink: 0;
+}
+.step-tag.badge-strong { background: rgba(226,194,106,0.16); color: var(--accent); border: 1rpx solid rgba(226,194,106,0.4); }
+.step-tag.badge-danger { background: rgba(230,102,102,0.14); color: var(--danger); border: 1rpx solid rgba(230,102,102,0.4); }
+.step-tag.badge-info { background: rgba(125,176,255,0.14); color: var(--info); border: 1rpx solid rgba(125,176,255,0.38); }
+.step-tag.badge-warn { background: rgba(232,164,94,0.14); color: var(--warn-c); border: 1rpx solid rgba(232,164,94,0.38); }
+.tip-btn {
+  width: 40rpx;
+  height: 40rpx;
+  margin-right: 12rpx;
+  margin-left: 6rpx;
+  border-radius: 50%;
+  border: 1rpx solid rgba(255,255,255,0.22);
+  color: var(--text-3);
+  font-size: 26rpx;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.tip-btn:active { color: var(--accent); border-color: var(--accent); }
+.key-card { border-color: rgba(255,200,90,0.5); }
+.key-card .step-head { background: linear-gradient(90deg, rgba(255,205,95,0.16), rgba(255,255,255,0) 55%); }
+.step-arrow { color: var(--text-3); font-size: 26rpx; transition: transform 0.25s; }
+.step-arrow.down { transform: rotate(180deg); }
+.step-body { padding: 30rpx; }
+.step-actions { display: flex; gap: 16rpx; margin-top: 24rpx; }
+.mini-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  height: 76rpx;
+  line-height: 1.5;
+  border-radius: 999rpx;
+  background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.01)), var(--bg-card-2);
+  color: var(--text-1);
+  border: 1rpx solid rgba(255,255,255,0.14);
+  box-shadow: 0 4rpx 14rpx rgba(0,0,0,0.25);
+}
+.mini-btn::after { border: none; }
+.mini-drill {
+  flex: 1 1 0;
+  font-size: 22rpx;
+  color: var(--text-2);
+}
+.mini-debate {
+  flex: 4 1 0;
+  font-size: 26rpx;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+/* 结构骨架辩论按钮：文字上下左右都居中 */
+.debate-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1.5;
+}
+
+/* materials */
+.material { margin-bottom: 12rpx; }
+.m-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 12rpx;
+  padding: 14rpx 16rpx;
+  background: var(--bg-card-2);
+  border: 1rpx solid rgba(255,255,255,0.06);
+  border-radius: 14rpx;
+}
+.m-fact { font-size: 26rpx; color: var(--text-1); line-height: 1.65; }
+
+/* anomaly */
+.candidate {
+  padding: 16rpx 18rpx;
+  background: var(--bg-card-2);
+  border: 2rpx solid rgba(255,255,255,0.07);
+  border-radius: 16rpx;
+  margin-bottom: 14rpx;
+}
+.candidate.selected {
+  border-color: rgba(226,194,106,0.6);
+  background: rgba(226,194,106,0.08);
+  box-shadow: 0 8rpx 24rpx rgba(212,175,55,0.12);
+}
+.c-row { display: flex; align-items: flex-start; gap: 10rpx; }
+.c-id { font-size: 22rpx; color: var(--accent); font-weight: 700; margin-top: 4rpx; }
+.c-content { flex: 1; font-size: 26rpx; color: var(--text-1); line-height: 1.6; }
+.c-lever { font-size: 20rpx; color: var(--warn-c); white-space: nowrap; margin-top: 6rpx; }
+
+/* skeleton step */
+.ssub { font-size: 25rpx; color: var(--text-2); margin-bottom: 10rpx; }
+
+/* mechanism layers */
+.layer {
+  border-left: 4rpx solid rgba(125,176,255,0.4);
+  padding: 8rpx 0 8rpx 18rpx;
+  margin-bottom: 14rpx;
+}
+.layer-ask { font-size: 25rpx; font-weight: 700; color: var(--info); margin-bottom: 4rpx; }
+.layer-find { font-size: 26rpx; color: var(--text-1); }
+.layer-break { font-size: 25rpx; color: var(--accent); margin-top: 4rpx; }
+.layer-indent { padding-left: 20rpx; }
+.bedrock {
+  font-size: 26rpx;
+  color: var(--text-1);
+  padding: 18rpx 20rpx;
+  border: 1rpx dashed rgba(226,194,106,0.4);
+  border-radius: 14rpx;
+  background: rgba(226,194,106,0.05);
+  margin: 8rpx 0 12rpx;
+}
+
+/* ===== 类比 / 博弈示例 ===== */
+.analog {
+  padding: 16rpx 18rpx;
+  background: linear-gradient(180deg, rgba(226,194,106,0.06), rgba(255,255,255,0) 70%), var(--bg-card-2);
+  border-left: 4rpx solid rgba(226,194,106,0.5);
+  border-radius: 14rpx;
+  margin-bottom: 12rpx;
+}
+.a-title { font-size: 27rpx; font-weight: 700; color: var(--accent); margin-bottom: 4rpx; }
+.a-iso { font-size: 25rpx; line-height: 1.65; }
+
+/* ===== 场景分支 ===== */
+.branch {
+  padding: 18rpx;
+  background: var(--bg-card-2);
+  border: 1rpx solid var(--border);
+  border-left: 4rpx solid rgba(125,176,255,0.5);
+  border-radius: 14rpx;
+  margin-bottom: 14rpx;
+}
+.b-head {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  margin-bottom: 8rpx;
+}
+.b-label {
+  flex: 1;
+  font-size: 27rpx;
+  font-weight: 800;
+  color: var(--text-1);
+}
+.b-prob {
+  font-size: 24rpx;
+  font-weight: 700;
+  color: var(--accent);
+  white-space: nowrap;
+}
+.b-nar { font-size: 25rpx; color: var(--text-2); line-height: 1.65; }
+.b-warn { font-size: 23rpx; color: var(--warn-c); margin-top: 8rpx; }
+
+/* ===== 判断卡 ===== */
+.judgment {
+  padding: 16rpx 18rpx;
+  background: var(--bg-card-2);
+  border: 1rpx solid var(--border);
+  border-radius: 14rpx;
+  margin-bottom: 14rpx;
+}
+.j-claim {
+  font-size: 27rpx;
+  font-weight: 700;
+  color: var(--text-1);
+  line-height: 1.6;
+  margin-bottom: 8rpx;
+}
+.j-conf { font-size: 22rpx; color: var(--accent); margin-bottom: 4rpx; }
+.j-false { font-size: 23rpx; color: var(--text-3); line-height: 1.6; }
+
+/* ===== 魔鬼代言人 ===== */
+.da {
+  padding: 14rpx 16rpx;
+  background: rgba(230,102,102,0.05);
+  border: 1rpx solid rgba(230,102,102,0.22);
+  border-radius: 14rpx;
+  margin-bottom: 12rpx;
+}
+.da-c { font-size: 25rpx; color: var(--text-1); font-weight: 600; line-height: 1.6; }
+.da-r { font-size: 24rpx; color: var(--text-2); margin-top: 6rpx; line-height: 1.6; }
+
+/* ===== 元认知审计 ===== */
+.meta {
+  padding: 14rpx 16rpx;
+  background: rgba(125,176,255,0.05);
+  border: 1rpx solid rgba(125,176,255,0.20);
+  border-radius: 14rpx;
+  margin-bottom: 12rpx;
+}
+.meta-b { font-size: 24rpx; font-weight: 700; color: var(--info); margin-bottom: 4rpx; }
+.meta-c { font-size: 24rpx; color: var(--text-2); line-height: 1.6; }
+.meta-title { font-weight: 700; color: var(--info); }
+
+/* ===== 增量覆盖层 ===== */
+.overlay {
+  padding: 16rpx 18rpx;
+  background: var(--bg-card-2);
+  border: 1rpx dashed rgba(226,194,106,0.35);
+  border-radius: 14rpx;
+  margin-bottom: 14rpx;
+}
+.ov-title { font-size: 22rpx; font-weight: 700; color: var(--accent); margin-bottom: 6rpx; }
+.ov-reason { font-size: 25rpx; color: var(--text-1); line-height: 1.65; }
+.ov-add {
+  font-size: 24rpx;
+  color: var(--text-2);
+  margin-top: 6rpx;
+  padding: 6rpx 0;
+  border-bottom: 1rpx dashed rgba(255,255,255,0.06);
+}
+
+/* ===== 辩论回合 ===== */
+.debate-turn {
+  margin-top: 4rpx;
+  margin-bottom: 14rpx;
+}
+.debate-you,
+.dt-you {
+  padding: 12rpx 16rpx;
+  margin: 0 32rpx 10rpx 0;
+  background: var(--bg-card-2);
+  border: 1rpx solid var(--border);
+  border-radius: 14rpx 14rpx 14rpx 4rpx;
+  font-size: 25rpx;
+  color: var(--text-1);
+  line-height: 1.6;
+}
+.debate-ai,
+.dt-ai {
+  padding: 12rpx 16rpx;
+  margin: 0 0 6rpx 32rpx;
+  background: linear-gradient(180deg, rgba(226,194,106,0.10), rgba(226,194,106,0.04)), var(--bg-card-2);
+  border: 1rpx solid rgba(226,194,106,0.28);
+  border-radius: 14rpx 14rpx 4rpx 14rpx;
+  font-size: 25rpx;
+  color: var(--text-2);
+  line-height: 1.6;
+}
+.debate-ai .badge,
+.dt-ai .badge { margin-bottom: 6rpx; }
+
+/* ===== 钻探 ===== */
+.drill-note {
+  padding: 12rpx 16rpx;
+  margin-bottom: 10rpx;
+  background: rgba(125,176,255,0.06);
+  border: 1rpx dashed rgba(125,176,255,0.28);
+  border-radius: 12rpx;
+  font-size: 24rpx;
+  color: var(--info);
+  line-height: 1.6;
+}
+.drill-out {
+  margin-top: 18rpx;
+  padding: 18rpx;
+  background: var(--bg-card-2);
+  border: 1rpx solid var(--border);
+  border-radius: 16rpx;
+  font-size: 26rpx;
+  color: var(--text-1);
+  line-height: 1.7;
+}
+
+/* ===== 底部操作 ===== */
+.bottom-actions { margin: 8rpx 24rpx 28rpx; }
+.bottom-actions .btn { margin-bottom: 18rpx; flex: none; width: 100%; }
+.btn.ghost {
+  background: transparent;
+  color: var(--text-2);
+  border: 1rpx solid var(--border);
+  box-shadow: none;
+}
+
+/* ===== 弹层 ===== */
+.modal-mask {
+  position: fixed;
+  inset: 0;
+  background: rgba(4, 6, 12, 0.72);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40rpx;
+  z-index: 100;
+}
+.modal {
+  width: 100%;
+  max-width: 680rpx;
+  background: linear-gradient(180deg, #1e2433, #141922 70%);
+  border: 1rpx solid rgba(226,194,106,0.3);
+  border-radius: 28rpx;
+  padding: 34rpx;
+  box-shadow: 0 24rpx 80rpx rgba(0,0,0,0.5);
+  box-sizing: border-box;
+}
+.modal-title {
+  font-size: 32rpx;
+  font-weight: 800;
+  color: var(--text-1);
+  margin-bottom: 20rpx;
+}
+.modal-input {
+  width: 100%;
+  min-height: 132rpx;
+  box-sizing: border-box;
+  padding: 16rpx;
+  background: var(--bg-card-2);
+  border: 1rpx solid var(--border);
+  border-radius: 16rpx;
+  color: var(--text-1);
+  font-size: 27rpx;
+  margin-bottom: 24rpx;
+}
+.modal .btn { width: 100%; margin-bottom: 16rpx; flex: none; }
+.modal .share-tip { font-size: 24rpx; color: var(--text-2); margin-bottom: 24rpx; }
+
+/* ===== 钻探模式切换 ===== */
+.mode-row { display: flex; gap: 12rpx; margin-bottom: 24rpx; }
+.mode {
+  flex: 1;
+  text-align: center;
+  font-size: 23rpx;
+  padding: 16rpx 6rpx;
+  background: var(--bg-card-2);
+  border: 1rpx solid var(--border);
+  border-radius: 14rpx;
+  color: var(--text-3);
+}
+.mode.active {
+  background: rgba(226,194,106,0.12);
+  border-color: rgba(226,194,106,0.5);
+  color: var(--accent);
+  font-weight: 700;
+}
+
+/* ===== 注释浮层：锚定在问号附近，不贴底 ===== */
+.tip-mask {
+  position: fixed;
+  inset: 0;
+  background: rgba(4, 6, 12, 0.35);
+  z-index: 900;
+}
+.tip-bubble {
+  position: fixed;
+  width: 82%;
+  max-width: 660rpx;
+  box-sizing: border-box;
+  padding: 26rpx 28rpx 22rpx;
+  background: linear-gradient(180deg, #20293a, #161b26);
+  border: 1rpx solid rgba(226,194,106,0.35);
+  border-radius: 20rpx;
+  box-shadow: 0 12rpx 40rpx rgba(0,0,0,0.5);
+  max-height: 60vh;
+  overflow-y: auto;
+}
+.tip-arrow {
+  position: absolute;
+  width: 0;
+  height: 0;
+  border: 12rpx solid transparent;
+  margin-left: -12rpx;
+}
+.tip-arrow.above { bottom: -24rpx; border-top-color: #20293a; }
+.tip-arrow.below { top: -24rpx; border-bottom-color: #20293a; }
+
+/* 离屏分享卡（生成小卡图片用，不显示） */
+.share-canvas {
+  position: fixed;
+  left: -9999rpx;
+  top: 0;
+  width: 750rpx;
+  height: 600rpx;
+}
+.tip-title {
+  font-size: 27rpx;
+  font-weight: 800;
+  color: var(--accent);
+  margin-bottom: 12rpx;
+}
+.tip-text {
+  font-size: 25rpx;
+  line-height: 1.75;
+  color: var(--text-2);
+}
+.tip-done {
+  margin-top: 22rpx;
+  text-align: center;
+  font-size: 25rpx;
+  font-weight: 700;
+  color: var(--accent);
+  padding: 16rpx;
+  border-top: 1rpx solid rgba(255,255,255,0.08);
+}
+
+/* ===== 整屏暗色 loading：承接首页「照一照」遮罩，切换不闪白 ===== */
+.report-loading {
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+  background: linear-gradient(180deg, #12161f 0%, #0d0f14 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding-top: 32vh;
+  box-sizing: border-box;
+}
+.loading-ring {
+  width: 76rpx;
+  height: 76rpx;
+  border-radius: 50%;
+  border: 6rpx solid transparent;
+  border-top-color: var(--accent-strong);
+  border-right-color: rgba(226,194,106,0.35);
+  animation: report-spin 1s linear infinite;
+  box-shadow: 0 0 40rpx rgba(212,175,55,0.3);
+}
+@keyframes report-spin { to { transform: rotate(360deg); } }
+.loading-text {
+  margin-top: 40rpx;
+  font-size: 34rpx;
+  font-weight: 700;
+  color: var(--text-1);
+  letter-spacing: 1rpx;
+}
+.loading-sub {
+  margin-top: 14rpx;
+  font-size: 24rpx;
+  color: var(--text-3);
+}
+
+/* ===== 1.0.19 重点强化（只改形式，不动内容） ===== */
+/* 判断卡：全文核心结论，金边阴影 */
+.judgment {
+  background: linear-gradient(180deg, rgba(226,194,106,0.10), rgba(226,194,106,0.02)), var(--bg-card-2);
+  border-color: rgba(226,194,106,0.38);
+  border-left: 6rpx solid var(--accent);
+}
+.j-claim { font-size: 29rpx; font-weight: 800; color: #fff3d6; }
+.j-conf { font-weight: 700; }
+.j-false {
+  color: var(--warn-c);
+  font-weight: 600;
+  border-top: 1rpx dashed rgba(232,160,94,0.4);
+  padding-top: 8rpx;
+  margin-top: 4rpx;
+}
+/* 机制穿透的突破层与见底基岩 */
+.layer-break { color: var(--warn-c); font-weight: 700; }
+.bedrock { color: var(--accent); font-weight: 700; }
+/* 情景分支概率颜色分级 */
+.b-prob.pb-hi { color: var(--ok); }
+.b-prob.pb-mid { color: var(--accent); }
+.b-prob.pb-lo { color: var(--text-3); }
+.b-warn { color: #f0a35e; font-weight: 600; }
+/* 魔鬼代言人 */
+.da-c { font-size: 26rpx; font-weight: 700; color: #ffe1d9; }

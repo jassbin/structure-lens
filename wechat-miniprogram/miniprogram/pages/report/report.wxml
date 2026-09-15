@@ -1,0 +1,253 @@
+<view wx:if="{{loading}}" class="report-loading">
+  <view class="loading-ring"></view>
+  <text class="loading-text">结构正在展开…</text>
+  <text class="loading-sub">正在读取分析与结构骨架</text>
+</view>
+<view class="page" wx:if="{{result}}">
+
+  <!-- 金句卡 -->
+  <view class="card verdict-card">
+    <view class="verdict-head">
+      <text class="verdict-label">一句金句结论</text>
+      <text class="tip-btn" id="tip-verdict" catchtap="toggleTip" data-tip="verdict">?</text>
+    </view>
+    <text class="verdict-text" user-select="true">{{verdict}}</text>
+    <view class="verdict-meta">版本 v{{result.version}} · {{createdAt}}</view>
+    <view class="orig-q" wx:if="{{question}}">
+      <view class="orig-label">原始困惑</view>
+      <text class="orig-text" user-select="true">{{question}}</text>
+    </view>
+  </view>
+
+  <!-- 结构骨架卡 -->
+  <view class="card">
+    <view class="section-head">
+      <text class="section-title">结构骨架卡</text>
+      <text class="tip-btn" id="tip-skeleton" catchtap="toggleTip" data-tip="skeleton">?</text>
+    </view>
+    <view class="root-badge-row">
+      <text class="badge badge-strong root-box">{{ROOT_LABELS[skeleton.root] || "未标注"}}</text>
+      <text class="badge badge-strong root-box" wx:if="{{skeleton.confidence}}">置信度 {{skeleton.confidence}}%</text>
+    </view>
+    <text class="skeleton-name" user-select="true">{{skeleton.name || '骨架待补充'}}</text>
+
+    <view class="skeleton-block">
+      <view class="skeleton-k">原本以为是</view>
+      <text class="skeleton-v dim" user-select="true">{{skeleton.perceivedAs || '—'}}</text>
+    </view>
+    <view class="skeleton-block reveal">
+      <view class="skeleton-k">真实运作是</view>
+      <text class="skeleton-v" user-select="true">{{skeleton.actualStructure || '—'}}</text>
+    </view>
+    <view class="skeleton-block">
+      <view class="skeleton-k">为什么是这样</view>
+      <text class="skeleton-v dim" user-select="true">{{skeleton.whySo || '—'}}</text>
+    </view>
+
+    <block wx:if="{{skeleton.parts && skeleton.parts.length}}">
+      <view class="skeleton-block" wx:for="{{skeleton.parts}}" wx:key="label">
+        <view class="skeleton-k">{{item.label}}</view>
+        <text class="skeleton-v" user-select="true">{{item.value}}</text>
+      </view>
+    </block>
+    <view class="skeleton-block" wx:if="{{skeleton.altStructure}}">
+      <view class="skeleton-k">或许更准</view>
+      <text class="skeleton-v dim" user-select="true">{{skeleton.altStructure}}</text>
+    </view>
+
+    <!-- 骨架辩论 -->
+    <view class="debate-btn" bindtap="onSkeletonDebate">💬 我不同意这条骨架</view>
+    <block wx:if="{{skeleton.debate && skeleton.debate.length}}">
+      <view class="debate-turn" wx:for="{{skeleton.debate}}" wx:key="at">
+        <view class="dt-you">{{item.objection}}</view>
+        <view class="dt-ai">
+          <text class="badge {{STANCE_CLASS[item.stance]}}">{{STANCE_LABELS[item.stance]}}</text>
+          <text>{{item.reason}}</text>
+        </view>
+      </view>
+    </block>
+  </view>
+
+  <!-- 8 步手风琴 -->
+  <view class="card step-card {{step.key ? 'key-card' : ''}}" wx:for="{{steps}}" wx:key="index" wx:for-item="step">
+    <view class="step-head" bindtap="toggleStep" data-index="{{step.index}}">
+      <text class="step-no">{{step.index + 1}}</text>
+      <text class="step-label">{{step.zh}}</text>
+      <text class="step-tag badge {{step.tagClass}}" wx:if="{{step.tag}}">{{step.tag}}</text>
+      <text class="tip-btn" id="tip-{{step.kind}}" catchtap="toggleTip" data-tip="{{step.kind}}">?</text>
+      <text class="step-arrow {{step.open ? 'down' : ''}}">▾</text>
+    </view>
+
+    <view class="step-body" wx:if="{{step.open}}">
+      <!-- materials -->
+      <block wx:if="{{step.kind === 'materials'}}">
+        <text class="text-2 mb" user-select="true">{{step.note}}</text>
+        <view class="material" wx:for="{{step.materials}}" wx:key="index" wx:for-item="m">
+          <view class="m-row">
+            <text class="badge {{SOURCE_GRADE_CLASS[m.grade]}}">{{SOURCE_GRADE_LABELS[m.grade] || m.grade}}</text>
+            <text class="m-fact" user-select="true">{{m.fact}}</text>
+          </view>
+        </view>
+      </block>
+
+      <!-- anomaly -->
+      <block wx:if="{{step.kind === 'anomaly'}}">
+        <text class="text-2 mb" user-select="true">基线：{{step.baseline}}</text>
+        <view
+          class="candidate {{m.id === step.selectedId ? 'selected' : ''}}"
+          wx:for="{{step.candidates}}" wx:key="id" wx:for-item="m"
+          data-index="{{step.index}}" data-point="{{m.content}}" data-title="{{step.label}}"
+          bindlongpress="openDrill"
+        >
+          <view class="c-row">
+            <text class="c-id" user-select="true">{{m.id}}</text>
+            <text class="c-content" user-select="true">{{m.content}}</text>
+            <text class="c-lever" user-select="true">杠杆{{m.leverage}}</text>
+          </view>
+        </view>
+        <text class="text-2" user-select="true">选中：{{step.selectedId}} · {{step.reason}}</text>
+      </block>
+
+      <!-- skeleton -->
+      <block wx:if="{{step.kind === 'skeleton'}}">
+        <text class="ssub" user-select="true">主体 {{step.skeletonStep.subject || '—'}} · 对象 {{step.skeletonStep.object || '—'}}</text>
+        <text class="text-2" user-select="true">机制：{{step.skeletonStep.mechanism || '—'}}</text>
+        <text class="text-2" user-select="true">受损方：{{step.skeletonStep.harmed}}</text>
+        <text class="text-2" user-select="true">受益方：{{step.skeletonStep.benefited}}</text>
+        <text class="text-2" user-select="true">中性命名：{{step.skeletonStep.naming}}</text>
+      </block>
+
+      <!-- mechanism -->
+      <block wx:if="{{step.kind === 'mechanism'}}">
+        <text class="text-2 mb" user-select="true">锚定异常：{{step.mechanism.anchorAnomaly}}</text>
+        <view class="layer" wx:for="{{step.mechanism.layers}}" wx:key="ask" wx:for-item="ly" wx:for-index="li">
+          <text class="layer-ask" user-select="true">追问{{li+1}}：{{ly.ask}}</text>
+          <text class="layer-find" user-select="true">→ {{ly.finding}}</text>
+          <text class="layer-break" user-select="true">⚡ {{ly.breakthrough}}</text>
+        </view>
+        <text class="bedrock" user-select="true">见底基岩（{{BEDROCK_LABELS[step.mechanism.bedrockKind] || step.mechanism.bedrockKind}}）：{{step.mechanism.bedrock}}</text>
+        <text class="text-2" user-select="true" wx:if="{{step.mechanism.renaming}}">重命名：{{step.mechanism.renaming}}</text>
+      </block>
+
+      <!-- game -->
+      <block wx:if="{{step.kind === 'game'}}">
+        <text class="text-2 mb" user-select="true">博弈均衡：{{step.game.gameSummary}}</text>
+        <text class="text-2 mb" user-select="true" wx:if="{{step.game.variableParameter}}">胜负手：{{step.game.variableParameter}}</text>
+        <view class="analog" wx:for="{{step.game.analogs}}" wx:key="title" wx:for-item="a">
+          <text class="a-title" user-select="true">{{a.title}}</text>
+          <text class="a-iso text-2" user-select="true">{{a.isomorphism}}</text>
+        </view>
+      </block>
+
+      <!-- scenario -->
+      <block wx:if="{{step.kind === 'scenario'}}">
+        <text class="text-2 mb" user-select="true" wx:for="{{step.variables}}" wx:key="index">变量：{{item}}</text>
+        <view class="branch" wx:for="{{step.branches}}" wx:key="label" wx:for-item="b">
+          <view class="b-head">
+            <text class="b-label">{{b.label}}</text>
+            <text class="b-prob {{b.probability >= 60 ? 'pb-hi' : b.probability >= 30 ? 'pb-mid' : 'pb-lo'}}">{{b.probability}}%</text>
+          </view>
+          <text class="b-nar" user-select="true">{{b.narrative}}</text>
+          <text class="b-warn text-2" user-select="true">预警：{{b.warningSignals}}</text>
+        </view>
+      </block>
+
+      <!-- judgment -->
+      <block wx:if="{{step.kind === 'judgment'}}">
+        <view class="judgment" wx:for="{{step.judgments}}" wx:key="claim" wx:for-item="j">
+          <text class="j-claim" user-select="true">{{j.claim}}</text>
+          <text class="j-conf" user-select="true">置信度 {{j.confidence}}%</text>
+          <text class="j-false text-2" user-select="true">可证伪：{{j.falsifiable}}</text>
+        </view>
+      </block>
+
+      <!-- adversarial -->
+      <block wx:if="{{step.kind === 'adversarial'}}">
+        <block wx:if="{{step.check.devilsAdvocate && step.check.devilsAdvocate.length}}">
+          <text class="text-2 mb" user-select="true">魔鬼代言人</text>
+          <view class="da" wx:for="{{step.check.devilsAdvocate}}" wx:key="challenge" wx:for-item="d">
+            <text class="da-c" user-select="true">{{d.challenge}}</text>
+            <text class="da-r" user-select="true">→ {{d.response}}</text>
+          </view>
+        </block>
+        <block wx:if="{{step.check.metacognition && step.check.metacognition.length}}">
+          <text class="text-2 mb meta-title" user-select="true">元认知审计</text>
+          <view class="meta" wx:for="{{step.check.metacognition}}" wx:key="bias" wx:for-item="mc">
+            <text class="meta-b" user-select="true">{{mc.bias}}</text>
+            <text class="meta-c text-2" user-select="true">{{mc.check}}</text>
+          </view>
+        </block>
+      </block>
+
+      <!-- overlays 增量覆盖层 -->
+      <view class="overlay" wx:for="{{step.meta.overlays}}" wx:key="version" wx:for-item="ov">
+        <text class="ov-title" user-select="true">v{{ov.version}} 覆盖</text>
+        <text class="ov-reason" user-select="true">{{ov.obsoleteReason}}</text>
+        <text class="ov-add" user-select="true" wx:for="{{ov.addendum}}" wx:for-item="ad" wx:key="*this">{{ad}}</text>
+      </view>
+
+      <!-- debate 留痕 -->
+      <block wx:if="{{step.meta.debate && step.meta.debate.length}}">
+        <view class="debate-turn" wx:for="{{step.meta.debate}}" wx:key="at" wx:for-item="d">
+          <text class="debate-you" user-select="true">{{d.objection}}</text>
+          <view class="debate-ai">
+            <text class="badge {{STANCE_CLASS[d.stance]}}">{{STANCE_LABELS[d.stance]}}</text>
+            <text user-select="true">{{d.reason}}</text>
+            <text class="text-2" user-select="true" wx:if="{{d.answer}}">{{d.answer}}</text>
+          </view>
+        </view>
+      </block>
+
+      <!-- drill notes -->
+      <text class="drill-note" user-select="true" wx:for="{{step.drillNotes}}" wx:key="index">{{item.text}}</text>
+
+      <view class="step-actions">
+        <button class="mini-btn mini-drill" data-index="{{step.index}}" data-point="{{step.drillDefault}}" data-title="{{step.label}}" bindtap="openDrill">钻探</button>
+        <button class="mini-btn mini-debate" data-index="{{step.index}}" bindtap="openStepDebate">我不同意 / 追问</button>
+      </view>
+    </view>
+  </view>
+
+  <!-- 底部入口 -->
+  <view class="bottom-actions">
+    <button class="btn" bindtap="onGoAction">生成行动方案</button>
+    <button class="btn ghost" open-type="share">分享这个结构报告</button>
+  </view>
+</view>
+
+<!-- 分享卡离屏画布（只用于生成分享图片，不显示） -->
+<canvas type="2d" id="share-canvas" class="share-canvas"></canvas>
+
+<!-- 「?」注释浮层：悬浮展示，点空白关闭 -->
+<view class="tip-mask" wx:if="{{openTip}}" bindtap="closeTip">
+  <view class="tip-bubble" style="{{tipBubbleStyle}}" catchtap="noop">
+    <view class="tip-arrow {{tipBubbleAbove ? 'above' : 'below'}}" style="left:{{tipArrowX}}px"></view>
+    <view class="tip-title">{{tipTitle}}</view>
+    <view class="tip-text">{{tipText}}</view>
+  </view>
+</view>
+
+<!-- 辩论弹层 -->
+<view class="modal-mask" wx:if="{{debateTarget}}" bindtap="onCloseDebate">
+  <view class="modal" catchtap="noop">
+    <view class="modal-title">我不同意 / 追问</view>
+    <textarea class="modal-input" placeholder="写下你的反对或想追问的地方…" value="{{debateText}}" bindinput="onDebateInput" maxlength="500" auto-height></textarea>
+    <button class="btn" bindtap="onSubmitDebate" disabled="{{debatting}}">{{debatting ? '正在重检… 约 15~40 秒' : '提交重算'}}</button>
+  </view>
+</view>
+
+<!-- 钻探弹层 -->
+<view class="modal-mask" wx:if="{{drillTarget}}" bindtap="onCloseDrill">
+  <view class="modal" catchtap="noop">
+    <view class="modal-title">钻探 · {{drillTarget.title}}</view>
+    <view class="mode-row">
+      <view class="mode {{drillMode === 'challenge' ? 'active' : ''}}" data-mode="challenge" bindtap="onDrillMode">质疑依据</view>
+      <view class="mode {{drillMode === 'deeper' ? 'active' : ''}}" data-mode="deeper" bindtap="onDrillMode">继续下钻</view>
+      <view class="mode {{drillMode === 'counter' ? 'active' : ''}}" data-mode="counter" bindtap="onDrillMode">最强反驳</view>
+    </view>
+    <textarea class="modal-input" placeholder="要钻探的那条判断…" value="{{drillText}}" bindinput="onDrillInput" max-height="200"></textarea>
+    <button class="btn" bindtap="onRunDrill">{{drilling ? '钻探中… 约 10~30 秒' : '钻进这一层'}}</button>
+    <text class="drill-out" user-select="true" wx:if="{{drillResult}}">{{drillResult}}</text>
+    <button class="btn ghost" wx:if="{{drillResult}}" bindtap="onApplyDrill">插入到这里</button>
+  </view>
+</view>

@@ -1,0 +1,99 @@
+<view class="page">
+  <view wx:if="{{loading}}" class="loading">
+    <view class="empty-icon">🧊</view>
+    <view>加载中…</view>
+  </view>
+
+  <view wx:elif="{{share}}">
+<view class="card share-card" wx:if="{{isAction}}">
+      <view class="brand">
+        <view class="brand-mark">⚡</view>
+        <view class="brand-text">
+          <view class="brand-name">解忧果</view>
+          <view class="brand-sub">STRUCTURE LENS · 行动方案</view>
+        </view>
+      </view>
+
+      <view class="share-verdict" user-select="true">{{share.actionPlan.headline}}</view>
+
+      <view class="action-plan" wx:if="{{actionSteps.length}}">
+        <view class="ast-step" wx:for="{{actionSteps}}" wx:key="key">
+          <view class="ast-head">
+            <text class="ast-no">{{index + 1}}</text>
+            <text class="ast-label">{{item.label}}</text>
+          </view>
+          <view class="ast-body" user-select="true">{{item.summary}}</view>
+        </view>
+      </view>
+
+      <view class="sk-block" wx:if="{{share.actionPlan.steps.placebo && share.actionPlan.steps.placebo.closingPrinciple}}">
+        <view class="sk-k">收尾</view>
+        <view class="sk-v" user-select="true">{{share.actionPlan.steps.placebo.closingPrinciple}}</view>
+      </view>
+
+      <view class="share-input">
+        <text class="share-input-k">就在今天</text>
+        <text class="share-input-v">选一个能动的部分走出去</text>
+      </view>
+    </view>
+
+    <view class="card share-card" wx:else>
+      <view class="brand">
+        <view class="brand-mark">🪞</view>
+        <view class="brand-text">
+          <view class="brand-name">解忧果</view>
+          <view class="brand-sub">STRUCTURE LENS · 结构报告</view>
+        </view>
+      </view>
+
+      <view class="share-verdict">{{share.verdict}}</view>
+
+      <view class="skeleton" wx:if="{{share.skeleton}}">
+        <view class="sk-head">
+          <text class="sk-name">{{share.skeleton.name}}</text>
+          <text class="badge badge-strong">{{ROOT_LABELS[share.skeleton.root] || share.skeleton.root}}</text>
+        </view>
+        <view class="sk-block">
+          <view class="sk-k">原本以为是</view>
+          <view class="sk-v dim">{{share.skeleton.perceivedAs}}</view>
+        </view>
+        <view class="sk-block">
+          <view class="sk-k">真实运作是</view>
+          <view class="sk-v">{{share.skeleton.actualStructure}}</view>
+        </view>
+        <view class="sk-block">
+          <view class="sk-k">为什么是这样</view>
+          <view class="sk-v dim">{{share.skeleton.whySo}}</view>
+        </view>
+      </view>
+
+      <view class="share-input">
+        <text class="share-input-k">原始困惑</text>
+        <text class="share-input-v">{{share.input}}</text>
+      </view>
+      <view class="report-steps" wx:if="{{reportSteps.length}}">
+        <view class="steps-head">报告全貌 · 8 节推演</view>
+        <view class="rs-card" wx:for="{{reportSteps}}" wx:key="kind">
+          <view class="rs-head">
+            <text class="rs-no">{{item.no}}</text>
+            <text class="rs-label">{{item.zh}}</text>
+          </view>
+          <view class="rs-row" wx:for="{{item.rows}}" wx:for-item="row" wx:key="k">
+            <text class="rs-k">{{row.k}}</text>
+            <text class="rs-v" user-select="true">{{row.v}}</text>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <view class="actions">
+      <button class="btn" bindtap="onHome">我也要照一照</button>
+    </view>
+  </view>
+
+  <view wx:else class="empty">
+    <view class="empty-icon">🔭</view>
+    <view>这张分享卡不存在或已失效</view>
+    <button class="btn ghost" bindtap="onHome">回首页</button>
+  </view>
+</view>

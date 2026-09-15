@@ -1,0 +1,139 @@
+.page {
+  padding: 24rpx 24rpx 240rpx;
+}
+.text-2 { color: var(--text-2); }
+
+.head-card {
+  background:
+    radial-gradient(120% 120% at 85% -20%, rgba(212,175,55,0.22), rgba(255,255,255,0) 55%),
+    linear-gradient(160deg, #1f1a10, var(--bg-card) 65%);
+  border-color: rgba(226, 194, 106, 0.32);
+}
+.head-kicker {
+  font-size: 20rpx;
+  letter-spacing: 4rpx;
+  color: var(--accent);
+  margin-bottom: 8rpx;
+}
+.head-title {
+  font-size: 52rpx;
+  font-weight: 900;
+  letter-spacing: 4rpx;
+  background: linear-gradient(120deg, #fff4cf, #e4c76f 60%, #b08a2e);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.head-sub {
+  font-size: 25rpx;
+  color: var(--text-2);
+  margin-top: 12rpx;
+  line-height: 1.7;
+}
+
+.aha {
+  font-size: 30rpx;
+  font-weight: 700;
+  color: var(--accent);
+  text-align: center;
+  padding: 20rpx 0;
+  line-height: 1.5;
+}
+.aha-sub {
+  font-size: 24rpx;
+  color: var(--text-3);
+  text-align: center;
+  padding: 8rpx 0 20rpx;
+}
+
+.empty {
+  text-align: center;
+  color: var(--text-3);
+  padding: 100rpx 0;
+  line-height: 1.8;
+}
+.empty-icon { font-size: 64rpx; margin-bottom: 12rpx; }
+
+.node {
+  padding: 26rpx;
+  position: relative;
+  overflow: hidden;
+}
+.node::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 6rpx;
+  background: linear-gradient(180deg, #f0d078, #b08a2e);
+  border-radius: 0 6rpx 6rpx 0;
+}
+.node-top {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8rpx;
+  margin-bottom: 12rpx;
+}
+.node-name {
+  font-size: 30rpx;
+  font-weight: 700;
+  color: var(--text-1);
+  line-height: 1.4;
+}
+.node-q {
+  margin-top: 10rpx;
+  font-size: 23rpx;
+  line-height: 1.6;
+  color: var(--text-2);
+  background: rgba(255,255,255,0.03);
+  border-radius: 10rpx;
+  padding: 10rpx 14rpx;
+}
+.node-events {
+  margin-top: 12rpx;
+  padding-top: 14rpx;
+  border-top: 1rpx dashed var(--border);
+}
+.evt {
+  font-size: 24rpx;
+  color: var(--text-3);
+  padding: 2rpx 0;
+}
+.node:active {
+  background: var(--bg-card-2);
+}
+
+/* 微信登录 + 数据同步卡（需求8） */
+.sync-card {
+  margin-bottom: 24rpx;
+  padding: 24rpx 26rpx;
+  background:
+    radial-gradient(120% 120% at 85% -20%, rgba(212,175,55,0.18), rgba(255,255,255,0) 55%),
+    linear-gradient(160deg, #1f1a10, var(--bg-card) 65%);
+  border-color: rgba(226, 194, 106, 0.3);
+}
+.sync-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20rpx;
+}
+.sync-info { flex: 1; min-width: 0; }
+.sync-title {
+  font-size: 28rpx;
+  font-weight: 800;
+  color: var(--accent);
+  margin-bottom: 4rpx;
+}
+.sync-sub {
+  font-size: 22rpx;
+  color: var(--text-3);
+  line-height: 1.5;
+}
+.sync-btn {
+  flex: none;
+  width: auto;
+  margin: 0;
+  padding: 0 30rpx;
+  font-size: 24rpx;
+}
+.sync-btn.btn { min-height: 64rpx; }
