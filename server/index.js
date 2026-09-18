@@ -7,6 +7,9 @@ const mapRoutes = require("./src/routes/map");
 const shareRoutes = require("./src/routes/share");
 const userRoutes = require("./src/routes/user");
 const actionRoutes = require("./src/routes/action");
+const contentRoutes = require("./src/routes/content");
+const methodRoutes = require("./src/routes/method");
+const { startDaily: startContentsDaily } = require("./src/contents");
 const { mysqlEnabled, startHeartbeat } = require("./src/db");
 const { stat: aiStat } = require("./src/ai-client");
 
@@ -52,7 +55,7 @@ app.use((req, res, next) => {
 app.get("/healthz", (req, res) =>
   res.json({
     ok: true,
-    version: "1.0.0-v21.5",
+    version: "1.0.0-v21.17",
     features: {
       storage: "mysql", // v15 MySQL persistence via CynosDB 5.7
       analyze: "async", // /api/analyze 异步任务
@@ -65,6 +68,8 @@ app.get("/healthz", (req, res) =>
       searchTimeoutMs: 4200, // 检索整体限时（v13 国内双源）
       share: "mysql-fallback", // v15 share: memory instant + MySQL persist
       searchEngine: "360+sogou", // v13 国内可直连搜索替代 DuckDuckGo
+      stageProgress: true, // v21.6: poll 返回 stage/progress 真实进度
+      contentDaily: true, // v21.7: 每日拆解 热榜；v21.8: 敏感词过滤；v21.9: 每天5条 + 热度优先 + 真实报告页可读
     },
     dbMode: mysqlEnabled() ? "mysql" : "memory",
     model: aiStat().primary || "not-set",
@@ -79,6 +84,8 @@ app.use("/api/structure-map", mapRoutes);
 app.use("/api/share", shareRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/action", actionRoutes);
+app.use("/api/contents", contentRoutes);
+app.use("/api/method", methodRoutes);
 
 // GET /api/debug-log : return recent runtime log ring (v21.4)
 app.get("/api/debug-log", (req, res) => res.json({ ok: true, lines: RING.slice(-400) }));
@@ -96,9 +103,12 @@ app.use((err, req, res, next) => {
 });
 
 startHeartbeat();
+startContentsDaily();
 const PORT = Number(process.env.PORT || 8080);
 app.listen(PORT, () => {
   console.log(`structure-lens server listening on :${PORT}`);
 });
 
 module.exports = app;
+
+

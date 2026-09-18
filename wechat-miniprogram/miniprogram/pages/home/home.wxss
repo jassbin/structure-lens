@@ -260,3 +260,55 @@
   0%, 100% { opacity: 1; }
   50% { opacity: 0.4; }
 }
+
+/* ---- 今日拆解卡片流 ---- */
+.daily { margin: 8rpx 24rpx 8rpx; z-index: 1; position: relative; }
+.daily-head { display: flex; align-items: baseline; gap: 16rpx; padding: 8rpx 8rpx 18rpx; }
+.daily-title { font-size: 34rpx; font-weight: 800; color: var(--accent); }
+.daily-sub { font-size: 22rpx; color: var(--text-3); }
+.daily-item {
+  background: linear-gradient(180deg, rgba(255,255,255,0.045), rgba(255,255,255,0.015)), var(--bg-card);
+  border: 1rpx solid var(--border-strong);
+  border-radius: 24rpx;
+  padding: 24rpx 28rpx;
+  margin-bottom: 18rpx;
+  box-shadow: 0 12rpx 32rpx rgba(0,0,0,0.28);
+}
+.daily-item-hover { opacity: 0.82; transform: scale(0.99); }
+.daily-row { display: flex; align-items: center; }
+.daily-badge {
+  flex: none;
+  font-size: 20rpx;
+  line-height: 1;
+  color: var(--accent);
+  background: rgba(226,194,106,0.14);
+  border: 1rpx solid rgba(226,194,106,0.38);
+  border-radius: 999rpx;
+  padding: 10rpx 16rpx;
+  margin-right: 16rpx;
+}
+.daily-name { flex: 1; font-size: 29rpx; font-weight: 700; color: var(--text-1); line-height: 1.4; }
+.daily-arrow { flex: none; margin-left: 12rpx; font-size: 36rpx; color: var(--accent); }
+.daily-hook { display: block; margin-top: 14rpx; font-size: 24rpx; color: var(--text-2); line-height: 1.6; }
+.daily-empty { padding: 28rpx; text-align: center; font-size: 24rpx; color: var(--text-3); }
+
+.daily-desc {
+  display: bl-ock;
+  font-size: 23rpx;
+  color: var(--text-2);
+  line-height: 1.6;
+  margin-top: 8rpx;
+}
+
+
+/* 事实核对卡候选行 */
+.cand {
+  margin-top: 10rpx;
+  padding: 14rpx 18rpx;
+  background: var(--bg-card-2);
+  border: 1rpx solid var(--border);
+  border-radius: 14rpx;
+  font-size: 24rpx;
+  color: var(--text-2);
+  line-height: 1.55;
+}

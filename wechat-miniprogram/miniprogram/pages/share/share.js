@@ -57,6 +57,18 @@ function buildActionSteps(plan) {
 }
 
 // 把整份结构报告（8 步）抹成可读的 key-value，分享落地页完整回显，不再是只有一张卡
+function buildMethodView(m) {
+  const arr = (v) => (Array.isArray(v) ? v : []);
+  return {
+    focus: (m && m.focus) || "",
+    variables: arr(m && m.variables).map((v) => ({ name: v.name || "", tier: v.tier || "", note: v.note || "" })),
+    map: arr(m && m.map).map((x) => ({ cond: x.cond || "", action: x.action || "", fail: x.fail || "", fallback: x.fallback || "" })),
+    steps: arr(m && m.steps).map((st) => ({ no: st.no || "", act: st.act || "" })),
+    order: (m && m.order) || "",
+    motto: (m && m.motto) || "",
+  };
+}
+
 function buildReportSteps(steps) {
   const out = [];
   (Array.isArray(steps) ? steps : []).forEach((step, i) => {
@@ -142,6 +154,8 @@ Page({
     actionSteps: [],
     reportSteps: [],
     isAction: false,
+    isMethod: false,
+    methodView: null,
   },
 
   onLoad(options) {
@@ -154,9 +168,11 @@ Page({
       .getShare(code)
       .then((share) => {
         const isAction = share && share.type === "action";
-        const actionSteps = isAction ? buildActionSteps(share) : [];
-        const reportSteps = isAction ? [] : buildReportSteps(share && share.steps);
-        this.setData({ share, loading: false, isAction, actionSteps, reportSteps });
+        const isMethod = share && share.type === "method";
+                const actionSteps = isAction ? buildActionSteps(share) : [];
+        const reportSteps = isAction || isMethod ? [] : buildReportSteps(share && share.steps);
+        const methodView = isMethod ? buildMethodView(share.steps) : null;
+        this.setData({ share, loading: false, isAction, isMethod, actionSteps, reportSteps, methodView });
       })
       .catch(() => {
         this.setData({ loading: false });
@@ -181,8 +197,8 @@ Page({
     const code = sh.code;
     const isAction = this.data.isAction;
     const title = isAction
-      ? ((sh.actionPlan && sh.actionPlan.headline) || sh.headline || "解忧果 · 行动方案")
-      : (sh.verdict || "解忧果 · 结构报告");
+      ? ((sh.actionPlan && sh.actionPlan.headline) || sh.headline || "解忧果 · 寻找缝隙")
+      : (sh.type === "method" ? (sh.verdict || "解忧果 · 规划未来") : (sh.verdict || "解忧果 · 结构报告"));
     return {
       title,
       path: code ? "/pages/share/share?code=" + encodeURIComponent(code) + (isAction ? "&type=action" : "") : "/pages/home/home",

@@ -91,7 +91,7 @@ const STANCE_LABELS = { absorb: "吸收调整", compromise: "折中处理", hold
 const STANCE_CLASS = { absorb: "badge-ok", compromise: "badge-warn", hold: "badge-info" };
 
 const ACTION_LOADING_STAGES = ["先摸清你此刻的辩", "先找一条能看到出口的缝", "把能改的与动不了的先拆开", "给最小试探设好时间盒与停手线", "留几句收尾：何时停、怎么复盘"];
-const PLACEBO_STAGE_STARTS = [0, 4, 8, 12];
+const PLACEBO_STAGE_STARTS = [0, 4, 8, 12, 16]; // 5 行阶段各自可点亮
 const PLACEBO_EXPECTED_SECONDS = 20;
 
 function tipFor(tip) {
@@ -149,6 +149,8 @@ Page({
     debateText: "",
     debateTitle: "",
     debatting: false,
+    debateHint: "",
+    debatePending: false,
     changeNote: "",
     // 分享态
     shared: false,
@@ -188,6 +190,7 @@ Page({
   startTick() {
     if (this._tick) clearInterval(this._tick);
     this._startedAt = Date.now();
+    this._stageMax = 0; // 阶段只前进（防真机回跳）
     this.setData({ elapsed: 0, progress: 0, stageIndex: 0, etaSec: PLACEBO_EXPECTED_SECONDS });
     this._tick = setInterval(() => {
       const elapsed = (Date.now() - this._startedAt) / 1000;
@@ -196,6 +199,8 @@ Page({
       for (let i = 0; i < PLACEBO_STAGE_STARTS.length; i++) {
         if (elapsed >= PLACEBO_STAGE_STARTS[i]) stageIndex = i;
       }
+      stageIndex = Math.max(this._stageMax || 0, stageIndex);
+      this._stageMax = stageIndex;
       const etaSec = Math.max(5, Math.ceil(PLACEBO_EXPECTED_SECONDS * (1 - progress / 100)));
       this.setData({ stageIndex, progress, elapsed: Math.floor(elapsed), etaSec });
     }, 200);
@@ -236,6 +241,16 @@ Page({
   },
   closeTip() { this.setData({ openTip: "" }); },
 
+  // 进入「复杂局」行动推演页
+  goMethod() {
+    const id = (this.data.plan && this.data.plan.id) || this.data.id || "";
+    if (!id) {
+      wx.showToast({ title: "缺少分析编号", icon: "none" });
+      return;
+    }
+    wx.navigateTo({ url: "/pages/method/method?id=" + encodeURIComponent(id) });
+  },
+
   async initPlan(id, analysis, fresh) {
     try {
       if (!fresh) {
@@ -267,13 +282,16 @@ Page({
     if (!silent) this.startTick();
     this.setData({ generating: true });
     try {
-      const plan = await api.getActionPlan({
-        id,
-        input: analysis.input,
-        verdict: analysis.verdict,
-        skeleton: analysis.skeleton,
-        ...(this.data.fresh ? { regenerate: true } : {}),
-      });
+      const plan = await api.getActionPlan(
+        {
+          id,
+          input: analysis.input,
+          verdict: analysis.verdict,
+          skeleton: analysis.skeleton,
+          ...(this.data.fresh ? { regenerate: true } : {}),
+        },
+        (poll) => this.onActionProgress(poll),
+      );
       this.stopTick();
       local.saveLocalActionPlan(id, plan);
       this.applyPlan(plan);
@@ -481,11 +499,13 @@ Page({
 
   // ---- 每节/每模块「我不同意/追问」----
   openModuleDebate(e) {
+    if (this.data.debatting) return;
     const modKey = e.currentTarget.dataset.key;
     const legacy = MODULE_META[modKey] ? MODULE_META[modKey].legacyKey : modKey;
     this.setData({ debateKey: legacy, debateText: "", changeNote: "", debateTitle: MODULE_META[modKey] ? MODULE_META[modKey].title : (STEP_LABELS[legacy] || legacy) });
   },
   openStepDebate(e) {
+    if (this.data.debatting) return;
     const key = e.currentTarget.dataset.key;
     this.setData({ debateKey: key, debateText: "", changeNote: "", debateTitle: STEP_LABELS[key] || key });
   },
@@ -497,9 +517,13 @@ Page({
     const { debateKey, debateText, plan } = this.data;
     const objection = (debateText || "").trim();
     if (!objection) { wx.showToast({ title: "先写下你的反对或追问", icon: "none" }); return; }
-    this.setData({ debatting: true });
+    // 提交即关弹层：页面保持可浏览，右下角浮条显示重算中
+    this.setData({ debateKey: "", debateText: "", debatting: true, debateHint: "", debatePending: true });
     try {
-      const res = await api.recomputeAction({ plan, fromStepKey: debateKey, objection });
+      const res = await api.recomputeAction(
+        { plan, fromStepKey: debateKey, objection },
+        (poll) => this.onDebateProgress2(poll),
+      );
       this.applyPlan(res.plan);
       local.saveLocalActionPlan(this.data.id, res.plan);
       this.clearReportDirtyFlag();
@@ -509,8 +533,40 @@ Page({
     } catch (e) {
       api.apiErrorToast(e, "重算失败");
     } finally {
-      this.setData({ debatting: false });
+      this.setData({ debatting: false, debateHint: "", debatePending: false });
     }
+  },
+
+  // v21.7: 行动方案生成遮罩真实阶段
+  onActionProgress(poll) {
+    if (!poll || poll.done) return;
+    const stage = poll.stage || "queued";
+    const m = {
+      generating: { idx: 1, title: "正在生成方案" },
+      parsing: { idx: 2, title: "整理成稿" },
+      saving: { idx: 3, title: "收尾" },
+    }[stage];
+    if (!m) return;
+    const progress = Math.max(this.data.progress || 0, Math.min(92, Math.round((poll.progress || 0) * 100)));
+    const si = Math.max(this._stageMax || 0, m.idx);
+    this._stageMax = si;
+    this.setData({
+      stageIndex: si,
+      progress,
+    });
+  },
+
+  // v21.7: 行动追问遮罩真实阶段
+  onDebateProgress2(poll) {
+    if (!poll || poll.done) return;
+    const stage = poll.stage || "queued";
+    const hint = {
+      generating: "正在重演… 约 15~30 秒",
+      parsing: "正在整理结果…",
+      cascading: "正在联动更新后续章节…",
+      saving: "快完成了…",
+    }[stage];
+    if (hint) this.setData({ debateHint: hint });
   },
 
   // 生成或重算后，清掉报告页的“已追问”标记，下次再进同一份分析直接看历史行动方案
@@ -581,5 +637,13 @@ Page({
     }
     if (this.data.shareImage) payload.imageUrl = this.data.shareImage;
     return payload;
+  },
+
+  onShareTimeline() {
+    const plan = this.data.plan;
+    return {
+      title: plan && plan.headline ? plan.headline : "解忧果 · 清醒行动",
+      query: this.data.id ? "id=" + encodeURIComponent(this.data.id) + "&source=share_timeline_action" : "source=share_timeline_action",
+    };
   },
 });

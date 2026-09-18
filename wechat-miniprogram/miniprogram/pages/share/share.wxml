@@ -37,6 +37,52 @@
       </view>
     </view>
 
+    <view class="card share-card" wx:elif="{{isMethod}}">
+      <view class="brand">
+        <view class="brand-mark">🧭</view>
+        <view class="brand-text">
+          <view class="brand-name">解忧果</view>
+          <view class="brand-sub">STRUCTURE LENS · 规划未来</view>
+        </view>
+      </view>
+
+      <view class="share-verdict" user-select="true">{{methodView.focus}}</view>
+
+      <view class="method-vars" wx:if="{{methodView.variables.length}}">
+        <view class="method-var" wx:for="{{methodView.variables}}" wx:key="index" wx:for-item="v">
+          <view class="method-var-head"><text class="method-var-name">{{v.name}}</text><text class="badge badge-strong">{{v.tier}}</text></view>
+          <view class="method-var-note">{{v.note}}</view>
+        </view>
+      </view>
+
+      <view class="method-map" wx:if="{{methodView.map.length}}">
+        <view class="method-map-title">条件 → 应对</view>
+        <view class="method-map-item" wx:for="{{methodView.map}}" wx:key="index" wx:for-item="m">
+          <text class="method-map-cond">{{m.cond}}</text>
+          <text class="method-map-act">{{m.action}}</text>
+          <text class="method-map-sub" wx:if="{{m.fail}}">失效 {{m.fail}} → {{m.fallback}}</text>
+        </view>
+      </view>
+
+      <view class="method-steps" wx:if="{{methodView.steps.length}}">
+        <view class="method-step" wx:for="{{methodView.steps}}" wx:key="no" wx:for-item="st">
+          <text class="method-step-no">{{st.no}}</text>
+          <text class="method-step-act">{{st.act}}</text>
+        </view>
+      </view>
+
+      <view class="method-order" wx:if="{{methodView.order}}">
+        <view class="method-order-k">停手核对</view>
+        <view class="method-order-v">{{methodView.order}}</view>
+      </view>
+
+      <view class="share-verdict motto" wx:if="{{methodView.motto}}">{{methodView.motto}}</view>
+      <view class="share-input">
+        <text class="share-input-k">这一局</text>
+        <text class="share-input-v">先分条件，再上滤网，最后把自己拆倒一遍</text>
+      </view>
+    </view>
+
     <view class="card share-card" wx:else>
       <view class="brand">
         <view class="brand-mark">🪞</view>

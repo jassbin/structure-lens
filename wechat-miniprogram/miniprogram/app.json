@@ -5,7 +5,9 @@
     "pages/actions/actions",
     "pages/report/report",
     "pages/action/action",
-    "pages/share/share"
+    "pages/method/method",
+    "pages/share/share",
+    "pages/webview/webview"
   ],
   "window": {
     "backgroundColor": "#0d0f14",

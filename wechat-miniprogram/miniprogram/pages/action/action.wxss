@@ -298,43 +298,6 @@
   line-height: 1.7;
 }
 
-/* modal */
-.modal-mask {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.65);
-  backdrop-filter: blur(6rpx);
-  z-index: 1000;
-  display: flex;
-  align-items: flex-end;
-}
-.modal {
-  width: 100%;
-  background: linear-gradient(180deg, #1a202c, #12161f);
-  border-radius: 30rpx 30rpx 0 0;
-  padding: 36rpx 32rpx 44rpx;
-  box-sizing: border-box;
-  box-shadow: 0 -20rpx 60rpx rgba(0,0,0,0.5);
-}
-.modal-title {
-  font-size: 32rpx;
-  font-weight: 800;
-  margin-bottom: 22rpx;
-  color: var(--accent);
-}
-.modal-input {
-  width: 100%;
-  min-height: 160rpx;
-  background: var(--bg-card-2);
-  border: 1rpx solid rgba(255,255,255,0.10);
-  border-radius: 16rpx;
-  padding: 18rpx;
-  box-sizing: border-box;
-  color: var(--text-1);
-  margin-bottom: 24rpx;
-  transition: border-color 0.2s;
-}
-.modal-input:focus { border-color: rgba(226,194,106,0.5); }
 /* 竖排手风琴 */
 .step-card { padding: 0; overflow: hidden; }
 .step-head {
@@ -375,79 +338,6 @@
 .step-tag.badge-danger { background: rgba(230,102,102,0.14); color: var(--danger); border: 1rpx solid rgba(230,102,102,0.4); }
 .step-tag.badge-info { background: rgba(125,176,255,0.14); color: var(--info); border: 1rpx solid rgba(125,176,255,0.38); }
 .step-tag.badge-warn { background: rgba(232,164,94,0.14); color: var(--warn-c); border: 1rpx solid rgba(232,164,94,0.38); }
-.tip-btn {
-  width: 40rpx;
-  height: 40rpx;
-  margin-right: 12rpx;
-  border-radius: 50%;
-  border: 1rpx solid rgba(255,255,255,0.22);
-  color: var(--text-3);
-  font-size: 26rpx;
-  font-weight: 700;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-.tip-btn:active { color: var(--accent); border-color: var(--accent); }
-.step-arrow {
-  color: var(--text-3);
-  font-size: 26rpx;
-  transition: transform 0.25s;
-  display: inline-block;
-}
-.step-arrow.down { transform: rotate(180deg); }
-.debate { padding: 0 30rpx 30rpx; }
-.mp-footer { justify-content: center; padding-bottom: 160rpx; }
-
-.btn.ghost {
-  background: transparent;
-  color: var(--text-2);
-  border: 1rpx solid var(--border);
-  box-shadow: none;
-}
-
-/* ===== 注释浮层 ===== */
-.tip-mask {
-  position: fixed;
-  inset: 0;
-  background: rgba(4, 6, 12, 0.35);
-  z-index: 900;
-}
-.tip-bubble {
-  position: fixed;
-  width: 82%;
-  max-width: 660rpx;
-  box-sizing: border-box;
-  padding: 26rpx 28rpx 22rpx;
-  background: linear-gradient(180deg, #20293a, #161b26);
-  border: 1rpx solid rgba(226,194,106,0.35);
-  border-radius: 20rpx;
-  box-shadow: 0 12rpx 40rpx rgba(0,0,0,0.5);
-  max-height: 60vh;
-  overflow-y: auto;
-}
-.tip-title {
-  font-size: 27rpx;
-  font-weight: 800;
-  color: var(--accent);
-  margin-bottom: 12rpx;
-}
-.tip-text {
-  font-size: 25rpx;
-  line-height: 1.75;
-  color: var(--text-2);
-}
-.tip-done {
-  margin-top: 22rpx;
-  text-align: center;
-  font-size: 25rpx;
-  font-weight: 700;
-  color: var(--accent);
-  padding: 16rpx;
-  border-top: 1rpx solid rgba(255,255,255,0.08);
-}
-
 /* helper */
 .txt { word-break: break-all; }
 
@@ -557,6 +447,9 @@
   margin-left: 12rpx;
 }
 .mod-body { padding: 28rpx 30rpx; }
+/* 追问/辩论与卡片内容对齐（mod-card 无内边距，参照 report/method 卡片内嵌样式补齐） */
+.mod-card .sec-ask { margin-left: 30rpx; margin-right: 30rpx; padding-bottom: 26rpx; }
+.mod-card .debate { padding: 0 30rpx 28rpx; }
 .sub-title {
   font-size: 25rpx;
   font-weight: 800;
@@ -672,3 +565,62 @@
 .step-card.key-card .step-label { color: var(--accent); }
 .item-title { font-weight: 800; letter-spacing: 1rpx; }
 .item-until { color: var(--warn-c); font-size: 23rpx; margin-top: 4rpx; }
+
+/* ===== 深度一层入口卡片 ===== */
+.depth-entry {
+  margin-top: 6rpx;
+  background: linear-gradient(180deg, rgba(226,194,106,0.14), rgba(255,255,255,0.02)), var(--bg-card);
+  border: 1rpx solid rgba(226,194,106,0.34);
+}
+.depth-entry:active { transform: scale(0.99); }
+.depth-head {
+  font-size: 22rpx;
+  color: var(--text-3);
+  letter-spacing: 3rpx;
+  margin-bottom: 10rpx;
+}
+.depth-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.depth-title {
+  font-family: var(--font-display);
+  font-size: 34rpx;
+  font-weight: 800;
+  color: var(--accent);
+  letter-spacing: 2rpx;
+}
+.depth-arrow { font-size: 36rpx; color: var(--accent-strong); }
+.depth-sub {
+  font-size: 24rpx;
+  color: var(--text-2);
+  line-height: 1.65;
+  margin-top: 10rpx;
+}
+
+/* 规划未来入口：黄色主按钮（与全局 .btn 一致）+ 说明文字 */
+.method-entry {
+  margin: 8rpx 24rpx 30rpx;
+  box-sizing: border-box;
+}
+.method-entry .method-btn { width: 100%; }
+.method-entry-hover { opacity: 0.86; }
+.method-entry-sub { margin-top: 16rpx; font-size: 24rpx; color: var(--text-2); line-height: 1.6; text-align: center; }
+/* 缝隙条目元信息小签（成本/可逆），与 badge 同一语言 */
+.item-tag {
+  display: inline-flex;
+  align-items: center;
+  font-size: 20rpx;
+  line-height: 1;
+  padding: 8rpx 14rpx;
+  border-radius: 999rpx;
+  color: var(--text-2);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1rpx solid rgba(255, 255, 255, 0.10);
+}
+.item-tag.ok {
+  color: var(--ok);
+  background: rgba(99, 201, 149, 0.10);
+  border-color: rgba(99, 201, 149, 0.30);
+}

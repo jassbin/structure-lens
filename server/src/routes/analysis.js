@@ -9,6 +9,8 @@ const { chatText } = require("../ai-client");
 const {
   ANALYSIS_SYSTEM_PROMPT,
   ALIGN_SUMMARY_SYSTEM_PROMPT,
+  PRECHECK_VERDICT_SYSTEM_PROMPT,
+  PRECHECK_EMPTY_SYSTEM_PROMPT,
   recomputeSystemPrompt,
   serializeStepsForContext,
   WALK_FOCUS_SYSTEM_PROMPT,
@@ -26,6 +28,7 @@ const {
   getAnalysisById,
   listRecentAnalyses,
 } = require("../store");
+const { getContent: getDailyContent } = require("../contents");
 
 const router = express.Router();
 
@@ -58,7 +61,7 @@ function createTask() {
   for (const [k, v] of TASKS) {
     if (now - v.createdAt > 30 * 60 * 1000) TASKS.delete(k);
   }
-  TASKS.set(id, { status: "pending", createdAt: now });
+  TASKS.set(id, { status: "pending", createdAt: now, stage: "queued", progress: 0 });
   return id;
 }
 function finishTaskOk(id, result) {
@@ -69,63 +72,176 @@ function finishTaskErr(id, error) {
   const t = TASKS.get(id);
   if (t && t.status === "pending") t.status = "error", (t.error = error);
 }
+// [v21.6] poll returns real stage/progress so frontend can show actual phase. No analysis logic change.
+function setTaskStage(id, stage, progress) {
+  const t = TASKS.get(id);
+  if (t && t.status === "pending") {
+    t.stage = stage;
+    if (typeof progress === "number") t.progress = progress;
+  }
+}
 
 // ---------- POST /api/precheck ----------
+
+// 中文检索兜底：去掉连接词（和/与/及/跟）重新组一次查询，「孙晨和景田」这类连写表达式也能命中
+const QUERY_CONNECT_RE = /[和与及跟、丶，,]+/g;
+function buildSearchVariants(input) {
+  const plain = String(input || "").trim();
+  const fixed = plain.replace(QUERY_CONNECT_RE, " ").replace(/\s+/g, " ").trim();
+  return fixed && fixed !== plain ? [plain, fixed] : [plain];
+}
+
 router.post("/precheck", async (req, res) => {
-  const user = getOptionalUser(req);
+  // v21.17 每次点击照一照都联网核对一次（不信任旧缓存），只有三种结局：
+  // - 搜到 & 稳对上 → diggable 直接分析（带来源）；
+  // - 搜到 & 拿不准 → align 确认卡（是→带源分析；不是→补一句再走一遍全流程，会重新搜）；
+  // - 0 条 → 用户自己说清楚了 → diggable 直接分析；用户说的没法懂 → need_detail 补一句再走一遍。
+  // 安全阀：同一件事补过 2 轮（round>=3）仍进不了 → 直接放行分析，绝不死循环。
   const input = String(req.body?.input ?? "").trim();
+  const round = Math.min(Math.max(Math.floor(Number(req.body?.round) || 1), 1), 9);
+  const DEFAULT_PROBES = [
+    "这件事里，最让你觉得不对劲的具体决定或动作是什么？",
+    "涉及哪些主体？他们各自想要什么，你希望怎么改变？",
+  ];
   if (!input) {
-    return res.json({
-      status: "too_shallow",
-      triage: {
-        verdict: "too_shallow",
-        probes: [
-          "这件事里，最让你觉得'不对劲'的具体决定或动作是什么？",
-          "涉及哪些主体？他们各自想要什么？",
-        ],
-      },
+    return res.json({ status: "need_detail", input, triage: { verdict: "need_detail", probes: DEFAULT_PROBES } });
+  }
+  const needDetail = (note, probes) =>
+    res.json({
+      status: "need_detail",
+      input,
+      note: note || "",
+      triage: { verdict: "need_detail", note: note || "", probes: probes && probes.length ? probes : DEFAULT_PROBES },
     });
-  }
+
   const triage = triageInput(input);
-  if (triage.verdict === "diggable") {
-    return res.json({ status: "diggable" });
+  if (triage.verdict === "not_applicable") return res.json({ status: "not_applicable", triage });
+
+  // 安全阀：已经补过两轮还进不了 → 直接放行分析（宁差一点，不卡死用户）
+  if (round >= 3) {
+    return res.json({ status: "diggable", input, summary: "", sources: [], straight: true });
   }
-  const SEARCH_BUDGET_MS = 3000; // precheck 整体预算：搜索 3s + 摘要 2.5s，防止单请求逼近 15s 容器上限
-  const SUMMARY_BUDGET_MS = 2500;
+
+  // 每次点击都联网检索（无 searchDone/缓存豁免）
+  const SEARCH_BUDGET_MS = 3000;
+  const VERDICT_BUDGET_MS = 2500;
   let searchResults = [];
   try {
-    searchResults = await Promise.race([
-      ddgSearch(input, 6).catch(() => []),
-      new Promise((r) => setTimeout(() => r([]), SEARCH_BUDGET_MS)),
-    ]);
+    const variants = buildSearchVariants(input);
+    const run = (q) =>
+      Promise.race([
+        ddgSearch(q, 6).catch(() => []),
+        new Promise((r) => setTimeout(() => r([]), SEARCH_BUDGET_MS)),
+      ]);
+    const batches = [await run(variants[0])];
+    if (batches[0].length < 2 && variants.length > 1) {
+      batches.push(await run(variants[1]));
+    }
+    const seen = new Set();
+    for (const arr of batches) {
+      for (const it of arr) {
+        const k = (it.title || "") + it.url;
+        if (!seen.has(k)) {
+          seen.add(k);
+          searchResults.push(it);
+        }
+      }
+    }
   } catch {}
+  console.log(`[precheck] searched=1 round=${round} n=${searchResults.length} q=${buildSearchVariants(input).join(" / ")}`);
+
   if (searchResults.length === 0) {
-    return res.json({ status: triage.verdict, triage });
+    // 0 条：能看懂直接分析；看不懂才补（搜不到不是障碍，说得清才是指标）
+    let enough = null;
+    try {
+      const raw = await Promise.race([
+        chatText({
+          messages: [
+            { role: "system", content: PRECHECK_EMPTY_SYSTEM_PROMPT },
+            { role: "user", content: "用户输入：\n" + input },
+          ],
+          temperature: 0.2,
+          max_tokens: 400,
+          json: true,
+        }),
+        new Promise((r) => setTimeout(() => r(""), VERDICT_BUDGET_MS)),
+      ]);
+      if (raw) {
+        const parsed = extractJson(raw);
+        if (parsed && typeof parsed.enough === "boolean") enough = parsed;
+      }
+    } catch (e) {
+      console.error("[precheck] empty-judge failed", e && e.message);
+    }
+    if (enough && enough.enough) {
+      return res.json({
+        status: "diggable",
+        input,
+        summary: "",
+        sources: [],
+        straight: true,
+        note: "网上没搜到公开信息，按你说的直接分析",
+      });
+    }
+    const probes =
+      enough && Array.isArray(enough.probes)
+        ? enough.probes.slice(0, 2).map((x) => String(x || "").trim()).filter(Boolean)
+        : [];
+    return needDetail(
+      enough && enough.note ? enough.note : "网上没搜到公开信息，这句话又没说清楚；补一句关键细节就能分析。",
+      probes,
+    );
   }
+
   const sources = searchResults.slice(0, 4).map((r) => ({ title: r.title, url: r.url }));
-  let summary = "";
+
+  let verdict = null;
   try {
-    summary = await Promise.race([
+    const raw = await Promise.race([
       chatText({
         messages: [
-          { role: "system", content: ALIGN_SUMMARY_SYSTEM_PROMPT },
-          { role: "user", content: `用户输入：${input}
-
-【检索资料】
-${formatSearchContext(searchResults)}` },
+          { role: "system", content: PRECHECK_VERDICT_SYSTEM_PROMPT },
+          { role: "user", content: "用户输入：" + input + "\n\n【检索资料】\n" + formatSearchContext(searchResults) },
         ],
-        temperature: 0.3,
-        max_tokens: 512,
+        temperature: 0.2,
+        max_tokens: 600,
+        json: true,
       }),
-      new Promise((r) => setTimeout(() => r(""), SUMMARY_BUDGET_MS)),
+      new Promise((r) => setTimeout(() => r(""), VERDICT_BUDGET_MS)),
     ]);
+    if (raw) {
+      const parsed = extractJson(raw);
+      if (parsed && typeof parsed.clear === "boolean") verdict = parsed;
+    }
   } catch (e) {
-    console.error("[precheck] summary failed", e && e.message);
-    return res.json({ status: triage.verdict, triage });
+    console.error("[precheck] verdict failed", e && e.message);
   }
-  summary = (summary || "").trim();
-  if (!summary) return res.json({ status: triage.verdict, triage });
-  return res.json({ status: "align", input, summary, sources });
+  if (!verdict) {
+    // 判定失败/超时：保守走确认卡，绝不替用户乱选
+    return res.json({
+      status: "align",
+      input,
+      summary: "搜到一些相关消息，但还不能完全确认就是你这件事：请核对，是它就直接拆，不是就在输入框补两句再照一次。",
+      sources,
+    });
+  }
+  if (verdict.clear) {
+    return res.json({ status: "diggable", input, summary: verdict.summary || "", sources });
+  }
+  if (verdict.guessable === false) {
+    // 检索全是噪音、输入也没法脑补：直接问补充，别让用户在无关结果上确认
+    return needDetail("网上检索到的内容和你说的对不上，这句又概括不出是什么事；补一句关键细节，就能直接分析。", []);
+  }
+  const candidates = Array.isArray(verdict.candidates)
+    ? verdict.candidates.slice(0, 3).map((x) => String(x || "").trim()).filter(Boolean)
+    : [];
+  return res.json({
+    status: "align",
+    input,
+    summary: verdict.summary || "没检索到和输入完全吻合的事，请核对：下面这些是不是你要拆的那件。",
+    sources,
+    candidates,
+  });
 });
 
 // ---------- POST /api/analyze ----------
@@ -136,6 +252,7 @@ router.post("/analyze", async (req, res) => {
   const input = String(body.input ?? "").trim();
   const aligned = Boolean(body.aligned);
   const alignedSources = Array.isArray(body.alignedSources) ? body.alignedSources : [];
+  const skipSearch = Boolean(body.skipSearch); // 个人私事/已搜过一次：进入分析不再联网
 
   const triage = triageInput(input);
   if (!aligned && triage.verdict !== "diggable") {
@@ -148,7 +265,7 @@ router.post("/analyze", async (req, res) => {
 
   // 后台异步执行，不阻塞本请求响应（避免云调用 15s 硬超时）
   const w = setTimeout(() => finishTaskErr(taskId, "ai_timeout"), 240000);
-  runAnalysisTask(taskId, { input, aligned, alignedSources, pre: preAligned, uid })
+  runAnalysisTask(taskId, { input, aligned, alignedSources, skipSearch, pre: preAligned, uid })
     .then(() => clearTimeout(w))
     .catch((err) => {
       console.error("[analyze] task failed", err && err.message);
@@ -161,13 +278,14 @@ router.post("/analyze", async (req, res) => {
 });
 
 async function runAnalysisTask(taskId, ctx) {
-  const { input, uid } = ctx;
+  const { input, uid, skipSearch } = ctx;
   const alignedSources = Array.isArray(ctx.alignedSources) ? ctx.alignedSources : [];
   const pre = alignedSources.length > 0;
   console.log(`[analyze] run started taskId=${taskId} pre=${pre} input=${(input || "").slice(0, 30)}`);
+  setTaskStage(taskId, "searching", 0.1);
 
   let searchResults = [];
-  if (!pre) {
+  if (!pre && !skipSearch) {
     try {
       searchResults = await ddgSearch(input, 6).catch(() => []);
     } catch {}
@@ -190,6 +308,7 @@ async function runAnalysisTask(taskId, ctx) {
     : input;
 
   let content = "";
+  setTaskStage(taskId, "generating", 0.35);
   content = await chatText({
     messages: [
       { role: "system", content: ANALYSIS_SYSTEM_PROMPT },
@@ -201,6 +320,7 @@ async function runAnalysisTask(taskId, ctx) {
   });
 
   let result;
+  setTaskStage(taskId, "parsing", 0.7);
   try {
     result = normalizeAnalysis(extractJson(content), makeId(), input, sources ? { sources } : undefined);
   } catch (e) {
@@ -208,6 +328,7 @@ async function runAnalysisTask(taskId, ctx) {
     // 首次解析失败：截断是头号嫌疑。重试一次，把 temperature 归零 + 更大 token 上限，
     // 并命令模型"只输出 JSON、不得截断"。多数情况下第二次能拿到完整 JSON。
     try {
+      setTaskStage(taskId, "generating", 0.5);
       const retryContent = await chatText({
         messages: [
           { role: "system", content: ANALYSIS_SYSTEM_PROMPT },
@@ -229,6 +350,7 @@ async function runAnalysisTask(taskId, ctx) {
   if (emptyKinds.length > 0) {
     console.error("[analyze] empty steps detected, repairing: " + emptyKinds.join(","));
     try {
+      setTaskStage(taskId, "generating", 0.62);
       const repairPrompt =
         analysisTarget +
         "\n\n（注意：你上次输出的 JSON 缺少或留空了这几节：" +
@@ -258,6 +380,7 @@ async function runAnalysisTask(taskId, ctx) {
     // 绝不能让它挂死阻塞 finishTaskOk，否则前端轮询 90s 一到就报"分析超时"。
     // 用一个 Promise.race 给整段入库设硬超时，超时就跳过入库直接出结果。
     try {
+      setTaskStage(taskId, "saving", 0.92);
       await Promise.race([
         (async () => {
           try {
@@ -285,7 +408,7 @@ router.get("/analyses/:taskId/poll", (req, res) => {
     return res.status(404).json({ error: "task_not_found" });
   }
   if (t.status === "pending") {
-    return res.json({ done: false });
+    return res.json({ done: false, stage: t.stage || "queued", progress: t.progress || 0 });
   }
   if (t.status === "error") {
     return res.json({ done: true, error: t.error || "ai_failed" });
@@ -334,6 +457,7 @@ router.post("/recompute", async (req, res) => {
 async function runRecomputeTask(taskId, ctx) {
   const { base, fromStepKind, disagreement, uid, isSkeletonCard } = ctx;
   console.log(`[recompute] run started taskId=${taskId} fromStep=${fromStepKind}`);
+  setTaskStage(taskId, "generating", 0.3);
 
   const fromIdx = isSkeletonCard ? -1 : STEP_ORDER.indexOf(fromStepKind);
   const upstream = isSkeletonCard
@@ -376,6 +500,7 @@ async function runRecomputeTask(taskId, ctx) {
   }
 
   let result;
+  setTaskStage(taskId, "parsing", 0.78);
   let changeNote = "";
   try {
     const parsed = extractJson(content) || {};
@@ -404,6 +529,7 @@ async function runRecomputeTask(taskId, ctx) {
     }
   }
 
+  setTaskStage(taskId, "saving", 0.95);
   console.log(`[recompute] run done taskId=${taskId}`);
   finishTaskOk(taskId, { result, changeNote, persisted: Boolean(uid) });
 }
@@ -458,7 +584,13 @@ router.post("/walk-focus", async (req, res) => {
 router.get("/analyses/:id", async (req, res) => {
   const user = getOptionalUser(req);
   if (!user) return res.status(401).json({ error: "login_required" });
-  const result = await getAnalysisById(user.id, req.params.id).catch(() => null);
+  const id = String(req.params.id || "").trim();
+  let result = await getAnalysisById(user.id, id).catch(() => null);
+  // v21.9: 今日拆解事件可直接进真实报告页（免登录内容分析兜底）
+  if (!result) {
+    const c = await getDailyContent(id).catch(() => null);
+    if (c && c.result) return res.json({ result: c.result });
+  }
   if (!result) return res.status(404).json({ error: "not_found" });
   return res.json({ result });
 });

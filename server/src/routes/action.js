@@ -47,6 +47,8 @@ function createTask() {
     if (now - v.createdAt > 30 * 60 * 1000) TASKS.delete(k);
   }
   TASKS.set(id, { status: "pending", createdAt: now });
+  TASKS.get(id).stage = "queued";
+  TASKS.get(id).progress = 0;
   return id;
 }
 function finishTaskOk(id, planRes) {
@@ -56,6 +58,14 @@ function finishTaskOk(id, planRes) {
 function finishTaskErr(id, error) {
   const t = TASKS.get(id);
   if (t && t.status === "pending") { t.status = "done"; t.error = error || "ai_failed"; }
+}
+// [v21.6] poll returns real stage/progress. No analysis logic change.
+function setTaskStage(id, stage, progress) {
+  const t = TASKS.get(id);
+  if (t && t.status === "pending") {
+    t.stage = stage;
+    if (typeof progress === "number") t.progress = progress;
+  }
 }
 
 // ---------- GET /api/action?id= ----------
@@ -178,6 +188,7 @@ async function runActionTask(taskId, ctx) {
   const uid = ctx.user ? ctx.user.id : null;
   const id = ctx.id;
   console.log(`[action] run started taskId=${taskId} input=${(input || "").slice(0, 30)} forced=${forcedLabel || "无"}`);
+  setTaskStage(taskId, "generating", 0.2);
 
   const userMsg = [
     `【用户的原始困惑/事件】\n${input || "(未提供)"}`,
@@ -233,6 +244,7 @@ async function runActionTask(taskId, ctx) {
     })(),
   ]);
 
+  setTaskStage(taskId, "parsing", 0.75);
   if (!stepsRes && !modsRes) return finishTaskErr(taskId, firstErr || "ai_failed");
 
   const rawPlan = {
@@ -250,6 +262,7 @@ async function runActionTask(taskId, ctx) {
     return finishTaskErr(taskId, "ai_parse_failed");
   }
 
+  setTaskStage(taskId, "saving", 0.9);
   if (uid) {
     try {
       await Promise.race([
@@ -272,7 +285,9 @@ router.get("/:taskId/poll", (req, res) => {
   const t = TASKS.get(String(req.params.taskId || "").trim());
   if (!t) return res.status(404).json({ error: "task_not_found" });
   console.log(`[action] poll taskId=${req.params.taskId} status=${t.status}`);
-  if (t.status === "pending") return res.json({ done: false });
+  if (t.status === "pending") {
+    return res.json({ done: false, stage: t.stage || "queued", progress: t.progress || 0 });
+  }
   if (t.status === "error") return res.json({ done: true, error: t.error || "ai_failed" });
   return res.json({ done: true, result: t.plan });
 });
@@ -301,6 +316,8 @@ router.post("/recompute", (req, res) => {
 async function runRecomputeTask(taskId, ctx) {
   const { base, fromStepKey, objection } = ctx;
   const uid = ctx.user ? ctx.user.id : null;
+  const t0 = Date.now();
+  setTaskStage(taskId, "generating", 0.5);
 
   const userMsg = [
     `【行动方案的视角】${base.perspective.label}（id=${base.perspective.id}）`,
@@ -324,6 +341,7 @@ async function runRecomputeTask(taskId, ctx) {
     return finishTaskErr(taskId, "ai_failed");
   }
 
+  setTaskStage(taskId, "parsing", 0.75);
   let plan, stance, changeNote;
   try {
     const parsed = extractJson(content);
@@ -333,6 +351,7 @@ async function runRecomputeTask(taskId, ctx) {
     console.error("[action/recompute] parse failed", e && e.message, (content || "").slice(0, 300));
     // 重试一次
     try {
+      setTaskStage(taskId, "generating", 0.55);
       const retry = await chatText({
         messages: [
           { role: "system", content: actionRecomputeSystemPrompt(fromStepKey, base.perspective) },
@@ -352,7 +371,7 @@ async function runRecomputeTask(taskId, ctx) {
   }
 
   // 增量联动：模型若只让当前节变化，补一轮专门重写未同步的下游章节
-  if (plan && stance && stance !== "hold") {
+  if (plan && stance && stance !== "hold" && Date.now() - t0 < 30000) {
     try {
       const stale = downstreamStaleKeys(base.steps, plan.steps, fromStepKey);
       if (stale.length) {
@@ -361,6 +380,7 @@ async function runRecomputeTask(taskId, ctx) {
           "【当前方案全文（含已更新的那一节）】\n" + JSON.stringify(plan.steps, null, 2),
           "【仍未同步、必须联动重写的下游节】\n" + stale.join("、"),
         ].join("\n\n");
+        setTaskStage(taskId, "cascading", 0.85);
         const fixText = await chatText({
           messages: [
             { role: "system", content: downstreamCascadePrompt(stale, base.perspective) },
@@ -384,6 +404,7 @@ async function runRecomputeTask(taskId, ctx) {
     }
   }
 
+  setTaskStage(taskId, "saving", 0.93);
   if (uid) {
     try {
       await Promise.race([

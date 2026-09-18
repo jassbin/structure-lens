@@ -1,3 +1,4 @@
+<!-- 首页：输入 -> 照一照 ->（反问题/事实对齐）在今日推荐之上；今日拆解列表带简单描述 -->
 <view class="page">
   <view class="glow glow-a"></view>
   <view class="glow glow-b"></view>
@@ -17,6 +18,8 @@
       bindinput="onInput"
       maxlength="300"
       auto-height
+      focus="{{inputFocus}}"
+      bindblur="onInputBlur"
     />
     <view class="input-foot">
       <text class="input-hint">🔎 越具体，照得越深</text>
@@ -46,9 +49,9 @@
     </button>
   </view>
 
-  <!-- 反问题卡 -->
+  <!-- 反问题卡（先于今日推荐：属于你这次的分析流） -->
   <view class="card feedback" wx:if="{{showTriage}}">
-    <view class="card-title">还差一点点</view>
+    <view class="card-title">还差一点点</view><view class="text-2" wx:if="{{triage.note}}">{{triage.note}}</view>
     <block wx:if="{{triage.probes && triage.probes.length}}">
       <view class="feedback-tip">试试从这些角度补一句：</view>
       <view class="probe" wx:for="{{triage.probes}}" wx:key="index">{{item}}</view>
@@ -56,23 +59,27 @@
     <view class="text-2" wx:else>{{triage.suggestion || '请补充更具体的信息。'}}</view>
   </view>
 
-  <!-- 事实对齐卡 -->
+  <!-- 事实核对卡：搜索不确定时让用户点确认 / 或回输入框补充 -->
   <view class="card feedback" wx:if="{{showAlign}}">
-    <view class="card-title">先对齐一下事实</view>
+    <view class="card-title">先对一下，是这件事吗？</view>
     <view class="text-2">{{align.summary}}</view>
-    <view class="sources" wx:if="{{align.sources.length}}">
+    <block wx:if="{{align.candidates && align.candidates.length}}">
+      <view class="feedback-tip">可能是这些：</view>
+      <view class="cand" wx:for="{{align.candidates}}" wx:key="*this">{{item}}</view>
+    </block>
+    <view class="sources" wx:if="{{align.sources && align.sources.length}}">
       <view class="source" wx:for="{{align.sources}}" wx:key="url">
         <text class="text-2">📄 {{item.title}}</text>
       </view>
     </view>
     <view class="btn-2row">
-      <button class="btn ghost" bindtap="onAlignSkip">跳过</button>
-      <button class="btn" bindtap="onAlignConfirm">按此分析</button>
+      <button class="btn ghost" bindtap="onAlignSkip">都不是，我补充</button>
+      <button class="btn" bindtap="onAlignConfirm">就是这个，拆它</button>
     </view>
   </view>
 
   <view class="footer-tip">清除之前的一道坎，戳 <text class="reset" bindtap="onReset">重新输入</text></view>
-  <view class="footer-ver" bindlongpress="onShowDiag">v1.0.36</view>
+  <view class="footer-ver" bindlongpress="onShowDiag">v1.0.54</view>
 </view>
 
 <!-- 全屏分析遮罩：乐观进度 + 阶段清单 + 预估时间 -->

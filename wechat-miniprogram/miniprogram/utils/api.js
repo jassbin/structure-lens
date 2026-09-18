@@ -159,9 +159,9 @@ function warm() {
 
 // ---- 类型占位（小程序无 TS，形状对齐 <原作>src/lib/api/analysis.ts） ----
 
-/** 分诊预检：够具体直接放行；太短先静默搜——搜到走对齐、搜不到走反问。免登录。 */
-async function precheck(input) {
-  return callApiRetry("/api/precheck", { input });
+/** 分诊预检（v21.17）：每次点击都联网核对一次；round=第几轮追问（防死循环安全阀）。免登录。 */
+async function precheck(input, opts) {
+  return callApiRetry("/api/precheck", { input, ...(opts || {}) });
 }
 
 /** 提交事件做深度分析。可带对齐后的来源（跳过分诊与重复搜索）。免登录。
@@ -180,7 +180,7 @@ async function analyze(input, opts) {
   }
   const taskId = accept.taskId;
   const deadline = Date.now() + 150 * 1000; // 最多等 150s（AI 冷启动/切换兜底通道时 60-120s 属正常）
-  const step = 2000;
+  const step = 1000; // v21.6: 1s 轮询，结果准时拿到
   while (Date.now() < deadline) {
     await new Promise((r) => setTimeout(r, step));
     const poll = await callApiRetry(
@@ -188,6 +188,7 @@ async function analyze(input, opts) {
       {},
       "GET",
     );
+    if (opts && typeof opts.onProgress === "function") opts.onProgress(poll);
     if (!poll) continue;
     if (poll.done) {
       if (poll.error) {
@@ -225,14 +226,14 @@ async function drill(payload) {
  * 避免同步调用撞 wx.cloud.callContainer 15s 超时（102002 → 前端"重算失败"）。
  * 返回 { result, changeNote, persisted }。
  */
-async function recompute(payload) {
+async function recompute(payload, onProgress) {
   const accept = await callApiRetry("/api/recompute", payload);
   if (!accept || !accept.taskId) {
     throw new Error("recompute submit failed");
   }
   const taskId = accept.taskId;
   const deadline = Date.now() + 120 * 1000; // 重算一般 10-40s（骨架卡/早期步骤会整篇重推），给足 120s
-  const step = 1500;
+  const step = 1000; // v21.7: 统一 1s 轮询
   while (Date.now() < deadline) {
     await new Promise((r) => setTimeout(r, step));
     const poll = await callApiRetry(
@@ -240,6 +241,7 @@ async function recompute(payload) {
       {},
       "GET",
     );
+    if (typeof onProgress === "function") onProgress(poll);
     if (!poll) continue;
     if (poll.done) {
       if (poll.error) {
@@ -270,6 +272,26 @@ async function getAnalysis(id) {
 async function getStructureMap() {
   const data = await callApiRetry("/api/structure-map", {}, "GET");
   return (data && data.nodes) || [];
+}
+
+/** 今日拆解列表（免登录）：近 7 天滚动，仅卡片元信息。失败返回空数组，不阻塞页面。 */
+async function getContents() {
+  try {
+    const data = await callApiRetry("/api/contents", {}, "GET");
+    return (data && data.items) || [];
+  } catch (e) {
+    return [];
+  }
+}
+
+/** 今日拆解详情（免登录）：content.result 复用 8 步报告结构。 */
+async function getContent(id) {
+  const data = await callApiRetry(
+    `/api/contents/${encodeURIComponent(id)}`,
+    {},
+    "GET",
+  );
+  return (data && data.content) || null;
 }
 
 /** 后置登录：把本地分析并入云端结构地图。 */
@@ -362,7 +384,7 @@ async function getShare(code) {
  * 因此同 analyze 一样走「异步提交 + 轮询」，内部自动轮询到完成/超时。
  * 兼容老实现：命中云端缓存时后端直接返回，无需轮询。
  */
-async function getActionPlan(payload) {
+async function getActionPlan(payload, onProgress) {
   const accept = await callApiRetry("/api/action", payload);
   // 命中缓存直接返回
   if (accept && accept.status === "done" && accept.result) {
@@ -374,7 +396,7 @@ async function getActionPlan(payload) {
   }
   const taskId = accept.taskId;
   const deadline = Date.now() + 100 * 1000; // 最多等 100s
-  const step = 2000;
+  const step = 1000; // v21.7: 统一 1s 轮询
   while (Date.now() < deadline) {
     await new Promise((r) => setTimeout(r, step));
     const poll = await callApiRetry(
@@ -382,6 +404,7 @@ async function getActionPlan(payload) {
       {},
       "GET",
     );
+    if (typeof onProgress === "function") onProgress(poll);
     if (!poll) continue;
     if (poll.done) {
       if (poll.error) {
@@ -399,7 +422,7 @@ async function getActionPlan(payload) {
 }
 
 /** 行动页某节「我不同意/追问」（异步提交 + 轮询，同 getActionPlan）。 */
-async function recomputeAction(payload) {
+async function recomputeAction(payload, onProgress) {
   const accept = await callApi("/api/action/recompute", payload);
   if (!accept || !accept.taskId) {
     // 兼容旧形态直返
@@ -408,7 +431,7 @@ async function recomputeAction(payload) {
   }
   const taskId = accept.taskId;
   const deadline = Date.now() + 150 * 1000;
-  const step = 2000;
+  const step = 1000; // v21.7: 统一 1s 轮询
   while (Date.now() < deadline) {
     await new Promise((r) => setTimeout(r, step));
     const poll = await callApiRetry(
@@ -416,6 +439,7 @@ async function recomputeAction(payload) {
       {},
       "GET",
     );
+    if (typeof onProgress === "function") onProgress(poll);
     if (!poll) continue;
     if (poll.done) {
       if (poll.error) {
@@ -441,6 +465,47 @@ async function getSavedActionPlan(id) {
       "GET",
     );
     return data.plan || null;
+  } catch (e) {
+    return null;
+  }
+}
+
+
+/** 生成「复杂环境行动」（异步提交 + 轮询，同 getActionPlan）。 */
+async function getMethodPlan(payload, onProgress) {
+  const accept = await callApiRetry("/api/method", payload);
+  if (accept && accept.status === "done" && accept.result) {
+    return accept.result.method || accept.result;
+  }
+  if (!accept || !accept.taskId) throw new Error("method submit failed");
+  const taskId = accept.taskId;
+  const deadline = Date.now() + 150 * 1000;
+  const step = 1000;
+  while (Date.now() < deadline) {
+    await new Promise((r) => setTimeout(r, step));
+    const poll = await callApiRetry("/api/method/" + encodeURIComponent(taskId) + "/poll", {}, "GET");
+    if (typeof onProgress === "function") onProgress(poll);
+    if (!poll) continue;
+    if (poll.done) {
+      if (poll.error) {
+        const e = new Error(poll.error || "ai_failed");
+        e.status = 502;
+        throw e;
+      }
+      const result = poll.result || {};
+      return result.method || result;
+    }
+  }
+  const t = new Error("分析超时，请稍后重试");
+  t.status = 408;
+  throw t;
+}
+
+/** 读取已算好的复杂局行动（缓存命中秒回，未命中返回 null）。 */
+async function getSavedMethod(id) {
+  try {
+    const d = await callApiRetry("/api/method?id=" + encodeURIComponent(id), {}, "GET");
+    return (d && d.result) || null;
   } catch (e) {
     return null;
   }
@@ -482,6 +547,8 @@ module.exports = {
   recompute,
   getAnalysis,
   getStructureMap,
+  getContents,
+  getContent,
   importLocalToCloud,
   syncStructureMap,
   createShare,
@@ -490,4 +557,6 @@ module.exports = {
   recomputeAction,
   getSavedActionPlan,
   listSavedActionPlans,
+  getMethodPlan,
+  getSavedMethod,
 };

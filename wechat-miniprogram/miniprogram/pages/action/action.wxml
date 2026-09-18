@@ -27,6 +27,15 @@
   </view>
 
   <block wx:elif="{{plan}}">
+    <!-- 三页链路：看穿 -> 找到缝 -> 动起来 -->
+    <view class="chain-bar">
+      <view class="chain-node passed"><view class="chain-dot">1</view><view class="chain-label">看穿</view></view>
+      <view class="chain-line passed"></view>
+      <view class="chain-node active"><view class="chain-dot">2</view><view class="chain-label">找到缝</view></view>
+      <view class="chain-line"></view>
+      <view class="chain-node"><view class="chain-dot">3</view><view class="chain-label">动起来</view></view>
+    </view>
+
     <!-- 头部：标签 + 视角切换 + 视图切换 + headline -->
     <view class="card head-card">
       <view class="head-row">
@@ -91,9 +100,7 @@
             <text class="item-until" wx:if="{{cw.until}}">可放下：{{cw.until}}</text>
           </view>
         </view>
-        <view class="debate-btn-row" wx:if="{{!shared}}">
-          <button class="mini-btn" data-key="anchor" bindtap="openModuleDebate" hover-class="mini-btn-press">我不同意 / 追问</button>
-        </view>
+        <view class="sec-ask" wx:if="{{!shared}}"><text class="ask-btn" data-key="anchor" bindtap="openModuleDebate">我不同意 / 追问</text></view>
         <view class="debate" wx:if="{{modulesView.debates.anchor.length}}">
           <view class="card-title">辩论留痕</view>
           <view class="debate-turn" wx:for="{{modulesView.debates.anchor}}" wx:key="at" wx:for-item="d">
@@ -123,8 +130,8 @@
             <view class="item-head">
               <text class="badge badge-info">{{cr.kind}}</text>
               <text class="badge {{cr.status === 'verified' ? 'badge-ok' : cr.status === 'closed' ? 'badge-danger' : 'badge-warn'}}">{{CRACK_STATUS_LABELS[cr.status]}}</text>
-              <text class="text-2">成本{{COST_LABELS[cr.cost]}}</text>
-              <text class="text-2" wx:if="{{cr.reversible}}">可逆</text>
+              <text class="item-tag" wx:if="{{cr.cost}}">成本 {{COST_LABELS[cr.cost]}}</text>
+              <text class="item-tag ok" wx:if="{{cr.reversible}}">可逆</text>
             </view>
             <text class="item-text" wx:if="{{cr.gap}}" user-select="true">落在哪：{{cr.gap}}</text>
             <text class="item-text" user-select="true">怎么走：{{cr.enter}}</text>
@@ -144,9 +151,7 @@
             <text class="item-title" user-select="true">{{ch.t}}</text>
             <text class="item-text" user-select="true">{{ch.d}}</text>
           </view>        </view>
-        <view class="debate-btn-row" wx:if="{{!shared}}">
-          <button class="mini-btn" data-key="recon" bindtap="openModuleDebate" hover-class="mini-btn-press">我不同意 / 追问</button>
-        </view>
+        <view class="sec-ask" wx:if="{{!shared}}"><text class="ask-btn" data-key="recon" bindtap="openModuleDebate">我不同意 / 追问</text></view>
         <view class="debate" wx:if="{{modulesView.debates.recon.length}}">
           <view class="card-title">辩论留痕</view>
           <view class="debate-turn" wx:for="{{modulesView.debates.recon}}" wx:key="at" wx:for-item="d">
@@ -179,12 +184,10 @@
             <text class="item-text" wx:if="{{pr.how}}" user-select="true">怎么做：{{pr.how}}</text>
             <text class="item-text" wx:if="{{pr.success}}" user-select="true">做到什么样算成：{{pr.success}}</text>
             <text class="item-until" wx:if="{{pr.danger}}">停手线：{{pr.danger}}</text>
-            <input class="probe-note" placeholder="试完记录一句（本地）…" value="{{pr.note}}" data-index="{{pr.idx}}" bindblur="onProbeNoteBlur" />
+            
           </view>
         </view>
-        <view class="debate-btn-row" wx:if="{{!shared}}">
-          <button class="mini-btn" data-key="probe" bindtap="openModuleDebate" hover-class="mini-btn-press">我不同意 / 追问</button>
-        </view>
+        <view class="sec-ask" wx:if="{{!shared}}"><text class="ask-btn" data-key="probe" bindtap="openModuleDebate">我不同意 / 追问</text></view>
         <view class="debate" wx:if="{{modulesView.debates.probe.length}}">
           <view class="card-title">辩论留痕</view>
           <view class="debate-turn" wx:for="{{modulesView.debates.probe}}" wx:key="at" wx:for-item="d">
@@ -231,9 +234,7 @@
             </view>
           </view>
         </view>
-        <view class="debate-btn-row" wx:if="{{!shared}}">
-          <button class="mini-btn" data-key="pivot" bindtap="openModuleDebate" hover-class="mini-btn-press">我不同意 / 追问</button>
-        </view>
+        <view class="sec-ask" wx:if="{{!shared}}"><text class="ask-btn" data-key="pivot" bindtap="openModuleDebate">我不同意 / 追问</text></view>
         <view class="debate" wx:if="{{modulesView.debates.pivot.length}}">
           <view class="card-title">辩论留痕</view>
           <view class="debate-turn" wx:for="{{modulesView.debates.pivot}}" wx:key="at" wx:for-item="d">
@@ -270,9 +271,7 @@
             <text class="scan-text {{item.done ? 'dim' : ''}}">{{item.q}}</text>
           </view>
         </view>
-        <view class="debate-btn-row" wx:if="{{!shared}}">
-          <button class="mini-btn" data-key="closure" bindtap="openModuleDebate" hover-class="mini-btn-press">我不同意 / 追问</button>
-        </view>
+        <view class="sec-ask" wx:if="{{!shared}}"><text class="ask-btn" data-key="closure" bindtap="openModuleDebate">我不同意 / 追问</text></view>
         <view class="debate" wx:if="{{modulesView.debates.closure.length}}">
           <view class="card-title">辩论留痕</view>
           <view class="debate-turn" wx:for="{{modulesView.debates.closure}}" wx:key="at" wx:for-item="d">
@@ -338,9 +337,7 @@
             </view>
             <text class="principle">{{plan.steps.placebo.closingPrinciple}}</text>
           </block>
-          <view class="debate-btn-row" wx:if="{{!shared}}">
-            <button class="mini-btn" data-key="{{key}}" bindtap="openStepDebate">我不同意 / 追问</button>
-          </view>
+          <view class="sec-ask" wx:if="{{!shared}}"><text class="ask-btn" data-key="{{key}}" bindtap="openStepDebate">我不同意 / 追问</text></view>
           <view class="debate" wx:if="{{plan.debates && plan.debates[key] && plan.debates[key].length}}">
             <view class="card-title">辩论留痕</view>
             <view class="debate-turn" wx:for="{{plan.debates[key]}}" wx:key="at" wx:for-item="d">
@@ -356,9 +353,11 @@
       </view>
     </block>
 
-    <view class="debate-btn-row mp-footer">
-      <button class="mini-btn" bindtap="onGoReport">{{shared ? '回首页' : '返回报告'}}</button>
-      <button class="mini-btn" open-type="share">分享行动方案</button>
+        <!-- 底部导航（三页统一：金色主按钮=下一页 + 分享） -->
+    <view class="bottom-actions">
+      <button class="next-btn" wx:if="{{!shared}}" bindtap="goMethod">规划未来 ›</button>
+      <button class="ghost-btn" wx:else bindtap="onGoReport">回首页</button>
+      <button class="ghost-btn" open-type="share">分享</button>
     </view>
   </block>
 
@@ -368,6 +367,11 @@
   </view>
 </view>
 
+<!-- 追问重算浮条：提交后不挡正文，右下角安静提示 -->
+<view class="debate-float" wx:if="{{debatePending}}">
+  <view class="float-ring"></view>
+  <text class="float-text">{{debateHint || '正在按你的追问重新推演…'}}</text>
+</view>
 <!-- 分享卡离屏画布（不显示） -->
 <canvas type="2d" id="action-share-canvas" class="share-canvas"></canvas>
 
@@ -376,7 +380,7 @@
   <view class="modal" catchtap="noop">
     <view class="modal-title">{{debateTitle}} · 我不同意 / 追问</view>
     <textarea class="modal-input" placeholder="写下你的反对或想追问的地方…" value="{{debateText}}" bindinput="onDebateInput" max-height="400" auto-height></textarea>
-    <button class="btn" bindtap="onSubmitDebate" disabled="{{debatting}}">{{debatting ? '正在重演… 约 20~90 秒' : '提交'}}</button>
+    <button class="btn" bindtap="onSubmitDebate" disabled="{{debatting}}">{{debatting ? (debateHint || '正在重演… 约 20~90 秒') : '提交'}}</button>
   </view>
 </view>
 

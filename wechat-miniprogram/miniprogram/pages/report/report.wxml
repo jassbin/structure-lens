@@ -5,6 +5,15 @@
 </view>
 <view class="page" wx:if="{{result}}">
 
+  <!-- 三页链路：看穿 -> 找到缝 -> 动起来 -->
+  <view class="chain-bar">
+    <view class="chain-node active"><view class="chain-dot">1</view><view class="chain-label">看穿</view></view>
+    <view class="chain-line"></view>
+    <view class="chain-node"><view class="chain-dot">2</view><view class="chain-label">找到缝</view></view>
+    <view class="chain-line"></view>
+    <view class="chain-node"><view class="chain-dot">3</view><view class="chain-label">动起来</view></view>
+  </view>
+
   <!-- 金句卡 -->
   <view class="card verdict-card">
     <view class="verdict-head">
@@ -56,7 +65,7 @@
     </view>
 
     <!-- 骨架辩论 -->
-    <view class="debate-btn" bindtap="onSkeletonDebate">💬 我不同意这条骨架</view>
+    <view class="sec-ask"><text class="ask-btn" bindtap="onSkeletonDebate">我不同意这条骨架 / 追问</text></view>
     <block wx:if="{{skeleton.debate && skeleton.debate.length}}">
       <view class="debate-turn" wx:for="{{skeleton.debate}}" wx:key="at">
         <view class="dt-you">{{item.objection}}</view>
@@ -87,6 +96,7 @@
             <text class="badge {{SOURCE_GRADE_CLASS[m.grade]}}">{{SOURCE_GRADE_LABELS[m.grade] || m.grade}}</text>
             <text class="m-fact" user-select="true">{{m.fact}}</text>
           </view>
+          <view class="m-link" wx:if="{{m.url}}" data-url="{{m.url}}" bindtap="openSourceLink">复制原文链接</view>
         </view>
       </block>
 
@@ -97,8 +107,7 @@
           class="candidate {{m.id === step.selectedId ? 'selected' : ''}}"
           wx:for="{{step.candidates}}" wx:key="id" wx:for-item="m"
           data-index="{{step.index}}" data-point="{{m.content}}" data-title="{{step.label}}"
-          bindlongpress="openDrill"
-        >
+                  >
           <view class="c-row">
             <text class="c-id" user-select="true">{{m.id}}</text>
             <text class="c-content" user-select="true">{{m.content}}</text>
@@ -201,20 +210,22 @@
       <!-- drill notes -->
       <text class="drill-note" user-select="true" wx:for="{{step.drillNotes}}" wx:key="index">{{item.text}}</text>
 
-      <view class="step-actions">
-        <button class="mini-btn mini-drill" data-index="{{step.index}}" data-point="{{step.drillDefault}}" data-title="{{step.label}}" bindtap="openDrill">钻探</button>
-        <button class="mini-btn mini-debate" data-index="{{step.index}}" bindtap="openStepDebate">我不同意 / 追问</button>
-      </view>
+      <view class="sec-ask"><text class="ask-btn" data-index="{{step.index}}" bindtap="openStepDebate">我不同意 / 追问</text></view>
     </view>
   </view>
 
   <!-- 底部入口 -->
   <view class="bottom-actions">
-    <button class="btn" bindtap="onGoAction">生成行动方案</button>
-    <button class="btn ghost" open-type="share">分享这个结构报告</button>
+    <button class="next-btn" bindtap="onGoAction">生成行动方案 ›</button>
+    <button class="ghost-btn" open-type="share">分享</button>
   </view>
 </view>
 
+<!-- 追问重算浮条：提交后不挡正文，右下角安静提示（report/action/method 三页统一） -->
+<view class="debate-float" wx:if="{{debatePending}}">
+  <view class="float-ring"></view>
+  <text class="float-text">{{debateHint || '正在按你的追问重新思考…'}}</text>
+</view>
 <!-- 分享卡离屏画布（只用于生成分享图片，不显示） -->
 <canvas type="2d" id="share-canvas" class="share-canvas"></canvas>
 
@@ -232,7 +243,7 @@
   <view class="modal" catchtap="noop">
     <view class="modal-title">我不同意 / 追问</view>
     <textarea class="modal-input" placeholder="写下你的反对或想追问的地方…" value="{{debateText}}" bindinput="onDebateInput" maxlength="500" auto-height></textarea>
-    <button class="btn" bindtap="onSubmitDebate" disabled="{{debatting}}">{{debatting ? '正在重检… 约 15~40 秒' : '提交重算'}}</button>
+    <button class="btn" bindtap="onSubmitDebate" disabled="{{debatting}}">{{debatting ? (debateHint || '正在重检… 约 15~40 秒') : '提交重算'}}</button>
   </view>
 </view>
 

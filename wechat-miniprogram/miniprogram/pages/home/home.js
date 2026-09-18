@@ -29,8 +29,15 @@ Page({
     align: null, // {summary, sources}
     showTriage: false,
     showAlign: false,
+    inputFocus: false,
+    precheckRound: 0, // question rounds, backend force-passes at >=3
     topics: DEEP_TOPICS,
   },
+
+  onLoad() {
+    // 首页自 1.0.45 起不再展示「今日推荐拆解」
+  },
+
 
   onShow() {
     if (typeof this.getTabBar === "function" && this.getTabBar()) {
@@ -42,8 +49,12 @@ Page({
     }
   },
 
+  // 输入过程中绝不重置 focus（否则打一个字键盘就会收起）；只在真实失焦时清掉聚焦标记
   onInput(e) {
     this.setData({ input: e.detail.value });
+  },
+  onInputBlur() {
+    if (this.data.inputFocus) this.setData({ inputFocus: false });
   },
 
   // 清空回到初始
@@ -54,6 +65,7 @@ Page({
       showTriage: false,
       showAlign: false,
       input: "",
+      precheckRound: 0,
     });
   },
 
@@ -66,23 +78,30 @@ Page({
     }
     this.setData({ submitting: true, triage: null, align: null, showTriage: false, showAlign: false });
     try {
-      // 预检（含冷启动恢复：瞬时 503/超时会先进过渡页，后台续试）
-      const res = await this.precheckRecovered(input);
+      // 预检 v21.16（含冷启动恢复）
+      const res = await this.precheckRecovered(input, {
+        round: this.data.precheckRound, // v21.17: 每次点击都重新搜索，round 只作防死循环安全阀
+      });
       if (res.status === "diggable") {
-        // 直接进入分析；已开的过渡遮罩直接复用，不闪屏
-        await this.doAnalyze(input, null, true);
+        // 公开清晰：带来源直接分析；个人私事/已搜过一次：不再联网直接分析
+        const opts = res.sources && res.sources.length
+            ? { alignedSources: res.sources, aligned: true }
+            : { aligned: true, skipSearch: true }; // 搜不到+说清楚：直接分析，不再联网
+        this.resetSessionMarkers();
+        await this.doAnalyze(input, opts, true);
         return;
       }
+      this.markRoundUsed(); // 没直接通过 -> 轮数+1；补充后再点照一会重新搜索索
       this.tearDownAnalyzing();
       if (res.status === "align") {
         // 弹事实对齐卡确认
         this.setData({
-          align: { input: res.input, summary: res.summary, sources: res.sources || [] },
+          align: { input: res.input, summary: res.summary, sources: res.sources || [], candidates: res.candidates || [] },
           showAlign: true,
         });
       } else {
-        // too_shallow / not_applicable → 反问引导
-        const triage = res.triage || { verdict: res.status };
+        // need_detail / not_applicable -> 反问题引导
+        const triage = res.triage || { verdict: res.status, probes: [] };
         this.setData({ triage, showTriage: true });
       }
     } catch (e) {
@@ -94,7 +113,16 @@ Page({
     }
   },
 
-  // 对齐卡：确认（带来源入 analyze）
+  // 会话流程标记（v21.16）
+  markRoundUsed() {
+    // 没走到分析 -> 轮数+1（后端安全阀用）；补充后再点照一照会重新搜索
+    this.setData({ precheckRound: (this.data.precheckRound || 0) + 1 });
+  },
+  resetSessionMarkers() {
+    this.setData({ precheckRound: 0 });
+  },
+
+  // 对齐卡：确认（带来源分析）
   onAlignConfirm() {
     const a = this.data.align;
     this.setData({ showAlign: false });
@@ -105,10 +133,11 @@ Page({
     });
   },
 
-  // 对齐卡：放弃来源，直接按原输入分析
+  // 对齐卡：都不是 → 回输入框补充细节，再照一次
   onAlignSkip() {
-    this.setData({ showAlign: false });
-    this.doAnalyze(this.data.input);
+    this.markRoundUsed(); // 候选都不是 -> 不再搜
+    this.setData({ showAlign: false, inputFocus: true });
+    wx.showToast({ title: "在输入框补充细节后，再点照一照", icon: "none" });
   },
 
   // ============ 冷启动恢复：第一次点“照一照”若遇 503/超时，先进过渡页，后台续醒服务 ============
@@ -125,10 +154,10 @@ Page({
   },
 
   // 预检走冷启动恢复：一次正常预检失败且属瞬时错 → 立刻进过渡页（给用户“有反应”），后台递增重试唤醒
-  async precheckRecovered(input) {
+  async precheckRecovered(input, opts) {
     let lastErr = null;
     try {
-      return await api.precheck(input);
+      return await api.precheck(input, opts);
     } catch (e) {
       lastErr = e;
       if (!this.isTransientError(e)) throw e;
@@ -139,7 +168,7 @@ Page({
     for (const d of delays) {
       await new Promise((r) => setTimeout(r, d));
       try {
-        const res = await api.precheck(input);
+        const res = await api.precheck(input, opts);
         return res; // 成功：过渡页保持，随后 onSubmit 直接进入 doAnalyze
       } catch (e) {
         if (!this.isTransientError(e)) { this.tearDownAnalyzing(); throw e; }
@@ -180,6 +209,7 @@ Page({
     }
     // 每次都重建“正式分析”进度（alreadyOverlay 时旧的只是预热进度）
     const startedAt = Date.now();
+    this._stageMax = 0; // 阶段只前进（防真机 setData 时序导致回跳）
     this.setData({
       analyzing: true,
       warmStage: "",
@@ -199,12 +229,17 @@ Page({
       for (let i = 0; i < ANALYZE_STAGE_STARTS.length; i++) {
         if (elapsed >= ANALYZE_STAGE_STARTS[i]) stageIndex = i;
       }
+      stageIndex = Math.max(this._stageMax || 0, stageIndex);
+      this._stageMax = stageIndex;
       const etaSec = Math.max(5, Math.ceil(ANALYZE_EXPECTED_SECONDS * (1 - progress / 100)));
       this.setData({ stageIndex, progress, elapsed: Math.floor(elapsed), etaSec });
     }, 200);
 
     try {
-      const res = await this.analyzeWithRetry(input, opts);
+      const res = await this.analyzeWithRetry(input, {
+        ...(opts || {}),
+        onProgress: (poll) => this.onAnalyzeProgress(poll),
+      });
       if (this._analyzeTimer) { clearInterval(this._analyzeTimer); this._analyzeTimer = null; }
       if (res.status === "diggable") {
         const result = res.result;
@@ -254,9 +289,47 @@ Page({
     throw lastErr || new Error("分析失败");
   },
 
+  // v21.7: 用后端真实阶段推动遮罩进度（不改分析逻辑）
+  onAnalyzeProgress(poll) {
+    if (!poll || poll.done) return;
+    const stage = poll.stage || "queued";
+    const map = {
+      searching: { idx: 0, title: "联网核对事实依据" },
+      generating: { idx: 1, title: "筛选底层结构骨架" },
+      parsing: { idx: 2, title: "逐层跑 8 步深度穿透" },
+      saving: { idx: 3, title: "整理反转与行动线索" },
+    };
+    const m = map[stage];
+    if (!m) return;
+    const progress = Math.max(this.data.progress, Math.min(95, Math.round((poll.progress || 0) * 100)));
+    const etaSec = Math.max(3, Math.ceil(ANALYZE_EXPECTED_SECONDS * (1 - progress / 100)));
+    const si = Math.max(this._stageMax || 0, m.idx);
+    this._stageMax = si;
+    this.setData({
+      stageIndex: si,
+      progress,
+      warmStage: m.title,
+      etaSec,
+    });
+  },
+
   onTapTopic(e) {
     const { prompt } = e.currentTarget.dataset;
     this.setData({ input: prompt });
+  },
+
+  onShareAppMessage() {
+    return {
+      title: "解忧果 · 把让你「不对劲」的事照一照",
+      path: "/pages/home/home?source=share_home",
+    };
+  },
+
+  onShareTimeline() {
+    return {
+      title: "解忧果 · 结构拆解，看穿一件让你不对劲的事",
+      query: "source=share_timeline_home",
+    };
   },
 
   // 长按页脚版本查看诊断弹窗：环境状态 + 最近请求流水（每行 phase 表示走到哪一步）

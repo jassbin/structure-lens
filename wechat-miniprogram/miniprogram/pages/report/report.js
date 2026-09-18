@@ -38,7 +38,7 @@ const STEP_TIPS = {
   judgment:
     "这里是整份报告的核心结论，每条都附「可证伪条件」——出现什么就说明这条判断错了。",
   adversarial:
-    "站在反方的最强立场自我攻击（魔鬼代言人），并审计自己可能中了哪些系统性偏差。",
+    "站在反方的最强立场找茬式自检（魔鬼代言人），并审计自己可能中了哪些系统性偏差。",
 };
 
 // 轻重表达：核心步骤带角标/高亮，辅助步骤弱化
@@ -155,6 +155,8 @@ Page({
     debateTarget: null, // {type:'skeleton'|'step', index}
     debateText: "",
     debatting: false,
+    debateHint: "",
+    debatePending: false,
     // 钻探会话
     drillTarget: null, // {stepIndex, point, layerTitle, verdict}
     drillMode: "challenge",
@@ -323,6 +325,17 @@ Page({
     this.setData({ openTip: "" });
   },
 
+  // 材料/证据：有链接就复制到剪贴板；没有链接的 wxml 不展示
+  openSourceLink(e) {
+    // 小程序不能直开任意站外链接：有链接就复制，没有链接不展示（wxml 已判断）
+    const url = String(e.currentTarget.dataset.url || "").trim();
+    if (!url) return;
+    wx.setClipboardData({
+      data: url,
+      success: () => wx.showToast({ title: "原文链接已复制", icon: "success" }),
+    });
+  },
+
   // ---- 分享小卡：金句图 + 公开短码（弱网失败不阻塞） ----
   prepareShare() {
     const r = this.data.result;
@@ -354,9 +367,11 @@ Page({
 
   // ---- 骨架卡辩论 ----
   onSkeletonDebate() {
+    if (this.data.debatting) return;
     this.setData({ debateTarget: { type: "skeleton" }, debateText: "" });
   },
   openStepDebate(e) {
+    if (this.data.debatting) return;
     const idx = e.currentTarget.dataset.index;
     this.setData({ debateTarget: { type: "step", index: idx }, debateText: "" });
   },
@@ -378,13 +393,17 @@ Page({
     }
     const fromStepKind =
       debateTarget.type === "skeleton" ? "skeleton-card" : this.data.steps[debateTarget.index].kind;
-    this.setData({ debatting: true });
+    // 提交即关弹层：页面保持可浏览，右下角浮条提示重算（详见 app.wxss .debate-float）
+    this.setData({ debateTarget: null, debateText: "", debatting: true, debateHint: "", debatePending: true });
     try {
-      const res = await api.recompute({
-        result,
-        fromStepKind,
-        disagreement,
-      });
+      const res = await api.recompute(
+        {
+          result,
+          fromStepKind,
+          disagreement,
+        },
+        (poll) => this.onDebateProgress(poll),
+      );
       // 用返回的 result 原地更新
       local.saveLocalAnalysis(res.result);
       autoSync.sync(); // 追问重算后自动同步
@@ -397,8 +416,20 @@ Page({
     } catch (e) {
       api.apiErrorToast(e, "重算失败");
     } finally {
-      this.setData({ debatting: false });
+      this.setData({ debatting: false, debateHint: "", debatePending: false });
     }
+  },
+
+  // v21.7: 追问遮罩显示真实阶段
+  onDebateProgress(poll) {
+    if (!poll || poll.done) return;
+    const stage = poll.stage || "queued";
+    const hint = {
+      generating: "重算生成中… 约 10~20 秒",
+      parsing: "正在整理结果…",
+      saving: "快完成了…",
+    }[stage];
+    if (hint) this.setData({ debateHint: hint });
   },
 
   // ---- 钻探 ----
@@ -473,4 +504,13 @@ Page({
     if (this.data.shareImage) payload.imageUrl = this.data.shareImage;
     return payload;
   },
+
+  onShareTimeline() {
+    const r = this.data.result;
+    return {
+      title: r ? r.verdict : "解忧果 · 结构拆解",
+      query: "id=" + encodeURIComponent(this.data.id) + "&source=share_timeline",
+    };
+  },
 });
+

@@ -1,0 +1,259 @@
+<view class="page">
+  <!-- 计算中 -->
+  <view wx:if="{{loading}}" class="center-state loading-state">
+    <view class="ring"></view>
+    <view class="load-text">{{stages[stageIndex]}}</view>
+    <view class="load-sub">用同一套方法，把这局的事件 + 结构 + 方案算成具体怎么动，通常 30~60 秒</view>
+    <view class="progress-wrap">
+      <view class="progress-track">
+        <view class="progress-fill" style="width:{{progress}}%"></view>
+      </view>
+      <view class="progress-meta">
+        <text>已用 {{elapsed}} 秒</text>
+        <text>{{progress}}%</text>
+      </view>
+      <view class="progress-eta">预计剩余约 {{etaSec}} 秒</view>
+    </view>
+    <view class="stage-list">
+      <view
+        class="stage-item {{index < stageIndex ? 'done' : index === stageIndex ? 'active' : ''}}"
+        wx:for="{{stages}}"
+        wx:key="*this"
+      >
+        <text class="stage-dot">{{index < stageIndex ? '✓' : index === stageIndex ? '◦' : '○'}}</text>
+        <text class="stage-label">{{item}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 出错 -->
+  <view wx:elif="{{errorText}}" class="center-state err-state">
+    <view class="err-mark">!</view>
+    <view class="err-title">这一局没算成</view>
+    <view class="err-text">{{errorText}}</view>
+    <view class="err-actions">
+      <button class="mini-btn" bindtap="recalc">重新计算</button>
+      <button class="ghost-btn" bindtap="goBack">返回「寻找缝隙」</button>
+    </view>
+  </view>
+
+  <!-- 结果 -->
+  <block wx:elif="{{method}}">
+    <!-- 三页链路：看穿 -> 找到缝 -> 动起来 -->
+    <view class="chain-bar">
+      <view class="chain-node passed"><view class="chain-dot">1</view><view class="chain-label">看穿</view></view>
+      <view class="chain-line passed"></view>
+      <view class="chain-node passed"><view class="chain-dot">2</view><view class="chain-label">找到缝</view></view>
+      <view class="chain-line passed"></view>
+      <view class="chain-node active"><view class="chain-dot">3</view><view class="chain-label">动起来</view></view>
+    </view>
+    <!-- 头部：局点 -->
+    <view class="card hero">
+      <view class="hero-head">
+        <view class="hero-eyebrow">解忧果 · 规划未来</view>
+        <text class="tip-btn" id="tip-focus" data-tip="focus" catchtap="toggleTip">?</text>
+      </view>
+      <view class="hero-title">这一局，怎么动</view>
+      <view class="hero-focus" user-select="true">{{method.focus}}</view>
+      <view class="hero-meta" wx:if="{{generatedAtText}}">{{generatedAtText}} · 具体到这一件事</view>
+    </view>
+
+    <!-- 追问记录 -->
+    <view class="card qa-card" wx:if="{{method.qas.length}}">
+      <view class="sec-head">
+        <view class="sec-title">你追问过的</view>
+        <text class="badge badge-warn">重算回应</text>
+      </view>
+      <view class="qa-item" wx:for="{{method.qas}}" wx:key="index" wx:for-item="qa">
+        <view class="qa-q"><text class="qa-k">你的追问：</text>{{qa.q}}</view>
+        <view class="qa-a"><text class="qa-k">回应：</text>{{qa.answer}}</view>
+      </view>
+    </view>
+
+    <!-- 关键变量 -->
+    <view class="card sec-card" wx:if="{{method.variables.length}}">
+      <view class="sec-head">
+        <view class="sec-no">01</view><view class="sec-title">先看决定成败的变量</view>
+        <text class="badge badge-strong">定级</text>
+        <text class="tip-btn" id="tip-variables" data-tip="variables" catchtap="toggleTip">?</text>
+      </view>
+      <view class="var-item" wx:for="{{method.variables}}" wx:key="index" wx:for-item="v">
+        <view class="var-head">
+          <view class="var-name">{{v.name}}</view>
+          <text class="badge {{v.tier === '硬' ? 'badge-strong' : v.tier === '软' ? 'badge-warn' : 'badge-info'}}">{{v.tier}}</text>
+        </view>
+        <view class="var-note text-2">{{v.note}}</view>
+      </view>
+      <view class="sec-ask"><text class="ask-btn" data-sec="variables" data-label="关键变量" bindtap="openDebate">我不同意 / 追问</text></view>
+    </view>
+
+    <!-- 条件/应对表 -->
+    <view class="card sec-card" wx:if="{{method.map.length}}">
+      <view class="sec-head">
+        <view class="sec-no">02</view><view class="sec-title">条件 → 应对表</view>
+        <text class="badge badge-info">关键</text>
+        <text class="tip-btn" id="tip-map" data-tip="map" catchtap="toggleTip">?</text>
+      </view>
+      <view class="map-item" wx:for="{{method.map}}" wx:key="index" wx:for-item="m">
+        <view class="map-cond">{{m.cond}}</view>
+        <view class="map-act"><text class="map-k">这个状态，做：</text>{{m.action}}</view>
+        <view class="map-sub" wx:if="{{m.basis}}">依据：{{m.basis}}</view>
+        <view class="map-sub" wx:if="{{m.fail}}">失效信号：{{m.fail}}</view>
+        <view class="map-fallback" wx:if="{{m.fallback}}">→ 换成：{{m.fallback}}</view>
+      </view>
+      <view class="sec-ask"><text class="ask-btn" data-sec="map" data-label="条件应对表" bindtap="openDebate">我不同意 / 追问</text></view>
+    </view>
+
+    <!-- 基线打法 -->
+    <view class="card sec-card" wx:if="{{method.baseline}}">
+      <view class="sec-head">
+        <view class="sec-no">03</view><view class="sec-title">基线打法</view>
+        <text class="badge badge-ok">先推这条</text>
+        <text class="tip-btn" id="tip-baseline" data-tip="baseline" catchtap="toggleTip">?</text>
+      </view>
+      <view class="base-desc text-2">{{method.baseline.desc}}</view>
+      <view class="base-act">{{method.baseline.act}}</view>
+      <view class="sec-ask"><text class="ask-btn" data-sec="baseline" data-label="基线打法" bindtap="openDebate">我不同意 / 追问</text></view>
+    </view>
+
+    <!-- 偏离 -->
+    <view class="card sec-card" wx:if="{{method.shifting.length}}">
+      <view class="sec-head">
+        <view class="sec-no">04</view><view class="sec-title">会偏到哪几条路</view>
+        <text class="badge badge-warn">一次只变一个</text>
+        <text class="tip-btn" id="tip-shifting" data-tip="shifting" catchtap="toggleTip">?</text>
+      </view>
+      <view class="shift-item" wx:for="{{method.shifting}}" wx:key="index" wx:for-item="s">
+        <view class="shift-when">{{s.when}}</view>
+        <view class="shift-change map-sub">变量变了：{{s.change}}</view>
+        <view class="shift-act"><text class="map-k">动作换成：</text>{{s.act}}</view>
+      </view>
+      <view class="sec-ask"><text class="ask-btn" data-sec="shifting" data-label="偏离路线" bindtap="openDebate">我不同意 / 追问</text></view>
+    </view>
+
+    <!-- 三层滤网 -->
+    <view class="card sec-card" wx:if="{{method.filters.length}}">
+      <view class="sec-head">
+        <view class="sec-no">05</view><view class="sec-title">候选动作过三层滤网</view>
+        <text class="badge badge-info">筛</text>
+        <text class="tip-btn" id="tip-filters" data-tip="filters" catchtap="toggleTip">?</text>
+      </view>
+      <view class="filter-item" wx:for="{{method.filters}}" wx:key="index" wx:for-item="f">
+        <view class="filter-head">
+          <view class="filter-choice">{{f.choice}}</view>
+          <text class="badge {{f.take === '否掉' || f.take === '否' ? 'badge-danger' : 'badge-ok'}}">{{f.take}}</text>
+        </view>
+        <view class="filter-reason text-2">{{f.reason}}</view>
+      </view>
+      <view class="sec-ask"><text class="ask-btn" data-sec="filters" data-label="三层滤网" bindtap="openDebate">我不同意 / 追问</text></view>
+    </view>
+
+    <!-- 边界与风险 -->
+    <view class="card sec-card" wx:if="{{method.riskline.length}}">
+      <view class="sec-head">
+        <view class="sec-no">06</view><view class="sec-title">边界与风险</view>
+        <text class="badge badge-danger">兜底</text>
+        <text class="tip-btn" id="tip-riskline" data-tip="riskline" catchtap="toggleTip">?</text>
+      </view>
+      <view class="risk-item" wx:for="{{method.riskline}}" wx:key="index" wx:for-item="r">
+        <view class="risk-name">{{r.name}}</view>
+        <view class="risk-line text-2">{{r.risk}}</view>
+        <view class="risk-patch"><text class="risk-k">补：</text>{{r.patch}}</view>
+      </view>
+      <view class="sec-ask"><text class="ask-btn" data-sec="riskline" data-label="边界与风险" bindtap="openDebate">我不同意 / 追问</text></view>
+    </view>
+
+    <!-- 反方预演 -->
+    <view class="card sec-card" wx:if="{{method.redline.length}}">
+      <view class="sec-head">
+        <view class="sec-no">07</view><view class="sec-title">反方会怎么拆</view>
+        <text class="badge badge-danger">先办倒自己</text>
+        <text class="tip-btn" id="tip-redline" data-tip="redline" catchtap="toggleTip">?</text>
+      </view>
+      <view class="red-item" wx:for="{{method.redline}}" wx:key="index" wx:for-item="r">
+        <view class="red-head">
+          <view class="red-name">{{r.name}}</view>
+          <text class="badge badge-warn">{{r.point}}</text>
+        </view>
+        <view class="red-patch"><text class="risk-k">补丁：</text>{{r.patch}}</view>
+      </view>
+      <view class="sec-ask"><text class="ask-btn" data-sec="redline" data-label="反方拆解" bindtap="openDebate">我不同意 / 追问</text></view>
+    </view>
+
+    <!-- 偏好 -->
+    <view class="card sec-card" wx:if="{{method.prefs.length}}">
+      <view class="sec-head">
+        <view class="sec-no">08</view><view class="sec-title">你的偏好落到这一局</view>
+        <text class="badge badge-info">定调</text>
+        <text class="tip-btn" id="tip-prefs" data-tip="prefs" catchtap="toggleTip">?</text>
+      </view>
+      <view class="pref-item" wx:for="{{method.prefs}}" wx:key="index" wx:for-item="p">
+        <view class="pref-name">{{p.name}}</view>
+        <view class="pref-why text-2">{{p.why}}</view>
+      </view>
+      <view class="sec-ask"><text class="ask-btn" data-sec="prefs" data-label="偏好落地" bindtap="openDebate">我不同意 / 追问</text></view>
+    </view>
+
+    <!-- 落地步骤 -->
+    <view class="card sec-card" wx:if="{{method.steps.length}}">
+      <view class="sec-head">
+        <view class="sec-no">09</view><view class="sec-title">落地步骤</view>
+        <text class="badge badge-ok">今天就动</text>
+        <text class="tip-btn" id="tip-steps" data-tip="steps" catchtap="toggleTip">?</text>
+      </view>
+      <view class="step-item" wx:for="{{method.steps}}" wx:key="no" wx:for-item="s">
+        <view class="step-no">{{s.no}}</view>
+        <view class="step-act">{{s.act}}</view>
+      </view>
+      <view class="sec-ask"><text class="ask-btn" data-sec="steps" data-label="落地步骤" bindtap="openDebate">我不同意 / 追问</text></view>
+    </view>
+
+    <!-- 停手校验 + 金句 -->
+    <view class="card order-card" wx:if="{{method.order}}">
+      <view class="sec-head">
+        <view class="sec-no">10</view><view class="sec-title">什么时候停下来核对</view>
+        <text class="tip-btn" id="tip-order" data-tip="order" catchtap="toggleTip">?</text>
+      </view>
+      <view class="order-text">{{method.order}}</view>
+      <view class="sec-ask"><text class="ask-btn" data-sec="order" data-label="停手核对" bindtap="openDebate">我不同意 / 追问</text></view>
+    </view>
+    <view class="card motto-card">
+      <view class="motto-head"><text class="motto-label">这一局的金句</text></view>
+      <text class="motto" user-select="true">{{method.motto}}</text>
+      <view class="motto-meta">先动一步，再校验一步</view>
+    </view>
+
+    <!-- 底部操作（与 report/action 统一） -->
+    <view class="bottom-actions">
+      <button class="ghost-btn" open-type="share">分享这一局</button>
+    </view>
+  </block>
+</view>
+
+<!-- 追问重算浮条：提交后不挡正文，右下角安静提示 -->
+<view class="debate-float" wx:if="{{debatePending}}">
+  <view class="float-ring"></view>
+  <text class="float-text">{{debateHint || '正在按你的追问重新推演…'}}</text>
+</view>
+<!-- 分享卡生成画布（不显示） -->
+<canvas type="2d" id="method-share-canvas" class="share-canvas"></canvas>
+
+<!-- 「?」注释浮层 -->
+<view class="tip-mask" wx:if="{{openTip}}" bindtap="closeTip">
+  <view class="tip-bubble" style="{{tipBubbleStyle}}" catchtap="noop">
+    <view class="tip-arrow {{tipBubbleAbove ? 'above' : 'below'}}" style="left:{{tipArrowX}}px"></view>
+    <view class="tip-title">{{tipTitle}}</view>
+    <view class="tip-text">{{tipText}}</view>
+  </view>
+</view>
+
+<!-- 追问弹层 -->
+<view class="modal-mask" wx:if="{{debateTarget}}" bindtap="closeDebate">
+  <view class="modal" catchtap="noop">
+    <view class="modal-title">我不同意 / 追问</view>
+    <view class="modal-sub" wx:if="{{debateTarget.label}}">正在讨论：「{{debateTarget.label}}」</view>
+    <textarea class="modal-input" placeholder="写下你的反对或想追问的地方…" value="{{debateText}}" bindinput="onDebateInput" maxlength="300" auto-height></textarea>
+    <button class="btn" bindtap="submitDebate" disabled="{{debatting}}">{{debatting ? (debateHint || '正在重算这一局… 约 30~60 秒') : '提交质疑，重算这一局'}}</button>
+  </view>
+</view>
+

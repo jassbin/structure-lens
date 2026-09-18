@@ -30,6 +30,20 @@ router.post("/", async (req, res) => {
     }
   }
 
+  if (type === "method") {
+    const method = body.method && typeof body.method === "object" ? body.method : null;
+    const focus = String((method && (method.focus || "")) || "").trim();
+    if (!method || !focus) {
+      return res.status(400).json({ error: "缺少可分享的规划内容" });
+    }
+    try {
+      const code = await createShare({ type: "method", input, verdict: focus, steps: method, headline: focus.slice(0, 60) });
+      return res.json({ code });
+    } catch (e) {
+      console.error("[share] create method failed", e);
+      return res.status(500).json({ error: "生成分享链接失败，请重试" });
+    }
+  }
   if (!verdict || !skeleton || !skeleton.name) {
     return res.status(400).json({ error: "缺少可分享内容" });
   }
